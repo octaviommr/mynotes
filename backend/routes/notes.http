@@ -1,0 +1,46 @@
+GET http://localhost:3001/api/notes HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+
+###
+
+GET http://localhost:3001/api/notes/63d983a3b5c4fbffae201ded HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+
+###
+
+POST http://localhost:3001/api/notes HTTP/1.1
+Content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+
+{
+    "title": "Title 10",
+    "content": "Content 10x",
+    "important": false
+}
+
+###
+
+PUT http://localhost:3001/api/notes/6638a2a6729f84cb8712bc2a HTTP/1.1
+Content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+
+{
+    "title": "Title 9",
+    "content": "Updated content 9",
+    "important": true
+}
+
+###
+
+DELETE http://localhost:3001/api/notes/6638a2a6729f84cb8712bc2a HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+
+###
+
+POST http://localhost:3001/api/notes/deleteBatch HTTP/1.1
+Content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+
+{
+    "ids": ["663908236cd3be751fef219f", "6639084f6cd3be751fef21a2"]
+}
