@@ -25,12 +25,7 @@ router.post("/", checkAuth, (req, res, next) => {
   const { title, content, important } = req.body
   const { id } = req.userData
 
-  Note.create({
-    title: title,
-    content: content,
-    important: important,
-    userId: id,
-  })
+  Note.create({ title, content, important, userId: id })
     .then((note) => res.status(201).json(note))
     .catch(next)
 })
@@ -99,7 +94,7 @@ router.post("/deleteBatch", checkAuth, (req, res, next) => {
                 [],
               )
 
-              res.status(200).json({ deletedIds: deletedIds })
+              res.status(200).json({ deletedIds })
             })
             .catch(next)
         })

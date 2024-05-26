@@ -1,46 +1,46 @@
 GET http://localhost:3001/api/notes HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjY1Mzc3MzA0MDIwNzYxYWU2NmU3MDgyIiwiaWF0IjoxNzE2NzQ2MDc0LCJleHAiOjE3MTY3NDk2NzR9.yb4c9frOJCi91mjoIfJ8WiaclCflFOVe_Ktk7jgnU7A
 
 ###
 
-GET http://localhost:3001/api/notes/63d983a3b5c4fbffae201ded HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+GET http://localhost:3001/api/notes/665378114020761ae66e7093 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjY1Mzc3MzA0MDIwNzYxYWU2NmU3MDgyIiwiaWF0IjoxNzE2NzQ2MDc0LCJleHAiOjE3MTY3NDk2NzR9.yb4c9frOJCi91mjoIfJ8WiaclCflFOVe_Ktk7jgnU7A
 
 ###
 
 POST http://localhost:3001/api/notes HTTP/1.1
 Content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjY1Mzc3MzA0MDIwNzYxYWU2NmU3MDgyIiwiaWF0IjoxNzE2NzQ2MDc0LCJleHAiOjE3MTY3NDk2NzR9.yb4c9frOJCi91mjoIfJ8WiaclCflFOVe_Ktk7jgnU7A
 
 {
-    "title": "Title 10",
-    "content": "Content 10x",
-    "important": false
-}
-
-###
-
-PUT http://localhost:3001/api/notes/6638a2a6729f84cb8712bc2a HTTP/1.1
-Content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
-
-{
-    "title": "Title 9",
-    "content": "Updated content 9",
+    "title": "Title 3",
+    "content": "Content 3x",
     "important": true
 }
 
 ###
 
-DELETE http://localhost:3001/api/notes/6638a2a6729f84cb8712bc2a HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+PUT http://localhost:3001/api/notes/665378114020761ae66e7093 HTTP/1.1
+Content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjY1Mzc3MzA0MDIwNzYxYWU2NmU3MDgyIiwiaWF0IjoxNzE2NzQ2MDc0LCJleHAiOjE3MTY3NDk2NzR9.yb4c9frOJCi91mjoIfJ8WiaclCflFOVe_Ktk7jgnU7A
+
+{
+    "title": "Title 2",
+    "content": "Updated content 2",
+    "important": true
+}
+
+###
+
+DELETE http://localhost:3001/api/notes/665378da4020761ae66e70a1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjY1Mzc3MzA0MDIwNzYxYWU2NmU3MDgyIiwiaWF0IjoxNzE2NzQ2MDc0LCJleHAiOjE3MTY3NDk2NzR9.yb4c9frOJCi91mjoIfJ8WiaclCflFOVe_Ktk7jgnU7A
 
 ###
 
 POST http://localhost:3001/api/notes/deleteBatch HTTP/1.1
 Content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjNkOTgzMmNiNWM0ZmJmZmFlMjAxZGUzIiwiaWF0IjoxNzE1MDc1MTcxLCJleHAiOjE3MTUwNzg3NzF9.69AKzfKTSHMkzIxgnrApc7_3J0kL1iFGe__lW5rBXi4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQHVzZXIxLmNvbSIsImlkIjoiNjY1Mzc3MzA0MDIwNzYxYWU2NmU3MDgyIiwiaWF0IjoxNzE2NzQ2MDc0LCJleHAiOjE3MTY3NDk2NzR9.yb4c9frOJCi91mjoIfJ8WiaclCflFOVe_Ktk7jgnU7A
 
 {
-    "ids": ["663908236cd3be751fef219f", "6639084f6cd3be751fef21a2"]
+    "ids": ["665378114020761ae66e7093", "665378f84020761ae66e70a8", "665378f84020761ae66e70a9"]
 }

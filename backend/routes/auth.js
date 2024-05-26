@@ -9,7 +9,7 @@ const router = express.Router()
 router.post("/login", (req, res, next) => {
   const { email, password } = req.body
 
-  User.findOne({ email: email })
+  User.findOne({ email })
     .then((user) => {
       if (!user) {
         res.status(401).json({ message: "Invalid email or password." })
@@ -35,7 +35,7 @@ router.post("/login", (req, res, next) => {
               return next(err)
             }
 
-            res.status(200).json({ token: token, username: user.name })
+            res.status(200).json({ token, username: user.username })
           },
         )
       })
@@ -51,11 +51,7 @@ router.post("/signup", (req, res, next) => {
       return next(err)
     }
 
-    User.create({
-      email: email,
-      name: username,
-      password: hash,
-    })
+    User.create({ email, username, password: hash })
       .then((user) => res.status(201).json(user))
       .catch(next)
   })
