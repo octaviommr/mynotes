@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { Button } from "@headlessui/react"
 
 type GlobalErrorProps = {
   onRetry: () => void
@@ -7,11 +8,15 @@ type GlobalErrorProps = {
 const GlobalError: FC<GlobalErrorProps> = ({ onRetry }) => {
   return (
     <div className="flex h-full flex-col items-center justify-center">
-      <h1 className="text-center text-3xl">Ooops...</h1>
-      <p className="text-center text-slate-500 mt-2">Something went wrong!</p>
-      <button className="text-sky-500 mt-6" onClick={() => onRetry()}>
+      <h1 className="text-3xl">Ooops...</h1>
+      <p className="mt-2 text-slate-700">Something went wrong!</p>
+      <Button
+        type="button"
+        className="mt-10 rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white"
+        onClick={() => onRetry()}
+      >
         Try again
-      </button>
+      </Button>
     </div>
   )
 }

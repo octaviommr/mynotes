@@ -1,19 +1,19 @@
 import { Component, ReactNode, ErrorInfo } from "react"
 import GlobalError from "./GlobalError"
 
-type ErrorHandlerProps = {
+type ErrorBoundaryProps = {
   children: ReactNode
 }
 
-type ErrorHandlerState = {
+type ErrorBoundaryState = {
   hasError: boolean
 }
 
-export class ErrorHandler extends Component<
-  ErrorHandlerProps,
-  ErrorHandlerState
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
 > {
-  constructor(props: ErrorHandlerProps) {
+  constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false }
     this.onRetry = this.onRetry.bind(this)
@@ -40,4 +40,4 @@ export class ErrorHandler extends Component<
   }
 }
 
-export default ErrorHandler
+export default ErrorBoundary
