@@ -1,5 +1,4 @@
 const express = require("express")
-
 const Note = require("../models/Note")
 const checkAuth = require("../middleware/checkAuth")
 
@@ -8,7 +7,7 @@ const router = express.Router()
 router.get("/", checkAuth, (req, res, next) => {
   const { id } = req.userData
 
-  Note.find({ userId: id })
+  Note.find({ userID: id })
     .then((notes) => {
       res.status(200).json(notes)
     })
@@ -25,7 +24,7 @@ router.post("/", checkAuth, (req, res, next) => {
   const { title, content, important } = req.body
   const { id } = req.userData
 
-  Note.create({ title, content, important, userId: id })
+  Note.create({ title, content, important, userID: id })
     .then((note) => res.status(201).json(note))
     .catch(next)
 })
@@ -57,9 +56,13 @@ router.post("/deleteBatch", checkAuth, (req, res, next) => {
   const { ids } = req.body
   const { id } = req.userData
 
-  // get the documents we'll actually be deleting, since some of them might not even exist
-  // (in order to return the deleted documents, we must be able to tell those that could not be deleted from those that didn't exist in the first place)
-  Note.find({ _id: ids, userId: id })
+  /*
+    Get the documents we'll actually be deleting, since some of them might not even exist or belong to another user.
+
+    In order to return the deleted documents, we must be able to tell those that could not be deleted from those that didn't
+    exist in the first place or belonged to another user.
+  */
+  Note.find({ _id: ids, userID: id })
     .then((notes) => {
       const idsToDelete = notes.map((note) => note._id)
 
@@ -112,7 +115,7 @@ router.param("id", (req, res, next, id) => {
         return
       }
 
-      if (!note.userId.equals(req.userData.id)) {
+      if (!note.userID.equals(req.userData.id)) {
         res.status(401).json({ message: "Not authorized." })
         return
       }

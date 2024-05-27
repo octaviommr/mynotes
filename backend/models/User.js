@@ -14,19 +14,16 @@ const userSchema = new mongoose.Schema({
       validator: function (email) {
         const doc = this
 
-        return new Promise((resolve) => {
+        return new Promise((resolve) =>
+          // make sure the email address isn't already being used by another user
           doc.constructor.findOne({ email }).then((user) => {
             if (user) {
-              if (doc._id === user._id) {
-                resolve(true)
-              }
-
-              resolve(false)
+              resolve(doc._id === user._id)
             }
 
             resolve(true)
-          })
-        })
+          }),
+        )
       },
       message: (props) => `${props.value} is already in use.`,
     },

@@ -1,7 +1,6 @@
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
-
 const authRouter = require("./routes/auth")
 const notesRouter = require("./routes/notes")
 const handleUnsupportedRoute = require("./middleware/handleUnsupportedRoute")
