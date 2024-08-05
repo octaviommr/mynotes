@@ -4,7 +4,10 @@ const User = require("./User")
 const noteSchema = new mongoose.Schema({
   title: { type: String, required: [true, "Title is required."] },
   content: { type: String },
-  important: { type: Boolean },
+  important: {
+    type: Boolean,
+    required: [true, "Importance status is required."],
+  },
   userID: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
