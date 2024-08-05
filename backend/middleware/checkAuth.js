@@ -4,7 +4,7 @@ const checkAuth = (req, res, next) => {
   const { authorization } = req.headers
 
   if (!authorization) {
-    res.status(401).json({ message: "Authentication failed." })
+    res.status(401).json({ message: "Authentication required." })
     return
   }
 
@@ -12,7 +12,7 @@ const checkAuth = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
     if (err) {
-      res.status(401).json({ message: "Authentication failed." })
+      res.status(401).json({ message: "Session expired or invalid." })
       return
     }
 

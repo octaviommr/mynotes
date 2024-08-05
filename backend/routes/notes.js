@@ -116,7 +116,7 @@ router.param("id", (req, res, next, id) => {
       }
 
       if (!note.userID.equals(req.userData.id)) {
-        res.status(401).json({ message: "Not authorized." })
+        res.status(403).json({ message: "Access denied." })
         return
       }
 
