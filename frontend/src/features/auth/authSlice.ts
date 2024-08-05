@@ -1,12 +1,5 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  PayloadAction,
-  isAnyOf,
-  createSelector,
-} from "@reduxjs/toolkit"
-import { APIError, AppThunk, RequestStatus, RootState } from "../../store"
-import authAPI from "./authAPI"
+import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit"
+import { AppThunk, RootState } from "../../store"
 
 const SESSION_CACHE_KEY = "MYNOTES_SESSION"
 
@@ -15,135 +8,65 @@ export interface Session {
   username: string
 }
 
-export interface AuthState {
-  isLoggedIn: boolean
-  session: Session | null
-  returnURL: string
-  status: RequestStatus
-}
-
-const initialState: AuthState = {
-  isLoggedIn: false,
-  session: null,
-  returnURL: "",
-  status: "idle",
-}
-
-// async thunks
-export const login = createAsyncThunk<
-  Session,
-  { email: string; password: string },
-  { rejectValue: APIError; extra: { token: string } }
->("auth/login", async ({ email, password }, { rejectWithValue, extra }) => {
-  const response = await authAPI.login(email, password)
-
-  const data = await response.json()
-
-  if (!response.ok) {
-    return rejectWithValue({
-      status: response.status,
-      message: data.message as string,
-    })
-  }
-
-  const session: Session = {
-    token: data.token as string,
-    username: data.username as string,
-  }
-
-  // cache session for state preloading purposes
-  const serializedSession = JSON.stringify(session)
-
-  localStorage.setItem(SESSION_CACHE_KEY, serializedSession)
-
-  // store the authentication token in thunk middleware
-  extra.token = session.token
-
-  return session
-})
-
-export const signup = createAsyncThunk<
-  void,
-  { email: string; username: string; password: string },
-  { rejectValue: APIError }
->("auth/signup", async ({ email, username, password }, { rejectWithValue }) => {
-  const response = await authAPI.signup(email, username, password)
-
-  if (!response.ok) {
-    const data = await response.json()
-
-    return rejectWithValue({
-      status: response.status,
-      message: data.message as string,
-    })
-  }
-
-  // no need to return anything so far
-  return
-})
+// set up a discriminated union to represent the valid state mutations
+export type AuthState =
+  | { isLoggedIn: false; attemptedURL?: string } // "attemptedURL" isn't used in the initial state or when logging out
+  | { isLoggedIn: true; session: Session }
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+
+  /*
+    Use a type assertion to make sure the broader type is inferred for the state of the slice (otherwise "initialState"
+    will be tightened to the relevant type of the discriminated union)
+  */
+  initialState: { isLoggedIn: false } satisfies AuthState as AuthState,
+
+  /*
+    Set up the case reducers using new state values that are constructed and returned. We do so not only to ensure type
+    safety but also because we won't be able to mutate the existing state as needed for all state types.
+  */
   reducers: {
-    clearSession(state) {
-      state.session = null
-      state.isLoggedIn = false
+    startSession(state, action: PayloadAction<Session>) {
+      return { isLoggedIn: true, session: action.payload }
     },
-
-    setReturnURL(state, action: PayloadAction<string>) {
-      state.returnURL = action.payload
+    endSession(state) {
+      return { isLoggedIn: false }
     },
-
-    clearReturnURL(state) {
-      state.returnURL = ""
+    setAttemptedURL(state, action: PayloadAction<string>) {
+      return { isLoggedIn: false, attemptedURL: action.payload }
     },
-  },
-
-  // async thunk actions
-  extraReducers: (builder) => {
-    builder
-      // login
-      .addCase(login.fulfilled, (state, action) => {
-        state.status = "idle"
-        state.session = action.payload
-        state.isLoggedIn = true
-      })
-
-      // signup
-      .addCase(signup.fulfilled, (state) => {
-        state.status = "idle"
-      })
-
-      // pending actions
-      .addMatcher(isAnyOf(login.pending, signup.pending), (state) => {
-        state.status = "loading"
-      })
-
-      // rejected actions
-      .addMatcher(isAnyOf(login.rejected, signup.rejected), (state) => {
-        state.status = "failed"
-      })
   },
 })
 
-export const { clearSession, setReturnURL, clearReturnURL } = authSlice.actions
+export const { setAttemptedURL } = authSlice.actions
 
 // selectors
 export const getUserInitials = createSelector(
-  [(state: RootState) => state.auth.session?.username],
-  (username) => (username ? username.charAt(0).toUpperCase() : ""),
+  [
+    (state: RootState) =>
+      state.auth.isLoggedIn ? state.auth.session.username : undefined,
+  ],
+  (username) => (username ? username.charAt(0).toUpperCase() : undefined),
 )
 
 // thunks
-export const logout = (): AppThunk => (dispatch, _, extraArgument) => {
-  dispatch(authSlice.actions.clearSession())
+export const login =
+  (session: Session): AppThunk =>
+  (dispatch) => {
+    dispatch(authSlice.actions.startSession(session))
+
+    const serializedSession = JSON.stringify(session)
+
+    // cache session to enable state preloading
+    localStorage.setItem(SESSION_CACHE_KEY, serializedSession)
+  }
+
+export const logout = (): AppThunk => (dispatch) => {
+  dispatch(authSlice.actions.endSession())
 
   // clear cached session
   localStorage.removeItem(SESSION_CACHE_KEY)
-
-  // clear authentication token in thunk middleware
-  extraArgument.token = ""
 }
 
 // state preloading
@@ -157,21 +80,9 @@ export const preloadAuthState = () => {
   const state: AuthState = {
     isLoggedIn: true,
     session,
-    returnURL: "",
-    status: "idle",
   }
 
   return state
-}
-
-export const preloadToken = () => {
-  const serializedSession = localStorage.getItem(SESSION_CACHE_KEY)
-
-  if (!serializedSession) return { token: "" }
-
-  const { token } = JSON.parse(serializedSession) as Session
-
-  return { token }
 }
 
 export default authSlice.reducer

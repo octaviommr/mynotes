@@ -1,8 +1,9 @@
 import { FC, ReactNode } from "react"
-import Messenger from "../features/messenger/Messenger"
+import Messenger from "../features/messages/Messenger"
 import Header from "../features/header/Header"
+import ModalPresenter from "../features/modals/ModalPresenter"
 
-type LayoutProps = {
+interface LayoutProps {
   children: ReactNode
 }
 
@@ -14,6 +15,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
         <div className="flex-1 overflow-auto">{children}</div>
       </div>
       <Messenger />
+      <ModalPresenter />
     </>
   )
 }

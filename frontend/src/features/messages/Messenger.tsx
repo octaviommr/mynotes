@@ -5,21 +5,26 @@ import { closeMessage } from "./messageSlice"
 import Alert from "./Alert"
 
 const Messenger = () => {
-  const { open, config } = useSelector((state: RootState) => state.message)
+  const messageState = useSelector((state: RootState) => state.message)
 
   const dispatch = useDispatch<AppDispatch>()
 
   // auto dismiss messages after 6 seconds
   useEffect(() => {
-    if (open) {
+    if (messageState.open) {
       setTimeout(() => dispatch(closeMessage()), 6000)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
+  }, [messageState.open])
 
   return (
-    <div className="fixed bottom-4 left-4 w-full">
-      {open && <Alert severity={config!.severity} message={config!.message} />}
+    <div className="fixed bottom-8 left-8 w-full">
+      {messageState.open && (
+        <Alert
+          severity={messageState.message.severity}
+          message={messageState.message.content}
+        />
+      )}
     </div>
   )
 }

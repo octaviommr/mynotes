@@ -5,6 +5,9 @@ import Login from "./features/auth/Login"
 import Signup from "./features/auth/Signup"
 import ErrorBoundary from "./components/ErrorBoundary"
 import AuthGuard from "./features/auth/AuthGuard"
+import NoteBoard from "./features/notes/NoteBoard"
+import NoteDetail from "./features/notes/NoteDetail"
+import NewNote from "./features/notes/NewNote"
 
 function App() {
   return (
@@ -16,7 +19,23 @@ function App() {
               path="/"
               element={
                 <AuthGuard>
-                  <div>App</div>
+                  <NoteBoard />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/note/:id"
+              element={
+                <AuthGuard>
+                  <NoteDetail />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/note/create"
+              element={
+                <AuthGuard>
+                  <NewNote />
                 </AuthGuard>
               }
             />

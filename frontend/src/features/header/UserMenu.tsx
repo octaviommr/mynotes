@@ -1,9 +1,9 @@
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
-import { ArrowLeftEndOnRectangleIcon } from "@heroicons/react/24/solid"
+import { ArrowLeftEndOnRectangleIcon } from "@heroicons/react/16/solid"
 import { AppDispatch } from "../../store"
-import { logout as logoutAction, getUserInitials } from "../auth/authSlice"
+import { logout as runLogoutThunk, getUserInitials } from "../auth/authSlice"
 
 const UserMenu = () => {
   const userInitials = useSelector(getUserInitials)
@@ -11,16 +11,16 @@ const UserMenu = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
-  const logout = async () => {
-    dispatch(logoutAction())
+  const logout = () => {
+    dispatch(runLogoutThunk())
 
-    // redirect back to login screen
+    // redirect to login screen
     navigate("/login")
   }
 
   return (
     <Menu>
-      <MenuButton className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-700 font-medium text-white ring-2 ring-white">
+      <MenuButton className="inline-flex size-10 items-center justify-center rounded-full bg-gray-700 font-medium text-white ring-2 ring-white">
         {userInitials}
       </MenuButton>
       <MenuItems

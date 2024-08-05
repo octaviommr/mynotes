@@ -1,77 +1,235 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import type { RootState } from "./store"
+import { Session } from "./features/auth/authSlice"
+
 const BASE_URL = process.env.REACT_APP_API_URL
 
-const request = async (url: string, config: RequestInit) => {
-  try {
-    const response = await fetch(`${BASE_URL}${url}`, config)
+/* 
+  Set up models for backend responses and frontend objects.
 
-    if (response.status === 500) {
-      const data = await response.json()
+  This highlights the importance of NOT cloning backend models in the frontend. Frontend models are usually different from
+  backend models because they have different concerns. A frontend model might not include all the props of the backend model
+  and can contain other props that are only relevant for UI logic.
 
-      // an unknow error occurred internally in the API so let's throw it
-      throw new Error(data.message as string)
-    }
-
-    return response
-  } catch (error) {
-    if (error instanceof TypeError) {
-      console.error(error)
-
-      // an unknown error occurred when trying to fetch from the API so let's rethrow it with a friendlier message
-      throw new Error("An unknown error has occurred.")
-    }
-
-    // just rethrow the error that occurred internally in the API
-    throw error
-  }
+  We should only pick the props we care about for the frontend from whatever is the response data, and then use those 
+  to build the actual frontend objects. For instance, we're ignoring the "userID" prop of the note objects that we get 
+  from the backend and we're also using a slightly different, friendlier name for the "_id" prop.
+*/
+interface NoteResponse {
+  _id: string
+  title: string
+  content: string
+  important: boolean
 }
 
-const api = {
-  get: async (url: string, token: string) => {
-    const response = await request(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+export type Note = Omit<NoteResponse, "_id"> & { id: string }
 
-    return response
-  },
+const makeNote = ({ _id, title, content, important }: NoteResponse): Note => ({
+  id: _id,
+  title,
+  content,
+  important,
+})
 
-  post: async (url: string, payload: any, token = "") => {
-    const response = await request(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-
-    return response
-  },
-
-  put: async (url: string, payload: any, token: string) => {
-    const response = await request(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-
-    return response
-  },
-
-  delete: async (url: string, token: string) => {
-    const response = await request(url, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    return response
-  },
+interface UserResponse {
+  _id: string
+  email: string
+  username: string
 }
 
-export default api
+export type User = Omit<UserResponse, "_id"> & { id: string }
+
+const makeUser = ({ _id, email, username }: UserResponse): User => ({
+  id: _id,
+  email,
+  username,
+})
+
+// set up the service to query the API
+export const api = createApi({
+  reducerPath: "api",
+  baseQuery: fetchBaseQuery({
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const authState = (getState() as RootState).auth
+      const token = authState.isLoggedIn ? authState.session.token : undefined
+
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`)
+      }
+
+      return headers
+    },
+  }),
+  tagTypes: ["Notes", "UNAUTHORIZED", "SESSION"],
+  endpoints: (build) => ({
+    // notes
+    getNotes: build.query<Note[], void>({
+      query: () => "/notes",
+      transformResponse: (response: NoteResponse[]) => response.map(makeNote),
+      providesTags: (result, error) => {
+        if (result) {
+          return [
+            ...result.map(({ id }) => ({ type: "Notes", id }) as const),
+
+            // query should also be refetched when the list itself changes (ie. when a new note is added)
+            { type: "Notes", id: "LIST" },
+
+            // and also when a different user logs in
+            "SESSION",
+          ]
+        }
+
+        if (error!.status === 401) {
+          /*
+            Session has expired or is invalid so the query should be refetched when we have a valid session again
+            (ie. after the user successfully logs in)
+          */
+          return ["UNAUTHORIZED"]
+        }
+
+        // an uknown error has occurred so we can't tell when the query should be refetched
+        return []
+      },
+    }),
+    getNote: build.query<Note, string>({
+      query: (id) => `/notes/${id}`,
+      transformResponse: (response: NoteResponse) => makeNote(response),
+      providesTags: (result, error, id) => {
+        if (result) {
+          return [
+            { type: "Notes", id },
+
+            // query should also be refetched when a different user logs in
+            "SESSION",
+          ]
+        }
+
+        if (error!.status === 401) {
+          /*
+            Session has expired or is invalid so the query should be refetched when we have a valid session again
+            (ie. after the user successfully logs in)
+          */
+          return ["UNAUTHORIZED"]
+        }
+
+        if (error!.status === 404) {
+          /* 
+            Note was not found so the query should be refetched if a note is ever created with the attempted ID
+            (even though that's highly unlikely)          
+          */
+          return [{ type: "Notes", id }]
+        }
+
+        if (error!.status === 403) {
+          // access was denied so the query should be refetched if the user that owns the note logs in
+          return ["SESSION"]
+        }
+
+        // an uknown error has occurred so we can't tell when the query should be refetched
+        return []
+      },
+    }),
+    addNote: build.mutation<Note, Omit<Note, "id">>({
+      query: (body) => ({
+        url: "/notes",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: NoteResponse) => makeNote(response),
+      invalidatesTags: (result) => {
+        if (result) {
+          return [{ type: "Notes", id: "LIST" }]
+        }
+
+        // an error has occurred so nothing has changed and no queries need to be refetched
+        return []
+      },
+    }),
+    updateNote: build.mutation<Note, Note>({
+      query: ({ id, ...body }) => ({
+        url: `/notes/${id}`,
+        method: "PUT",
+        body,
+      }),
+      transformResponse: (response: NoteResponse) => makeNote(response),
+      invalidatesTags: (result, error, { id }) => {
+        if (result) {
+          return [{ type: "Notes", id }]
+        }
+
+        // an error has occurred so nothing has changed and no queries need to be refetched
+        return []
+      },
+    }),
+    deleteNote: build.mutation<undefined, string>({
+      query: (id) => ({
+        url: `/notes/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => {
+        /* 
+          We need to use "error" in this case when checking for a successful response since those will have an
+          undefined body
+        */
+        if (!error) {
+          return [{ type: "Notes", id }]
+        }
+
+        // an error has occurred so nothing has changed and no queries need to be refetched
+        return []
+      },
+    }),
+    deleteNotes: build.mutation<{ deletedIds: string[] }, string[]>({
+      query: (ids) => ({
+        url: "/notes/deleteBatch",
+        method: "POST",
+        body: { ids },
+      }),
+      invalidatesTags: (result) => {
+        if (result) {
+          return result.deletedIds.map((id) => ({ type: "Notes", id }))
+        }
+
+        // an error has occurred so nothing has changed and no queries need to be refetched
+        return []
+      },
+    }),
+
+    // authentication
+    login: build.mutation<Session, Pick<User, "email"> & { password: string }>({
+      query: (body) => ({
+        url: "/auth/login",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (result) => {
+        if (result) {
+          return ["UNAUTHORIZED", "SESSION"]
+        }
+
+        // an error has occurred so nothing has changed and no queries need to be refetched
+        return []
+      },
+    }),
+    signup: build.mutation<User, Omit<User, "id"> & { password: string }>({
+      query: (body) => ({
+        url: "/auth/signup",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: UserResponse) => makeUser(response),
+    }),
+  }),
+})
+
+export const {
+  useGetNotesQuery,
+  useGetNoteQuery,
+  useAddNoteMutation,
+  useUpdateNoteMutation,
+  useDeleteNoteMutation,
+  useDeleteNotesMutation,
+  useLoginMutation,
+  useSignupMutation,
+} = api

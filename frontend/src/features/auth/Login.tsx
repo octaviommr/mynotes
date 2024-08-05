@@ -4,13 +4,14 @@ import { useNavigate, Link } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { Button } from "@headlessui/react"
 import { RootState, AppDispatch } from "../../store"
-import { login as loginAction, clearReturnURL } from "./authSlice"
-import { showMessage } from "../messenger/messageSlice"
+import { useLoginMutation } from "../../api"
+import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
+import { login as runLoginThunk } from "./authSlice"
 import { EMAIL_REGEX } from "./Signup"
-import TextField from "../../components/form/TextField"
+import InputField from "../../components/form/InputField"
 import PasswordField from "../../components/form/PasswordField"
 
-type LoginFormData = {
+interface LoginFormData {
   email: string
   password: string
 }
@@ -18,9 +19,11 @@ type LoginFormData = {
 const Login = () => {
   const [canRender, setCanRender] = useState(false)
 
-  const { isLoggedIn, returnURL } = useSelector(
-    (state: RootState) => state.auth,
-  )
+  const authState = useSelector((state: RootState) => state.auth)
+  const attemptedURL = authState.isLoggedIn ? undefined : authState.attemptedURL
+
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
 
   const {
     register,
@@ -33,40 +36,18 @@ const Login = () => {
     },
   })
 
-  const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
+  const [login, { data, error }] = useLoginMutation()
+  const handle = useAPIErrorHandler()
 
-  const login: SubmitHandler<LoginFormData> = async (data) => {
+  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
     const { email, password } = data
 
-    const resultAction = await dispatch(loginAction({ email, password }))
-
-    if (loginAction.fulfilled.match(resultAction)) {
-      // login was successful so let's redirect to any existing stored URL or the homepage
-      navigate(returnURL || "/")
-
-      if (returnURL) {
-        // clear any existing stored URL since we just returned to it
-        dispatch(clearReturnURL())
-      }
-
-      return
-    }
-
-    // login failed so let's show the error message returned from the API for any known error
-    if (resultAction.payload) {
-      dispatch(
-        showMessage({
-          severity: "error",
-          message: resultAction.payload.message,
-        }),
-      )
-    }
+    await login({ email, password })
   }
 
   // only render the login screen if the user is not already logged in
   useEffect(() => {
-    if (isLoggedIn) {
+    if (authState.isLoggedIn) {
       // redirect to homepage
       navigate("/")
 
@@ -77,6 +58,24 @@ const Login = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // handle mutation results
+  useEffect(() => {
+    if (data) {
+      dispatch(runLoginThunk(data))
+
+      // redirect to any existing attempted URL or the homepage
+      navigate(attemptedURL || "/")
+
+      return
+    }
+
+    if (error) {
+      // login failed so let's handle the error
+      handle(error)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, error])
+
   if (!canRender) {
     return null
   }
@@ -85,9 +84,9 @@ const Login = () => {
     <div className="flex h-full flex-col justify-center gap-10">
       <h2 className="text-center text-2xl font-bold">Log in</h2>
       <div className="mx-auto w-full max-w-sm">
-        <form onSubmit={handleSubmit(login)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-6">
-            <TextField
+            <InputField
               {...register("email", {
                 required: "Email is required.",
                 pattern: {
@@ -95,6 +94,7 @@ const Login = () => {
                   message: "Email is not valid.",
                 },
               })}
+              type="email"
               label="Email"
               error={errors.email?.message}
             />
@@ -107,7 +107,7 @@ const Login = () => {
             />
             <Button
               type="submit"
-              className="rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white"
+              className="rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white data-[disabled]:bg-gray-500"
               disabled={isSubmitting}
             >
               Log in
@@ -116,9 +116,9 @@ const Login = () => {
         </form>
       </div>
       <div className="flex justify-center">
-        <span className="text-slate-700">
+        <span className="text-sm/6 text-slate-700">
           Don't have an account yet?{" "}
-          <Link to="/signup" className="text-sky-700">
+          <Link to="/signup" className="font-medium text-sky-700">
             Sign up
           </Link>
         </span>

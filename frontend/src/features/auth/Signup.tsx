@@ -4,16 +4,17 @@ import { useNavigate, Link } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { Button } from "@headlessui/react"
 import { RootState, AppDispatch } from "../../store"
-import { signup as signupAction } from "./authSlice"
-import { showMessage } from "../messenger/messageSlice"
-import TextField from "../../components/form/TextField"
+import { useSignupMutation } from "../../api"
+import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
+import { showMessage } from "../messages/messageSlice"
+import InputField from "../../components/form/InputField"
 import PasswordField from "../../components/form/PasswordField"
 
 // https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address
 export const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
-type SignupFormData = {
+interface SignupFormData {
   email: string
   username: string
   password: string
@@ -24,6 +25,9 @@ const Signup = () => {
   const [canRender, setCanRender] = useState(false)
 
   const { isLoggedIn } = useSelector((state: RootState) => state.auth)
+
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
 
   const {
     register,
@@ -39,40 +43,13 @@ const Signup = () => {
     },
   })
 
-  const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
+  const [signup, { error, isSuccess }] = useSignupMutation()
+  const handle = useAPIErrorHandler()
 
-  const signup: SubmitHandler<SignupFormData> = async (data) => {
+  const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     const { email, username, password } = data
 
-    const resultAction = await dispatch(
-      signupAction({ email, username, password }),
-    )
-
-    if (signupAction.fulfilled.match(resultAction)) {
-      // signup was successful so let's redirect to the login screen so the user can log in
-      navigate("/login")
-
-      // also show a success message
-      dispatch(
-        showMessage({
-          severity: "success",
-          message: "Account created successfully! Please log in to start.",
-        }),
-      )
-
-      return
-    }
-
-    // signup failed so let's show the error message returned from the API for any known error
-    if (resultAction.payload) {
-      dispatch(
-        showMessage({
-          severity: "error",
-          message: resultAction.payload.message,
-        }),
-      )
-    }
+    await signup({ email, username, password })
   }
 
   // only render the signup screen if the user is not already logged in
@@ -88,6 +65,30 @@ const Signup = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // handle mutation results
+  useEffect(() => {
+    if (isSuccess) {
+      // redirect to the login screen so the user can log in
+      navigate("/login")
+
+      // show a success message
+      dispatch(
+        showMessage({
+          severity: "success",
+          content: "Account created successfully! Please log in to start.",
+        }),
+      )
+
+      return
+    }
+
+    if (error) {
+      // signup failed so let's handle the error
+      handle(error)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, error])
+
   if (!canRender) {
     return null
   }
@@ -96,9 +97,9 @@ const Signup = () => {
     <div className="flex h-full flex-col justify-center gap-10">
       <h2 className="text-center text-2xl font-bold">Sign up</h2>
       <div className="mx-auto w-full max-w-sm">
-        <form onSubmit={handleSubmit(signup)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-6">
-            <TextField
+            <InputField
               {...register("email", {
                 required: "Email is required.",
                 pattern: {
@@ -106,10 +107,11 @@ const Signup = () => {
                   message: "Email is not valid.",
                 },
               })}
+              type="email"
               label="Email"
               error={errors.email?.message}
             />
-            <TextField
+            <InputField
               {...register("username", {
                 required: "Username is required.",
               })}
@@ -137,7 +139,7 @@ const Signup = () => {
             />
             <Button
               type="submit"
-              className="rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white"
+              className="rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white data-[disabled]:bg-gray-500"
               disabled={isSubmitting}
             >
               Sign up
@@ -146,9 +148,9 @@ const Signup = () => {
         </form>
       </div>
       <div className="flex justify-center">
-        <span className="text-slate-700">
+        <span className="text-sm/6 text-slate-700">
           Already have an account?{" "}
-          <Link to="/login" className="text-sky-700">
+          <Link to="/login" className="font-medium text-sky-700">
             Log in
           </Link>
         </span>

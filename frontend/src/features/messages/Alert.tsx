@@ -7,19 +7,17 @@ import {
 } from "@heroicons/react/24/solid"
 import { MessageSeverity } from "./messageSlice"
 
-type SeverityAlertProps = {
+interface SeverityAlertProps {
   message: string
 }
 
 const ErrorAlert: FC<SeverityAlertProps> = ({ message }) => {
   return (
     <div
-      className={
-        "flex max-w-xl items-center gap-2 rounded-md bg-red-100 p-4 text-red-700"
-      }
+      className={"flex max-w-lg items-center gap-2 rounded-md bg-red-100 p-4"}
     >
       <XCircleIcon className="size-6 fill-red-700" />
-      <p className="text-sm/6">{message}</p>
+      <p className="text-sm/6 text-red-700">{message}</p>
     </div>
   )
 }
@@ -28,11 +26,11 @@ const WarningAlert: FC<SeverityAlertProps> = ({ message }) => {
   return (
     <div
       className={
-        "flex max-w-xl items-center gap-2 rounded-md bg-yellow-100 p-4 text-yellow-700"
+        "flex max-w-lg items-center gap-2 rounded-md bg-yellow-100 p-4"
       }
     >
       <ExclamationTriangleIcon className="size-6 fill-yellow-700" />
-      <p className="text-sm/6">{message}</p>
+      <p className="text-sm/6 text-yellow-700">{message}</p>
     </div>
   )
 }
@@ -40,12 +38,10 @@ const WarningAlert: FC<SeverityAlertProps> = ({ message }) => {
 const InfoAlert: FC<SeverityAlertProps> = ({ message }) => {
   return (
     <div
-      className={
-        "flex max-w-xl items-center gap-2 rounded-md bg-gray-100 p-4 text-gray-700"
-      }
+      className={"flex max-w-lg items-center gap-2 rounded-md bg-gray-100 p-4"}
     >
       <InformationCircleIcon className="size-6 fill-gray-700" />
-      <p className="text-sm/6">{message}</p>
+      <p className="text-sm/6 text-gray-700">{message}</p>
     </div>
   )
 }
@@ -53,17 +49,15 @@ const InfoAlert: FC<SeverityAlertProps> = ({ message }) => {
 const SuccessAlert: FC<SeverityAlertProps> = ({ message }) => {
   return (
     <div
-      className={
-        "flex max-w-xl items-center gap-2 rounded-md bg-green-100 p-4 text-green-700"
-      }
+      className={"flex max-w-lg items-center gap-2 rounded-md bg-green-100 p-4"}
     >
       <CheckCircleIcon className="size-6 fill-green-700" />
-      <p className="text-sm/6">{message}</p>
+      <p className="text-sm/6 text-green-700">{message}</p>
     </div>
   )
 }
 
-type AlertProps = {
+interface AlertProps {
   severity: MessageSeverity
   message: string
 }

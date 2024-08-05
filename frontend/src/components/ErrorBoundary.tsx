@@ -1,11 +1,11 @@
 import { Component, ReactNode, ErrorInfo } from "react"
 import GlobalError from "./GlobalError"
 
-type ErrorBoundaryProps = {
+interface ErrorBoundaryProps {
   children: ReactNode
 }
 
-type ErrorBoundaryState = {
+interface ErrorBoundaryState {
   hasError: boolean
 }
 

@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { Button } from "@headlessui/react"
 
-type GlobalErrorProps = {
+interface GlobalErrorProps {
   onRetry: () => void
 }
 

@@ -1,28 +1,25 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit"
-import authReducer, {
-  preloadAuthState,
-  preloadToken,
-} from "./features/auth/authSlice"
-import messageReducer from "./features/messenger/messageSlice"
+import { api } from "./api"
+import authReducer, { preloadAuthState } from "./features/auth/authSlice"
+import messageReducer from "./features/messages/messageSlice"
+import modalReducer from "./features/modals/modalSlice"
 
 export const store = configureStore({
-  reducer: { auth: authReducer, message: messageReducer },
+  reducer: {
+    [api.reducerPath]: api.reducer,
+    auth: authReducer,
+    message: messageReducer,
+    modal: modalReducer,
+  },
+
+  // add the API middleware
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(api.middleware),
+
+  // preload any existing session from local storage
   preloadedState: {
     auth: preloadAuthState(),
   },
-
-  /*
-    Use the "extra" argument of the default thunk middleware to hold the authentication token.
-
-    This allows easier access to the token in async thunks since we can get it directly from the thunk API,
-    instead of having to use the "getState" method to get it from the store.
-  */
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      thunk: {
-        extraArgument: preloadToken(),
-      },
-    }),
 })
 
 export type AppDispatch = typeof store.dispatch
@@ -30,13 +27,6 @@ export type RootState = ReturnType<typeof store.getState>
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   RootState,
-  { token: string },
+  unknown,
   Action<string>
 >
-
-export type RequestStatus = "idle" | "loading" | "failed"
-
-export interface APIError {
-  status: number
-  message: string
-}

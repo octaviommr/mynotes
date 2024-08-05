@@ -11,7 +11,7 @@ const Header = () => {
   }
 
   return (
-    <div className="fixed inset-x-0 top-0 flex h-16 items-center bg-sky-700 px-4">
+    <div className="flex h-16 items-center bg-sky-700 px-4">
       <Link to="/" className="text-bold text-2xl text-white">
         MyNotes
       </Link>

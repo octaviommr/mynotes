@@ -9,18 +9,19 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid"
 
 type PasswordFieldProps = Omit<
   DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
-  "ref"
+  "ref" | "type"
 > & { label: string; error?: string }
 
 const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
-  ({ label, error, ...inputProps }, ref) => {
+  ({ label, error, disabled, ...inputProps }, ref) => {
     const [showPassword, setShowPassword] = useState(false)
 
+    // set up a data attribute to be able to conditionally apply styling when in an error state
+    const dataAttrs = { ...(error && { "data-error": true }) }
+
     return (
-      <Field>
-        <Label
-          className={`text-sm/6 font-medium ${error ? "text-red-700" : ""}`}
-        >
+      <Field className="group" disabled={disabled || false} {...dataAttrs}>
+        <Label className="text-sm/6 font-medium data-[disabled]:opacity-50 group-data-[error]:text-red-700">
           {label}
         </Label>
         <div className="relative mt-1">
@@ -28,12 +29,14 @@ const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
             ref={ref}
             {...inputProps}
             type={showPassword ? "text" : "password"}
-            className={`block w-full rounded-lg border px-3 py-1.5 pr-10 text-sm/6 ${error ? "border-red-700" : "border-gray-300"}`}
+            className="block w-full rounded-lg border border-gray-300 px-3 py-1.5 pr-10 text-sm/6 data-[disabled]:border-opacity-50 data-[disabled]:bg-gray-100 group-data-[error]:border-red-700"
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-2">
             <Button
               type="button"
+              className="data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
               onClick={() => setShowPassword((previousValue) => !previousValue)}
+              disabled={disabled || false}
             >
               {showPassword ? (
                 <EyeSlashIcon className="size-6" />

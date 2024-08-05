@@ -1,12 +1,18 @@
 # MyNotes
 
-A very simple note board application, written for demonstration purposes. It showcases the MERN stack and the following features:
+A very simple note board application, written for sandboxing and demonstration purposes. It showcases the MERN stack, specially the frontend bit which is my main area of interest and the one I'm more passionate about. Below is a breakdown of the most relevant application features:
 
-- TypeScript frontend for type-safe code
-- State management using Redux Toolkit (with Redux Thunk middleware and Reselect memoized selectors)
-- Tailwind CSS styling (with Headless UI and Heroicons)
+## Frontend
+
+- TypeScript code for static type checking
+- State management using Redux Toolkit (with RTK Query and Reselect)
 - Form building and validation using React Hook Form
-- Contextual application header
-- Data modeling and validation with Mongoose
-- Authentication and authorization using JWTs
-- Global error handling (frontend and backend)
+- Tailwind CSS styling (with Headless UI and Heroicons)
+- Global error handling
+- Testing using Jest and React Testing Library
+
+## Backend
+
+- Data modelling and validation using Mongoose
+- Authentication using JWTs
+- Global error handling

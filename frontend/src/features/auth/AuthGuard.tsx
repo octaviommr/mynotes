@@ -2,9 +2,9 @@ import { FC, ReactNode, useState, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useLocation, useNavigate } from "react-router-dom"
 import { RootState, AppDispatch } from "../../store"
-import { setReturnURL } from "./authSlice"
+import { setAttemptedURL } from "./authSlice"
 
-type AuthGuardProps = {
+interface AuthGuardProps {
   children: ReactNode
 }
 
@@ -21,7 +21,7 @@ const AuthGuard: FC<AuthGuardProps> = ({ children }) => {
   useEffect(() => {
     if (!isLoggedIn) {
       // save the attempted URL so we can redirect back to it later after login
-      dispatch(setReturnURL(pathname))
+      dispatch(setAttemptedURL(pathname))
 
       // redirect to login screen
       navigate("/login")
