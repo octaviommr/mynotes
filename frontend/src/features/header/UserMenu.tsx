@@ -1,3 +1,4 @@
+import { FC } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
@@ -5,7 +6,7 @@ import { ArrowLeftEndOnRectangleIcon } from "@heroicons/react/16/solid"
 import { AppDispatch } from "../../store"
 import { logout as runLogoutThunk, getUserInitials } from "../auth/authSlice"
 
-const UserMenu = () => {
+const UserMenu: FC = () => {
   const userInitials = useSelector(getUserInitials)
 
   const dispatch = useDispatch<AppDispatch>()

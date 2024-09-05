@@ -75,6 +75,7 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
   return (
     <div className="fixed inset-x-0 bottom-8 flex justify-center">
       <div
+        role="toolbar"
         className="relative flex w-56 justify-center rounded-full bg-sky-100 py-2 data-[selected]:bg-red-100"
         {...dataAttrs}
       >
@@ -84,6 +85,7 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
               type="button"
               className="inline-flex size-10 items-center justify-center rounded-full bg-red-700"
               onClick={() => deleteNotes()}
+              aria-label="Delete"
             >
               <TrashIcon className="size-6 fill-white" />
             </Button>
@@ -92,10 +94,11 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
                 type="button"
                 className="inline-flex items-center gap-2"
                 onClick={() => onCancelSelection()}
+                aria-label="Clear selection"
               >
                 <XMarkIcon className="size-6 fill-red-700" />
               </Button>
-              <span className="font-medium text-red-700">
+              <span className="font-medium text-red-700" role="status">
                 {selectedNotes.length}
               </span>
             </div>
@@ -105,6 +108,7 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
           <Link
             to="/note/create"
             className="inline-flex size-10 items-center justify-center rounded-full bg-sky-700"
+            aria-label="Add"
           >
             <PlusIcon className="size-6 fill-white" />
           </Link>

@@ -1,9 +1,10 @@
+import { FC } from "react"
 import { useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import { RootState } from "../../store"
 import UserMenu from "./UserMenu"
 
-const Header = () => {
+const Header: FC = () => {
   const { isLoggedIn } = useSelector((state: RootState) => state.auth)
 
   if (!isLoggedIn) {

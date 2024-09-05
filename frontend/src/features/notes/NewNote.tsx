@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { FC, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { SubmitHandler } from "react-hook-form"
@@ -8,7 +8,7 @@ import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
 import { showMessage } from "../messages/messageSlice"
 import NoteForm, { NoteFormData } from "./NoteForm"
 
-const NewNote = () => {
+const NewNote: FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 

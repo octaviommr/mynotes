@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import type { RootState } from "./store"
 import { Session } from "./features/auth/authSlice"
 
-const BASE_URL = process.env.REACT_APP_API_URL
+export const BASE_URL = process.env.REACT_APP_API_URL
 
 /* 
   Set up models for backend responses and frontend objects.
@@ -15,7 +15,7 @@ const BASE_URL = process.env.REACT_APP_API_URL
   to build the actual frontend objects. For instance, we're ignoring the "userID" prop of the note objects that we get 
   from the backend and we're also using a slightly different, friendlier name for the "_id" prop.
 */
-interface NoteResponse {
+export interface NoteResponse {
   _id: string
   title: string
   content: string

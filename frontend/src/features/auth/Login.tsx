@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate, Link } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
@@ -16,7 +16,7 @@ interface LoginFormData {
   password: string
 }
 
-const Login = () => {
+const Login: FC = () => {
   const [canRender, setCanRender] = useState(false)
 
   const authState = useSelector((state: RootState) => state.auth)

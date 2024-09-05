@@ -22,6 +22,7 @@ const NoteBoardItem: FC<NoteBoardItemProps> = ({
     <Link
       to={`/note/${note.id}`}
       className="flex h-72 flex-col items-start gap-4 rounded-xl border border-gray-300 p-4 hover:border-gray-700 data-[selected]:border-red-700"
+      aria-label={`Edit ${note.title}`}
       {...dataAttrs}
     >
       <div className="flex w-full items-center gap-4">
@@ -30,6 +31,7 @@ const NoteBoardItem: FC<NoteBoardItemProps> = ({
           checked={selected}
           onChange={onToggle}
           className="group size-6 rounded-md bg-white p-1 ring-1 ring-inset ring-gray-300 hover:cursor-default data-[checked]:bg-red-700 data-[checked]:ring-red-300"
+          aria-label={`Toggle ${note.title}`}
         >
           <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
         </Checkbox>
@@ -39,7 +41,10 @@ const NoteBoardItem: FC<NoteBoardItemProps> = ({
       </p>
       <span className="flex-1"></span>
       {note.important && (
-        <span className="rounded-md border border-red-300 bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
+        <span
+          className="rounded-md border border-red-300 bg-red-100 px-2 py-1 text-xs font-medium text-red-700"
+          role="status"
+        >
           Important
         </span>
       )}

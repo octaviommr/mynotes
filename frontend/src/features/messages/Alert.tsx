@@ -15,6 +15,7 @@ const ErrorAlert: FC<SeverityAlertProps> = ({ message }) => {
   return (
     <div
       className={"flex max-w-lg items-center gap-2 rounded-md bg-red-100 p-4"}
+      role="alert"
     >
       <XCircleIcon className="size-6 fill-red-700" />
       <p className="text-sm/6 text-red-700">{message}</p>
@@ -28,6 +29,7 @@ const WarningAlert: FC<SeverityAlertProps> = ({ message }) => {
       className={
         "flex max-w-lg items-center gap-2 rounded-md bg-yellow-100 p-4"
       }
+      role="alert"
     >
       <ExclamationTriangleIcon className="size-6 fill-yellow-700" />
       <p className="text-sm/6 text-yellow-700">{message}</p>
@@ -39,6 +41,7 @@ const InfoAlert: FC<SeverityAlertProps> = ({ message }) => {
   return (
     <div
       className={"flex max-w-lg items-center gap-2 rounded-md bg-gray-100 p-4"}
+      role="alert"
     >
       <InformationCircleIcon className="size-6 fill-gray-700" />
       <p className="text-sm/6 text-gray-700">{message}</p>
@@ -50,6 +53,7 @@ const SuccessAlert: FC<SeverityAlertProps> = ({ message }) => {
   return (
     <div
       className={"flex max-w-lg items-center gap-2 rounded-md bg-green-100 p-4"}
+      role="alert"
     >
       <CheckCircleIcon className="size-6 fill-green-700" />
       <p className="text-sm/6 text-green-700">{message}</p>

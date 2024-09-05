@@ -1,3 +1,4 @@
+import { FC } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import {
   Dialog,
@@ -9,7 +10,7 @@ import {
 import { RootState, AppDispatch } from "../../store"
 import { closeModal } from "./modalSlice"
 
-const ModalPresenter = () => {
+const ModalPresenter: FC = () => {
   const modalState = useSelector((state: RootState) => state.modal)
 
   const dispatch = useDispatch<AppDispatch>()
@@ -21,6 +22,7 @@ const ModalPresenter = () => {
           open={modalState.open}
           onClose={() => dispatch(closeModal(false))}
           className="relative z-50"
+          role={modalState.modal.type === "alert" ? "alertdialog" : "dialog"}
         >
           <DialogBackdrop className="fixed inset-0 bg-black/30" />
           <div className="fixed inset-0 flex w-screen items-center justify-center p-4">

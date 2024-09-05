@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { FC, useState, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { useParams, useNavigate } from "react-router-dom"
 import { SubmitHandler } from "react-hook-form"
@@ -12,7 +12,7 @@ import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
 import { showMessage } from "../messages/messageSlice"
 import NoteForm, { NoteFormData } from "./NoteForm"
 
-const NoteDetail = () => {
+const NoteDetail: FC = () => {
   const [skipQuery, setSkipQuery] = useState(false)
 
   const { id } = useParams()

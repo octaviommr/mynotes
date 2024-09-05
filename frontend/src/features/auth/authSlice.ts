@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit"
 import { AppThunk, RootState } from "../../store"
 
-const SESSION_CACHE_KEY = "MYNOTES_SESSION"
+export const SESSION_CACHE_KEY = "MYNOTES_SESSION"
 
 export interface Session {
   token: string
@@ -56,10 +56,8 @@ export const login =
   (dispatch) => {
     dispatch(authSlice.actions.startSession(session))
 
-    const serializedSession = JSON.stringify(session)
-
     // cache session to enable state preloading
-    localStorage.setItem(SESSION_CACHE_KEY, serializedSession)
+    localStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(session))
   }
 
 export const logout = (): AppThunk => (dispatch) => {

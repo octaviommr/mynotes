@@ -1,10 +1,10 @@
-import { useEffect } from "react"
+import { FC, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { RootState, AppDispatch } from "../../store"
 import { closeMessage } from "./messageSlice"
 import Alert from "./Alert"
 
-const Messenger = () => {
+const Messenger: FC = () => {
   const messageState = useSelector((state: RootState) => state.message)
 
   const dispatch = useDispatch<AppDispatch>()

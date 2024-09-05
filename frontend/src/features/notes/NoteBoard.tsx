@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { useGetNotesQuery } from "../../api"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
 import NoteBoardItem from "./NoteBoardItem"
 import NoteBoardToolbar from "./NoteBoardToolbar"
 
-const NoteBoard = () => {
+const NoteBoard: FC = () => {
   const [selected, setSelected] = useState<string[]>([])
 
   const { data: notes, error /* , isLoading */ } = useGetNotesQuery()
