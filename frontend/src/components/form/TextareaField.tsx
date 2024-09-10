@@ -24,7 +24,11 @@ const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
           {...textareaProps}
           className="mt-1 block w-full resize-none rounded-lg border border-gray-300 px-3 py-1.5 text-sm/6 data-[disabled]:border-opacity-50 data-[disabled]:bg-gray-100 group-data-[error]:border-red-700"
         />
-        {error && <span className="text-sm/6 text-red-700">{error}</span>}
+        {error && (
+          <span role="alert" className="text-sm/6 text-red-700">
+            {error}
+          </span>
+        )}
       </Field>
     )
   },

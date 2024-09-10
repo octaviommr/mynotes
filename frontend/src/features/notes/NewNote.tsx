@@ -31,7 +31,7 @@ const NewNote: FC = () => {
       dispatch(
         showMessage({
           severity: "success",
-          content: `Note created successfully!`,
+          content: "Note created successfully!",
         }),
       )
 

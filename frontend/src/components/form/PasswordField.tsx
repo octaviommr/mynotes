@@ -46,7 +46,11 @@ const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
             </Button>
           </div>
         </div>
-        {error && <span className="text-sm/6 text-red-700">{error}</span>}
+        {error && (
+          <span role="alert" className="text-sm/6 text-red-700">
+            {error}
+          </span>
+        )}
       </Field>
     )
   },

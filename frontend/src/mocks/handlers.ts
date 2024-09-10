@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw"
-import { BASE_URL, NoteResponse } from "../api"
+import { BASE_URL, NoteResponse, Note } from "../api"
 
 export const mockNoteList: NoteResponse[] = [
   {
@@ -46,4 +46,13 @@ export const handlers = [
 
     return HttpResponse.json({ deletedIds: ids })
   }),
+
+  http.post<never, Omit<Note, "id">, NoteResponse, `${typeof BASE_URL}/notes`>(
+    `${BASE_URL}/notes`,
+    async ({ request }) => {
+      const newNote = await request.json()
+
+      return HttpResponse.json({ _id: "3", ...newNote })
+    },
+  ),
 ]
