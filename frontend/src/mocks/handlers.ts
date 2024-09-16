@@ -23,7 +23,6 @@ export const handlers = [
       return HttpResponse.json(mockNoteList)
     },
   ),
-
   http.get<{ id: string }, never, NoteResponse, `${typeof BASE_URL}/notes/:id`>(
     `${BASE_URL}/notes/:id`,
     ({ params: { id } }) => {
@@ -35,7 +34,6 @@ export const handlers = [
       })
     },
   ),
-
   http.post<
     never,
     { ids: string[] },
@@ -46,13 +44,28 @@ export const handlers = [
 
     return HttpResponse.json({ deletedIds: ids })
   }),
-
   http.post<never, Omit<Note, "id">, NoteResponse, `${typeof BASE_URL}/notes`>(
     `${BASE_URL}/notes`,
     async ({ request }) => {
-      const newNote = await request.json()
+      const newNoteData = await request.json()
 
-      return HttpResponse.json({ _id: "3", ...newNote })
+      return HttpResponse.json({ _id: "3", ...newNoteData })
+    },
+  ),
+  http.put<
+    { id: string },
+    Omit<Note, "id">,
+    NoteResponse,
+    `${typeof BASE_URL}/notes/:id`
+  >(`${BASE_URL}/notes/:id`, async ({ params: { id }, request }) => {
+    const updatedNoteData = await request.json()
+
+    return HttpResponse.json({ _id: id, ...updatedNoteData })
+  }),
+  http.delete<{ id: string }, never, never, `${typeof BASE_URL}/notes/:id`>(
+    `${BASE_URL}/notes/:id`,
+    () => {
+      return new HttpResponse(null, { status: 204 })
     },
   ),
 ]

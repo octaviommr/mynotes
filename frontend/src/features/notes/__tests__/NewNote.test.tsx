@@ -1,6 +1,6 @@
 import userEvent from "@testing-library/user-event"
 import { http, HttpResponse } from "msw"
-import { render, screen, within } from "../../../testUtils"
+import { render } from "../../../testUtils"
 import {
   fillInTitleField,
   fillInContentField,
@@ -8,8 +8,10 @@ import {
   submitForm,
   cancelForm,
   expectNoteForm,
+  expectNoteFormDefaultValues,
   expectNotes,
   expectMessage,
+  expectNoteFormErrorMessage,
 } from "../testUtils"
 import { mockNoteList } from "../../../mocks/handlers"
 import { server } from "../../../mocks/node"
@@ -24,60 +26,37 @@ const mockNewNote: NoteResponse = {
 }
 
 const mockNoteCreation = () => {
-  let createdNote: NoteResponse
+  let currentMockNoteList = [...mockNoteList]
 
   server.use(
-    // override the original request handler to make sure we store the note that was created
+    // override the original request handler to keep an updated mock note list when notes are created
     http.post<
       never,
       Omit<Note, "id">,
       NoteResponse,
       `${typeof BASE_URL}/notes`
     >(`${BASE_URL}/notes`, async ({ request }) => {
-      const newNote = await request.json()
+      const newNoteData = await request.json()
 
-      createdNote = { _id: mockNewNote._id, ...newNote }
+      const createdNote: NoteResponse = {
+        _id: `${currentMockNoteList.length + 1}`,
+        ...newNoteData,
+      }
+
+      // update current mock note list
+      currentMockNoteList = [...currentMockNoteList, createdNote]
 
       return HttpResponse.json(createdNote)
     }),
 
-    // override the original request handler to return an updated mock note list including the note that was created
+    // override the original request handler to return the current mock note list
     http.get<never, never, NoteResponse[], `${typeof BASE_URL}/notes`>(
       `${BASE_URL}/notes`,
       () => {
-        const updatedMockNoteList = createdNote
-          ? [...mockNoteList, createdNote]
-          : mockNoteList
-
-        return HttpResponse.json(updatedMockNoteList)
+        return HttpResponse.json(currentMockNoteList)
       },
     ),
   )
-}
-
-// assertions
-const expectDefaultValues = () => {
-  const form = screen.getByRole("form", { name: "New note" })
-  expect(form).toHaveFormValues({
-    title: "",
-    content: "",
-  })
-
-  /* 
-    Assert the value of the "Important" field individually because currently the feature that allows using Headless UI's
-    "Checkbox" component with forms (by rendering a hidden input field in sync with the checkbox state) is not working 
-    correctly. Once it is, we should be able to use "toHaveFormValues" to assert the value of the "Important" form control
-    as well.
-  */
-  expect(
-    within(form).getByRole("checkbox", { name: "Important" }),
-  ).not.toBeChecked()
-}
-
-const expectErrorMessage = () => {
-  expect(
-    within(screen.getByRole("form", { name: "New note" })).getByRole("alert"),
-  ).toHaveTextContent(new RegExp(`^Title is required.$`)) // match the whole content
 }
 
 // tests
@@ -90,12 +69,12 @@ describe("displays the note creation form", () => {
     await expectNoteForm()
   })
 
-  test("displays default values for all fields", () => {
+  test("displays default values for all fields", async () => {
     // arrange
     render("/note/create")
 
     // assert
-    expectDefaultValues()
+    await expectNoteFormDefaultValues()
   })
 })
 
@@ -127,12 +106,13 @@ describe("creates new notes", () => {
     render("/note/create")
 
     // act
-    await fillInContentField(user, "Content 3")
+    await fillInTitleField(user, "")
+    await fillInContentField(user, mockNewNote.content)
     await toggleImportantField(user)
     await submitForm(user)
 
     // assert
-    expectErrorMessage()
+    expectNoteFormErrorMessage()
   })
 
   test("displays an unchanged list on the note board page when the user cancels the operation", async () => {

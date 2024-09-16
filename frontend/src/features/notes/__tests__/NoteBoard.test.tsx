@@ -1,10 +1,10 @@
 import userEvent, { UserEvent } from "@testing-library/user-event"
 import { http, HttpResponse } from "msw"
-import { render, screen, waitFor, within } from "../../../testUtils"
+import { render, screen, within } from "../../../testUtils"
 import {
-  CARD_NAME_REGEX,
+  confirmNoteDeletion,
+  cancelNoteDeletion,
   expectNotes,
-  expectNote,
   expectNoteDeletionAlert,
   expectMessage,
   expectNoteForm,
@@ -27,10 +27,10 @@ const mockEmptyNoteList = () => {
 }
 
 const mockNoteDeletion = () => {
-  let deletedIds: string[] = []
+  let currentMockNoteList = [...mockNoteList]
 
   server.use(
-    // override the original request handler to make sure we store what notes were deleted
+    // override the original request handler to keep an updated mock note list when notes are deleted
     http.post<
       never,
       { ids: string[] },
@@ -39,21 +39,25 @@ const mockNoteDeletion = () => {
     >(`${BASE_URL}/notes/deleteBatch`, async ({ request }) => {
       const { ids } = await request.json()
 
-      // store notes to delete
-      deletedIds = ids
+      const result = currentMockNoteList.reduce<[string[], NoteResponse[]]>(
+        (previousValue, currentValue) =>
+          ids.includes(currentValue._id)
+            ? [[...previousValue[0], currentValue._id], [...previousValue[1]]]
+            : [[...previousValue[0]], [...previousValue[1], currentValue]],
+        [[], []],
+      )
 
-      return HttpResponse.json({ deletedIds })
+      // update current mock note list
+      currentMockNoteList = result[1]
+
+      return HttpResponse.json({ deletedIds: result[0] })
     }),
 
-    // override the original request handler to return an updated mock note list without the notes that were deleted
+    // override the original request handler to return the current mock note list
     http.get<never, never, NoteResponse[], `${typeof BASE_URL}/notes`>(
       `${BASE_URL}/notes`,
       () => {
-        const updatedMockNoteList = mockNoteList.filter(
-          (mockNote) => !deletedIds.includes(mockNote._id),
-        )
-
-        return HttpResponse.json(updatedMockNoteList)
+        return HttpResponse.json(currentMockNoteList)
       },
     ),
   )
@@ -64,10 +68,10 @@ const toggleNoteSelection = async (
   user: UserEvent,
   { title }: NoteResponse,
 ) => {
-  const cardCheckbox = await screen.findByRole("checkbox", {
-    name: `Toggle ${title}`,
-  })
-  await user.click(cardCheckbox)
+  const card = await screen.findByRole("link", { name: `Edit ${title}` })
+  await user.click(
+    within(card).getByRole("checkbox", { name: `Toggle ${title}` }),
+  )
 }
 
 const clearNoteSelection = async (user: UserEvent) => {
@@ -81,22 +85,6 @@ const clearNoteSelection = async (user: UserEvent) => {
 const deleteSelectedNotes = async (user: UserEvent) => {
   await user.click(
     within(screen.getByRole("toolbar")).getByRole("button", { name: "Delete" }),
-  )
-}
-
-const confirmNoteDeletion = async (user: UserEvent) => {
-  await user.click(
-    within(screen.getByRole("alertdialog")).getByRole("button", {
-      name: "Delete",
-    }),
-  )
-}
-
-const cancelNoteDeletion = async (user: UserEvent) => {
-  await user.click(
-    within(screen.getByRole("alertdialog")).getByRole("button", {
-      name: "Cancel",
-    }),
   )
 }
 
@@ -118,6 +106,22 @@ const editNote = async (user: UserEvent, { title }: NoteResponse) => {
 }
 
 // assertions
+const expectNoteSelection = async (
+  { title }: NoteResponse,
+  isSelected: boolean,
+) => {
+  const card = await screen.findByRole("link", { name: `Edit ${title}` })
+  const checkbox = within(card).getByRole("checkbox", {
+    name: `Toggle ${title}`,
+  })
+
+  if (isSelected) {
+    expect(checkbox).toBeChecked()
+  } else {
+    expect(checkbox).not.toBeChecked()
+  }
+}
+
 const expectEmptyState = async () => {
   const message = await screen.findByText("No notes yet.")
   expect(message).toBeInTheDocument()
@@ -126,42 +130,7 @@ const expectEmptyState = async () => {
 const expectSelectedNotesCount = (count: number) => {
   expect(
     within(screen.getByRole("toolbar")).getByRole("status"),
-  ).toHaveTextContent(new RegExp(`^${count}$`))
-}
-
-const expectUpdatedNotes = async (mockUpdatedNotes: NoteResponse[]) => {
-  await waitFor(() => {
-    // wait until list is updated
-    expect(screen.getAllByRole("link", { name: CARD_NAME_REGEX })).toHaveLength(
-      mockUpdatedNotes.length,
-    )
-
-    for (let i = 0; i < mockUpdatedNotes.length; i++) {
-      expectNote(mockUpdatedNotes[i])
-    }
-  })
-}
-
-const expectNoUpdatedNotes = async (mockUpdatedNotes: NoteResponse[]) => {
-  await expect(
-    waitFor(() => {
-      expect(
-        screen.getAllByRole("link", { name: CARD_NAME_REGEX }),
-      ).toHaveLength(mockUpdatedNotes.length)
-    }),
-  ).rejects.toThrow() // expect the list to never be updated, and so "waitFor" to time out
-}
-
-const expectNoteSelection = ({ title }: NoteResponse, isSelected: boolean) => {
-  const checkbox = within(
-    screen.getByRole("link", { name: `Edit ${title}` }),
-  ).getByRole("checkbox", { name: `Toggle ${title}` })
-
-  if (isSelected) {
-    expect(checkbox).toBeChecked()
-  } else {
-    expect(checkbox).not.toBeChecked()
-  }
+  ).toHaveTextContent(`${count}`)
 }
 
 // tests
@@ -187,6 +156,15 @@ describe("lists existing notes", () => {
 })
 
 describe("provides selection features", () => {
+  test("initially, all notes are unselected", async () => {
+    // arrange
+    render()
+
+    // assert
+    await expectNoteSelection(mockNoteList[0], false)
+    await expectNoteSelection(mockNoteList[1], false)
+  })
+
   test("displays the correct selected notes count as the user selects and unselects notes", async () => {
     const user = userEvent.setup()
 
@@ -224,8 +202,8 @@ describe("provides selection features", () => {
     await clearNoteSelection(user)
 
     // assert
-    expectNoteSelection(mockNoteList[0], false)
-    expectNoteSelection(mockNoteList[1], false)
+    await expectNoteSelection(mockNoteList[0], false)
+    await expectNoteSelection(mockNoteList[1], false)
   })
 })
 
@@ -241,7 +219,10 @@ describe("deletes selected notes", () => {
     await deleteSelectedNotes(user)
 
     // assert
-    expectNoteDeletionAlert()
+    expectNoteDeletionAlert(
+      "Delete notes",
+      "Are you sure you want to delete the selected notes?",
+    )
   })
 
   test("updates the list and displays a success message when the user confirms the operation", async () => {
@@ -261,11 +242,17 @@ describe("deletes selected notes", () => {
     await confirmNoteDeletion(user)
 
     // assert
-    await expectUpdatedNotes([mockNoteList[1]])
+    await expectNotes([mockNoteList[1]])
+    /*
+      NOTE: it's ok to expect the updated list right after the confirmation action because, although deleting a note
+      involves some API calls, the promise returned by user events includes an extra delay to allow asynchronous updates
+      to happen (which will be enough since all our API calls are mocked)
+    */
+
     expectMessage("Notes deleted successfully!")
   })
 
-  test("doesn't change the list if the user cancels the operation", async () => {
+  test("doesn't change the list nor note selection if the user cancels the operation", async () => {
     const user = userEvent.setup()
 
     // arrange
@@ -282,8 +269,9 @@ describe("deletes selected notes", () => {
     await cancelNoteDeletion(user)
 
     // assert
-    await expectNoUpdatedNotes([mockNoteList[1]])
-    expectNoteSelection(mockNoteList[0], true)
+    await expectNotes(mockNoteList)
+    await expectNoteSelection(mockNoteList[0], true)
+    await expectNoteSelection(mockNoteList[1], false)
   })
 })
 
