@@ -44,7 +44,7 @@ Create a "nodemon.json" file in the "backend" folder with the following structur
 }
 ```
 
-Create a ".env" file in the "frontend" folder containing the following key and value representing the API endpoint:
+Create a ".env.local" file in the "frontend" folder containing the following key and value representing the API endpoint:
 
 `REACT_APP_API_URL=http://localhost:3001/api`
 
