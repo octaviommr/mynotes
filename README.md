@@ -39,13 +39,13 @@ Create a "nodemon.json" file in the "backend" folder with the following structur
 ```
 {
   "env": {
-    "MONGODB_URI": "your-mongodb-instance-address",
+    "MONGODB_URI": "your-mongodb-instance-address-goes-here",
     "JWT_SECRET": "your-secret-goes-here"
   }
 }
 ```
 
-Typically, a local MongoDB instance address looks like `mongodb://127.0.0.1:27017/mynotes`. If you're using MongoDB Atlas, use the connection string that is provided for your instance.
+Typically, a local MongoDB instance address looks like `mongodb://127.0.0.1:27017/your-database-name-goes-here`. If you're using MongoDB Atlas, use the connection string that is provided for your instance.
 
 ### Build and start
 
