@@ -26,7 +26,7 @@ Below is a breakdown of the most relevant application features:
 
 ### Prerequisites
 
-Building and running the application locally requires Node.js 20+ and MongoDB Community Edition 6+ to be installed in your system.
+Building and running the application locally requires Node.js 20+ and either MongoDB Community Edition 6+ or a MongoDB Atlas account.
 
 ### Install dependencies
 
@@ -34,19 +34,18 @@ Run `npm install` in both the "backend" and "frontend" directories. This will in
 
 ### Environment variables
 
-Create a "nodemon.json" file in the "backend" folder with the following structure, containing the secret key that will be used to encode JWT tokens:
+Create a "nodemon.json" file in the "backend" folder with the following structure, which contains the address of the MongoDB instance and the secret key that will be used to encode JWT tokens:
 
 ```
 {
   "env": {
+    "MONGODB_URI": "your-mongodb-instance-address",
     "JWT_SECRET": "your-secret-goes-here"
   }
 }
 ```
 
-Create a ".env.local" file in the "frontend" folder containing the following key and value representing the API endpoint:
-
-`REACT_APP_API_URL=http://localhost:3001/api`
+Typically, a local MongoDB instance address looks like `mongodb://127.0.0.1:27017/mynotes`. If you're using MongoDB Atlas, use the connection string that is provided for your instance.
 
 ### Build and start
 
