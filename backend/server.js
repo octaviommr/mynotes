@@ -8,7 +8,7 @@ const handleError = require("./middleware/handleError")
 
 const app = express()
 
-mongoose.connect("mongodb://localhost/mynotes")
+mongoose.connect(process.env.MONGODB_URI)
 
 app.use(cors())
 app.use(express.json())
