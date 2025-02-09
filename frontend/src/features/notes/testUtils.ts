@@ -27,7 +27,7 @@ export const fillInTitleField = async (
   mockNote?: NoteResponse,
 ) => {
   const form = await screen.findByRole("form", {
-    name: mockNote ? mockNote.title : "New note",
+    name: mockNote ? "Edit Note" : "New Note",
   })
   const field = within(form).getByLabelText("Title (required)")
   await user.clear(field)
@@ -43,7 +43,7 @@ export const fillInContentField = async (
   mockNote?: NoteResponse,
 ) => {
   const textbox = within(
-    screen.getByRole("form", { name: mockNote ? mockNote.title : "New note" }),
+    screen.getByRole("form", { name: mockNote ? "Edit Note" : "New Note" }),
   ).getByLabelText("Content")
   await user.clear(textbox)
 
@@ -59,7 +59,7 @@ export const toggleImportantField = async (
   await user.click(
     within(
       screen.getByRole("form", {
-        name: mockNote ? mockNote.title : "New note",
+        name: mockNote ? "Edit Note" : "New Note",
       }),
     ).getByLabelText("Important"),
   )
@@ -69,7 +69,7 @@ export const submitForm = async (user: UserEvent, mockNote?: NoteResponse) => {
   await user.click(
     within(
       screen.getByRole("form", {
-        name: mockNote ? mockNote.title : "New note",
+        name: mockNote ? "Edit Note" : "New Note",
       }),
     ).getByRole("button", {
       name: mockNote ? "Update" : "Create",
@@ -81,7 +81,7 @@ export const cancelForm = async (user: UserEvent, mockNote?: NoteResponse) => {
   await user.click(
     within(
       screen.getByRole("form", {
-        name: mockNote ? mockNote.title : "New note",
+        name: mockNote ? "Edit Note" : "New Note",
       }),
     ).getByRole("link", { name: "Cancel" }),
   )
@@ -93,7 +93,12 @@ export const expectNote = ({ title, content, important }: NoteResponse) => {
   expect(card).toBeInTheDocument()
 
   expect(within(card).getByRole("heading", { name: title })).toBeInTheDocument()
-  expect(within(card).getByRole("paragraph")).toHaveTextContent(content)
+
+  if (content) {
+    expect(within(card).getByRole("paragraph")).toHaveTextContent(content)
+  } else {
+    expect(within(card).getByRole("paragraph")).toBeEmptyDOMElement()
+  }
 
   if (important) {
     expect(within(card).getByRole("status")).toHaveTextContent("Important")
@@ -130,14 +135,14 @@ export const expectMessage = (message: string) => {
 
 export const expectNoteForm = async (mockNote?: NoteResponse) => {
   const pageTitle = await screen.findByRole("heading", {
-    name: mockNote ? mockNote.title : "New note",
+    name: mockNote ? "Edit Note" : "New Note",
   })
   expect(pageTitle).toBeInTheDocument()
 }
 
 export const expectNoteFormDefaultValues = async (mockNote?: NoteResponse) => {
   const form = await screen.findByRole("form", {
-    name: mockNote ? mockNote.title : "New note",
+    name: mockNote ? "Edit Note" : "New Note",
   })
   expect(form).toHaveFormValues({
     title: mockNote ? mockNote.title : "",
@@ -163,7 +168,7 @@ export const expectNoteFormErrorMessage = (mockNote?: NoteResponse) => {
   expect(
     within(
       screen.getByRole("form", {
-        name: mockNote ? mockNote.title : "New note",
+        name: mockNote ? "Edit Note" : "New Note",
       }),
     ).getByRole("alert"),
   ).toHaveTextContent("Title is required.")

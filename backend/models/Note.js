@@ -4,18 +4,17 @@ const User = require("./User")
 const noteSchema = new mongoose.Schema({
   title: { type: String, required: [true, "Title is required."] },
   content: { type: String },
-  important: {
-    type: Boolean,
-    required: [true, "Importance status is required."],
-  },
-  userID: {
+  important: { type: Boolean },
+  userId: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
     required: [true, "User is required."],
+
+    // foreign key validation
     validate: {
-      validator: function (userID) {
+      validator: function (userId) {
         return new Promise((resolve) =>
-          User.findOne({ _id: userID }).then((user) => resolve(!!user)),
+          User.findOne({ _id: userId }).then((user) => resolve(!!user)),
         )
       },
       message: () => "User not found.",

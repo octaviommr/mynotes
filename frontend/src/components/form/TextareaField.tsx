@@ -15,7 +15,7 @@ const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
     const dataAttrs = { ...(error && { "data-error": true }) }
 
     return (
-      <Field className="group" disabled={disabled || false} {...dataAttrs}>
+      <Field className="group" disabled={disabled} {...dataAttrs}>
         <Label className="text-sm/6 font-medium data-[disabled]:opacity-50 group-data-[error]:text-red-700">
           {label}
         </Label>

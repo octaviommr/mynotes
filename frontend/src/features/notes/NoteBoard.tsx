@@ -11,12 +11,12 @@ const NoteBoard: FC = () => {
   const { data: notes, error /* , isLoading */ } = useGetNotesQuery()
   const handle = useAPIErrorHandler()
 
-  const onToggle = (noteID: string, selected: boolean) => {
+  const onToggle = (noteId: string, selected: boolean) => {
     setSelected((previousSelection) =>
       selected
-        ? [...previousSelection, noteID]
+        ? [...previousSelection, noteId]
         : previousSelection.filter(
-            (selectedNoteID) => selectedNoteID !== noteID,
+            (selectedNoteId) => selectedNoteId !== noteId,
           ),
     )
   }
@@ -24,7 +24,7 @@ const NoteBoard: FC = () => {
   const onDeleteNotes = (deletedNotes: string[]) => {
     setSelected((previousSelection) =>
       previousSelection.filter(
-        (selectedNoteID) => !deletedNotes.includes(selectedNoteID),
+        (selectedNoteId) => !deletedNotes.includes(selectedNoteId),
       ),
     )
   }
@@ -55,7 +55,7 @@ const NoteBoard: FC = () => {
           />
         ))}
       </div>
-      {notes.length && (
+      {notes.length > 0 && (
         <NoteBoardToolbar
           selectedNotes={selected}
           onDeleteNotes={onDeleteNotes}

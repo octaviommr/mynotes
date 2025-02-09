@@ -7,7 +7,7 @@ const router = express.Router()
 router.get("/", checkAuth, (req, res, next) => {
   const { id } = req.userData
 
-  Note.find({ userID: id })
+  Note.find({ userId: id })
     .then((notes) => {
       res.status(200).json(notes)
     })
@@ -24,7 +24,7 @@ router.post("/", checkAuth, (req, res, next) => {
   const { title, content, important } = req.body
   const { id } = req.userData
 
-  Note.create({ title, content, important, userID: id })
+  Note.create({ title, content, important, userId: id })
     .then((note) => res.status(201).json(note))
     .catch(next)
 })
@@ -62,7 +62,7 @@ router.post("/deleteBatch", checkAuth, (req, res, next) => {
     In order to return the deleted documents, we must be able to tell those that could not be deleted from those that didn't
     exist in the first place or belonged to another user.
   */
-  Note.find({ _id: ids, userID: id })
+  Note.find({ _id: ids, userId: id })
     .then((notes) => {
       const idsToDelete = notes.map((note) => note._id)
 
@@ -115,7 +115,7 @@ router.param("id", (req, res, next, id) => {
         return
       }
 
-      if (!note.userID.equals(req.userData.id)) {
+      if (!note.userId.equals(req.userData.id)) {
         res.status(403).json({ message: "Access denied." })
         return
       }

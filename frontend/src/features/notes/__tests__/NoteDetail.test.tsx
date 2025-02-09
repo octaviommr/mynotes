@@ -21,7 +21,7 @@ import { server } from "../../../mocks/node"
 import { BASE_URL, NoteResponse, Note } from "../../../api"
 
 // mocks
-const mockUpdatedNote = {
+const mockUpdatedNote: NoteResponse = {
   _id: mockNoteList[0]._id,
   title: "Title 3",
   content: "Content 3",
@@ -101,8 +101,8 @@ const mockNoteDeletion = () => {
 }
 
 // actions
-const deleteNote = async (user: UserEvent, { title }: NoteResponse) => {
-  const form = await screen.findByRole("form", { name: title })
+const deleteNote = async (user: UserEvent) => {
+  const form = await screen.findByRole("form", { name: "Edit Note" })
   await user.click(within(form).getByRole("button", { name: "Delete" }))
 }
 
@@ -137,7 +137,7 @@ describe("updates notes", () => {
 
     // act
     await fillInTitleField(user, mockUpdatedNote.title, mockNoteList[0])
-    await fillInContentField(user, mockUpdatedNote.content, mockNoteList[0])
+    await fillInContentField(user, mockUpdatedNote.content!, mockNoteList[0])
     await toggleImportantField(user, mockNoteList[0])
     await submitForm(user, mockNoteList[0])
 
@@ -154,7 +154,7 @@ describe("updates notes", () => {
 
     // act
     await fillInTitleField(user, "", mockNoteList[0])
-    await fillInContentField(user, mockUpdatedNote.content, mockNoteList[0])
+    await fillInContentField(user, mockUpdatedNote.content!, mockNoteList[0])
     await toggleImportantField(user, mockNoteList[0])
     await submitForm(user, mockNoteList[0])
 
@@ -173,7 +173,7 @@ describe("updates notes", () => {
 
     // act
     await fillInTitleField(user, mockUpdatedNote.title, mockNoteList[0])
-    await fillInContentField(user, mockUpdatedNote.content, mockNoteList[0])
+    await fillInContentField(user, mockUpdatedNote.content!, mockNoteList[0])
     await toggleImportantField(user, mockNoteList[0])
     await cancelForm(user, mockNoteList[0])
 
@@ -190,7 +190,7 @@ describe("deletes notes", () => {
     render(`/note/${mockNoteList[0]._id}`)
 
     // act
-    await deleteNote(user, mockNoteList[0])
+    await deleteNote(user)
 
     // assert
     expectNoteDeletionAlert(
@@ -209,7 +209,7 @@ describe("deletes notes", () => {
     render(`/note/${mockNoteList[0]._id}`)
 
     // act
-    await deleteNote(user, mockNoteList[0])
+    await deleteNote(user)
     await confirmNoteDeletion(user)
 
     // assert
@@ -224,7 +224,7 @@ describe("deletes notes", () => {
     render(`/note/${mockNoteList[0]._id}`)
 
     // act
-    await deleteNote(user, mockNoteList[0])
+    await deleteNote(user)
     await cancelNoteDeletion(user)
 
     // assert

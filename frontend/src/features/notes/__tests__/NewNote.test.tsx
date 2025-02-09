@@ -90,7 +90,7 @@ describe("creates new notes", () => {
 
     // act
     await fillInTitleField(user, mockNewNote.title)
-    await fillInContentField(user, mockNewNote.content)
+    await fillInContentField(user, mockNewNote.content!)
     await toggleImportantField(user)
     await submitForm(user)
 
@@ -107,7 +107,7 @@ describe("creates new notes", () => {
 
     // act
     await fillInTitleField(user, "")
-    await fillInContentField(user, mockNewNote.content)
+    await fillInContentField(user, mockNewNote.content!)
     await toggleImportantField(user)
     await submitForm(user)
 
@@ -126,7 +126,7 @@ describe("creates new notes", () => {
 
     // act
     await fillInTitleField(user, mockNewNote.title)
-    await fillInContentField(user, mockNewNote.content)
+    await fillInContentField(user, mockNewNote.content!)
     await toggleImportantField(user)
     await cancelForm(user)
 

@@ -5,21 +5,25 @@ import { Session } from "./features/auth/authSlice"
 export const BASE_URL = process.env.REACT_APP_API_URL
 
 /* 
-  Set up models for backend responses and frontend objects.
+  Set up models for back-end responses and front-end objects.
 
-  This highlights the importance of NOT cloning backend models in the frontend. Frontend models are usually different from
-  backend models because they have different concerns. A frontend model might not include all the props of the backend model
-  and can contain other props that are only relevant for UI logic.
+  This highlights the importance of NOT cloning back-end data models in the front-end. 
 
-  We should only pick the props we care about for the frontend from whatever is the response data, and then use those 
-  to build the actual frontend objects. For instance, we're ignoring the "userID" prop of the note objects that we get 
-  from the backend and we're also using a slightly different, friendlier name for the "_id" prop.
+  Front-end models are usually different from back-end ones because they have different concerns. A front-end model
+  might include only some of props of the back-end model, since the rest might not be needed in the front-end. On the other
+  hand, a front-end model might contain some props that don't exist in the back-end model due to only being relevant for
+  UI logic.
+
+  We should only pick the props we care about for the front-end, and then use those to build the actual front-end objects.
+  Just as an example, here we're ignoring the "userId" prop of the note objects that we get from the back-end (since a user
+  will only ever interact with their own notes), and we're also replacing the "_id" prop with the "id" prop which has a
+  slightly different, friendlier name.
 */
 export interface NoteResponse {
   _id: string
   title: string
-  content: string
-  important: boolean
+  content?: string
+  important?: boolean
 }
 
 export type Note = Omit<NoteResponse, "_id"> & { id: string }

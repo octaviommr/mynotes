@@ -9,11 +9,7 @@ interface AllTheProvidersProps {
   children: ReactNode
 }
 
-const AllTheProviders: FC<AllTheProvidersProps> = ({
-  children,
-}: {
-  children: ReactNode
-}) => {
+const AllTheProviders: FC<AllTheProvidersProps> = ({ children }) => {
   const mockSession: Session = {
     token: "token",
     username: "username",

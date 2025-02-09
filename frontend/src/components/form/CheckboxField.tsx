@@ -18,7 +18,7 @@ const CheckboxField: FC<CheckboxFieldProps> = ({
   label,
 }) => {
   return (
-    <Field className="flex items-center gap-2" disabled={disabled || false}>
+    <Field className="flex items-center gap-2" disabled={disabled}>
       <Label className="text-sm/6 font-medium data-[disabled]:opacity-50">
         {label}
       </Label>
