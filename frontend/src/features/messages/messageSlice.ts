@@ -8,7 +8,9 @@ export interface Message {
 }
 
 // set up a discriminated union to represent the valid state mutations
-export type MessageState = { open: false } | { open: true; message: Message }
+export type MessageState =
+  | { open: false; message?: Message }
+  | { open: true; message: Message }
 
 // slice
 const messageSlice = createSlice({
@@ -20,16 +22,13 @@ const messageSlice = createSlice({
   */
   initialState: { open: false } satisfies MessageState as MessageState,
 
-  /*
-    Set up the case reducers using new state values that are constructed and returned. We do so not only to ensure type
-    safety but also because we won't be able to mutate the existing state as needed for all state types.
-  */
   reducers: {
     showMessage(state, action: PayloadAction<Message>) {
-      return { open: true, message: action.payload }
+      state.open = true
+      state.message = action.payload
     },
     closeMessage(state) {
-      return { open: false }
+      state.open = false
     },
   },
 })
