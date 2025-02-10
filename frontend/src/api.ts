@@ -38,15 +38,15 @@ const makeNote = ({ _id, title, content, important }: NoteResponse): Note => ({
 interface UserResponse {
   _id: string
   email: string
-  username: string
+  name: string
 }
 
 export type User = Omit<UserResponse, "_id"> & { id: string }
 
-const makeUser = ({ _id, email, username }: UserResponse): User => ({
+const makeUser = ({ _id, email, name }: UserResponse): User => ({
   id: _id,
   email,
-  username,
+  name,
 })
 
 // set up the service to query the API

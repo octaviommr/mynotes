@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { Button } from "@headlessui/react"
 import { RootState, AppDispatch } from "../../store"
-import { useSignupMutation } from "../../api"
+import { User, useSignupMutation } from "../../api"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
 import { showMessage } from "../messages/messageSlice"
 import InputField from "../../components/form/InputField"
@@ -14,9 +14,7 @@ import PasswordField from "../../components/form/PasswordField"
 export const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
-interface SignupFormData {
-  email: string
-  username: string
+type SignupFormData = Omit<User, "id"> & {
   password: string
   confirmationPassword: string
 }
@@ -34,22 +32,15 @@ const Signup: FC = () => {
     handleSubmit,
     formState: { isSubmitting, errors },
     getValues,
-  } = useForm<SignupFormData>({
-    defaultValues: {
-      email: "",
-      username: "",
-      password: "",
-      confirmationPassword: "",
-    },
-  })
+  } = useForm<SignupFormData>()
 
   const [signup, { error, isSuccess }] = useSignupMutation()
   const handle = useAPIErrorHandler()
 
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
-    const { email, username, password } = data
+    const { email, name, password } = data
 
-    await signup({ email, username, password })
+    await signup({ email, name, password })
   }
 
   // only render the signup screen if the user is not already logged in
@@ -112,11 +103,11 @@ const Signup: FC = () => {
               error={errors.email?.message}
             />
             <InputField
-              {...register("username", {
-                required: "Username is required.",
+              {...register("name", {
+                required: "Name is required.",
               })}
-              label="Username"
-              error={errors.username?.message}
+              label="Name"
+              error={errors.name?.message}
             />
             <PasswordField
               {...register("password", {

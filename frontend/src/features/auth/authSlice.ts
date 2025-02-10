@@ -5,7 +5,7 @@ export const SESSION_CACHE_KEY = "MYNOTES_SESSION"
 
 export interface Session {
   token: string
-  username: string
+  name: string
 }
 
 // set up a discriminated union to represent the valid state mutations
@@ -45,9 +45,9 @@ export const { setAttemptedURL } = authSlice.actions
 export const getUserInitials = createSelector(
   [
     (state: RootState) =>
-      state.auth.isLoggedIn ? state.auth.session.username : undefined,
+      state.auth.isLoggedIn ? state.auth.session.name : undefined,
   ],
-  (username) => (username ? username.charAt(0).toUpperCase() : undefined),
+  (name) => (name ? name.charAt(0).toUpperCase() : undefined),
 )
 
 // thunks

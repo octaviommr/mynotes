@@ -12,7 +12,7 @@ interface AllTheProvidersProps {
 const AllTheProviders: FC<AllTheProvidersProps> = ({ children }) => {
   const mockSession: Session = {
     token: "token",
-    username: "username",
+    name: "name",
   }
 
   // set up a mock session in local storage

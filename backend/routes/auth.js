@@ -1,4 +1,5 @@
 const express = require("express")
+const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const User = require("../models/User")
@@ -34,7 +35,7 @@ router.post("/login", (req, res, next) => {
               return next(err)
             }
 
-            res.status(200).json({ token, username: user.username })
+            res.status(200).json({ token, name: user.name })
           },
         )
       })
@@ -43,16 +44,27 @@ router.post("/login", (req, res, next) => {
 })
 
 router.post("/signup", (req, res, next) => {
-  const { email, username, password } = req.body
+  const { email, name, password } = req.body
 
   bcrypt.hash(password, 10, function (err, hash) {
     if (err) {
       return next(err)
     }
 
-    User.create({ email, username, password: hash })
+    User.create({ email, name, password: hash })
       .then((user) => res.status(201).json(user))
-      .catch(next)
+      .catch((err) => {
+        /* 
+          Handle MongoDB duplicate key errors, since we're using the "unique" option in the schema (this option is NOT a
+          validator and won't cause a mongoose validation error)
+        */
+        if (err instanceof mongoose.mongo.MongoError && err.code === 11000) {
+          res.status(400).json({ message: `${email} is already in use.` })
+          return
+        }
+
+        next(err)
+      })
   })
 })
 
