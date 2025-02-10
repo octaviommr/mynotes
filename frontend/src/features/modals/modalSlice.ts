@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { AppThunk } from "../../store"
 
 // set up a discriminated union to represent the available modal types
 export type Modal =
@@ -18,8 +19,8 @@ export type Modal =
 
 // set up a discriminated union to represent the valid state mutations
 export type ModalState =
+  | { open: false; modal?: Modal }
   | { open: true; modal: Modal }
-  | { open: false; result?: boolean } // "result" isn't used in the initial state
 
 // slice
 const modalSlice = createSlice({
@@ -31,20 +32,44 @@ const modalSlice = createSlice({
   */
   initialState: { open: false } satisfies ModalState as ModalState,
 
-  /*
-    Set up the case reducers using new state values that are constructed and returned. We do so not only to ensure type
-    safety but also because we won't be able to mutate the existing state as needed for all state types.
-  */
   reducers: {
     showModal(state, action: PayloadAction<Modal>) {
-      return { open: true, modal: action.payload }
+      state.open = true
+      state.modal = action.payload
     },
-    closeModal(state, action: PayloadAction<boolean>) {
-      return { open: false, result: action.payload }
+    closeModal(state) {
+      state.open = false
     },
   },
 })
 
-export const { showModal, closeModal } = modalSlice.actions
+/*
+  Set up the thunks used to control the modal state.
+
+  In this case, we can't just use actions since we need side effects associated with the state transitions in order to
+  return a promise of the modal result to the user, but reducers must be pure.
+    
+  Instead, we provide thunks that run the needed side effects, besides dispatching actions to update the state.
+*/
+let resolveResult: (value: boolean) => void // this will hold the function used to resolve the promise of the modal result
+
+export const showModal =
+  (modal: Modal): AppThunk<Promise<boolean>> =>
+  (dispatch) => {
+    dispatch(modalSlice.actions.showModal(modal))
+
+    // return a promise which will be resolved with the modal result once the user closes it
+    return new Promise((resolve) => {
+      resolveResult = resolve
+    })
+  }
+
+export const closeModal =
+  (result: boolean): AppThunk =>
+  (dispatch) => {
+    resolveResult(result)
+
+    dispatch(modalSlice.actions.closeModal())
+  }
 
 export default modalSlice.reducer

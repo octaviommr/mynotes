@@ -14,7 +14,7 @@ import InputField from "../../components/form/InputField"
 import TextareaField from "../../components/form/TextareaField"
 import CheckboxField from "../../components/form/CheckboxField"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
-import { useModal } from "../../hooks/useModal"
+import { showModal } from "../modals/modalSlice"
 import { showMessage } from "../messages/messageSlice"
 
 type NoteFormData = Omit<Note, "id">
@@ -59,8 +59,6 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
 
   const handle = useAPIErrorHandler()
 
-  const showModal = useModal()
-
   // handle mutation results
   useEffect(() => {
     if (isMutationSuccess) {
@@ -93,25 +91,24 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
       : updateNote({ id: note.id, title, content, important }))
   }
 
-  const deleteNote = () => {
+  const deleteNote = async () => {
     if (!note) {
       return
     }
 
-    showModal(
-      {
+    const result = await dispatch(
+      showModal({
         type: "alert",
         title: "Delete note",
         content: "Are you sure you want to delete the note?",
         okLabel: "Delete",
         cancelLabel: "Cancel",
-      },
-      (result) => {
-        if (result) {
-          runDeleteNoteMutation(note.id)
-        }
-      },
+      }),
     )
+
+    if (result) {
+      runDeleteNoteMutation(note.id)
+    }
   }
 
   return (

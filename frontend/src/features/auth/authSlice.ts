@@ -46,7 +46,14 @@ export const getUserInitials = createSelector(
   (name) => (name ? name.charAt(0).toUpperCase() : undefined),
 )
 
-// thunks
+/*
+  Set up the thunks used to control the authentication state.
+
+  In this case, we can't just use actions since we need side effects associated with the state transitions in order to
+  handle the caching of the session, but reducers must be pure.
+    
+  Instead, we provide thunks that run the needed side effects, besides dispatching actions to update the state.
+*/
 export const login =
   (session: Session): AppThunk =>
   (dispatch) => {

@@ -6,7 +6,7 @@ import { Button } from "@headlessui/react"
 import { AppDispatch } from "../../store"
 import { useDeleteNotesMutation } from "../../api"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
-import { useModal } from "../../hooks/useModal"
+import { showModal } from "../modals/modalSlice"
 import { showMessage } from "../messages/messageSlice"
 
 interface NoteBoardToolbarProps {
@@ -25,23 +25,20 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
   const [runDeleteNotesMutation, { data, error }] = useDeleteNotesMutation()
   const handle = useAPIErrorHandler()
 
-  const showModal = useModal()
-
-  const deleteNotes = () => {
-    showModal(
-      {
+  const deleteNotes = async () => {
+    const result = await dispatch(
+      showModal({
         type: "alert",
         title: "Delete notes",
         content: "Are you sure you want to delete the selected notes?",
         okLabel: "Delete",
         cancelLabel: "Cancel",
-      },
-      (result) => {
-        if (result) {
-          runDeleteNotesMutation(selectedNotes)
-        }
-      },
+      }),
     )
+
+    if (result) {
+      runDeleteNotesMutation(selectedNotes)
+    }
   }
 
   // handle mutation results
