@@ -10,7 +10,7 @@ export interface Session {
 
 // set up a discriminated union to represent the valid state mutations
 export type AuthState =
-  | { isLoggedIn: false; attemptedURL?: string } // "attemptedURL" isn't used in the initial state or when logging out
+  | { isLoggedIn: false; session: undefined } // still define a "session" prop so we can use Immer in reducers
   | { isLoggedIn: true; session: Session }
 
 const authSlice = createSlice({
@@ -20,26 +20,22 @@ const authSlice = createSlice({
     Use a type assertion to make sure the broader type is inferred for the state of the slice (otherwise "initialState"
     will be tightened to the relevant type of the discriminated union)
   */
-  initialState: { isLoggedIn: false } satisfies AuthState as AuthState,
+  initialState: {
+    isLoggedIn: false,
+    session: undefined,
+  } satisfies AuthState as AuthState,
 
-  /*
-    Set up the case reducers using new state values that are constructed and returned. We do so not only to ensure type
-    safety but also because we won't be able to mutate the existing state as needed for all state types.
-  */
   reducers: {
     startSession(state, action: PayloadAction<Session>) {
-      return { isLoggedIn: true, session: action.payload }
+      state.isLoggedIn = true
+      state.session = action.payload
     },
     endSession(state) {
-      return { isLoggedIn: false }
-    },
-    setAttemptedURL(state, action: PayloadAction<string>) {
-      return { isLoggedIn: false, attemptedURL: action.payload }
+      state.isLoggedIn = false
+      state.session = undefined
     },
   },
 })
-
-export const { setAttemptedURL } = authSlice.actions
 
 // selectors
 export const getUserInitials = createSelector(

@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate, Link, useSearchParams } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { Button } from "@headlessui/react"
 import { RootState, AppDispatch } from "../../store"
@@ -20,9 +20,9 @@ const Login: FC = () => {
   const [canRender, setCanRender] = useState(false)
 
   const authState = useSelector((state: RootState) => state.auth)
-  const attemptedURL = authState.isLoggedIn ? undefined : authState.attemptedURL
 
   const dispatch = useDispatch<AppDispatch>()
+  const [params] = useSearchParams()
   const navigate = useNavigate()
 
   const {
@@ -64,7 +64,7 @@ const Login: FC = () => {
       dispatch(runLoginThunk(data))
 
       // redirect to any existing attempted URL or the homepage
-      navigate(attemptedURL || "/")
+      navigate(params.get("attemptedUrl") || "/")
 
       return
     }

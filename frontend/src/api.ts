@@ -56,10 +56,9 @@ export const api = createApi({
     baseUrl: BASE_URL,
     prepareHeaders: (headers, { getState }) => {
       const authState = (getState() as RootState).auth
-      const token = authState.isLoggedIn ? authState.session.token : undefined
 
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`)
+      if (authState.isLoggedIn) {
+        headers.set("authorization", `Bearer ${authState.session.token}`)
       }
 
       return headers
