@@ -5,7 +5,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react"
 import { useNavigate } from "react-router-dom"
 import { RootState, AppDispatch } from "../store"
 import { showMessage } from "../features/messages/messageSlice"
-import { logout } from "../features/auth/authSlice"
+import { logOut } from "../features/auth/authSlice"
 
 export const useAPIErrorHandler = () => {
   const { isLoggedIn } = useSelector((state: RootState) => state.auth)
@@ -27,7 +27,7 @@ export const useAPIErrorHandler = () => {
 
         if (error.status === 401 && isLoggedIn) {
           // session has expired or is invalid so let's also log the user out
-          dispatch(logout())
+          dispatch(logOut())
 
           // and redirect to the login screen
           navigate("/login")

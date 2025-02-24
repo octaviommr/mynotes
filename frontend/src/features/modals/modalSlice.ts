@@ -17,7 +17,7 @@ export type Modal =
       cancelLabel: string
     }
 
-// set up a discriminated union to represent the valid state mutations
+// set up a discriminated union to represent the valid states
 export type ModalState =
   | { open: false; modal?: Modal }
   | { open: true; modal: Modal }

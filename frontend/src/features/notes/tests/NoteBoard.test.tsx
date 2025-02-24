@@ -8,7 +8,7 @@ import {
   expectNoteDeletionAlert,
   expectMessage,
   expectNoteForm,
-} from "../testUtils"
+} from "./utils"
 import { mockNoteList } from "../../../mocks/handlers"
 import { server } from "../../../mocks/node"
 import { BASE_URL, NoteResponse } from "../../../api"
@@ -90,7 +90,7 @@ const deleteSelectedNotes = async (user: UserEvent) => {
 
 const addNote = async (user: UserEvent, isEmptyState = false) => {
   if (isEmptyState) {
-    const addLink = await screen.findByRole("link", { name: "Add one" })
+    const addLink = await screen.findByRole("link", { name: "Add One" })
     await user.click(addLink)
   } else {
     const toolbar = await screen.findByRole("toolbar")
@@ -289,7 +289,7 @@ describe("allows note creation", () => {
     await expectNoteForm()
   })
 
-  test("navigates to the note creation page when the user clicks the 'Add one' link in the empty state", async () => {
+  test("navigates to the note creation page when the user clicks the 'Add One' link in the empty state", async () => {
     const user = userEvent.setup()
 
     // mock

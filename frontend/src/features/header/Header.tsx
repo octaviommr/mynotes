@@ -12,11 +12,10 @@ const Header: FC = () => {
   }
 
   return (
-    <div className="flex h-16 items-center bg-sky-700 px-4">
+    <div className="flex h-16 items-center justify-between bg-sky-700 px-4">
       <Link to="/" className="text-bold text-2xl text-white">
         MyNotes
       </Link>
-      <span className="flex-1"></span>
       <UserMenu />
     </div>
   )

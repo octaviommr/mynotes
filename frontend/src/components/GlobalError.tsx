@@ -15,7 +15,7 @@ const GlobalError: FC<GlobalErrorProps> = ({ onRetry }) => {
         className="mt-10 rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white"
         onClick={() => onRetry()}
       >
-        Try again
+        Try Again
       </Button>
     </div>
   )

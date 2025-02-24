@@ -8,10 +8,17 @@ export interface Session {
   name: string
 }
 
-// set up a discriminated union to represent the valid state mutations
+// set up a discriminated union to represent the valid states
 export type AuthState =
-  | { isLoggedIn: false; session: undefined } // still define a "session" prop so we can use Immer in reducers
+  | { isLoggedIn: false; session?: null }
   | { isLoggedIn: true; session: Session }
+/*
+  NOTE: Another option for the logged out state that would still allow us to use Immer in the "endSession" action, while
+  also still ensuring there's never a session when the user is logged out, would be defining the session property as
+  "session?: never" or "session?: undefined". But this would force us to assign "undefined" to the session in the action,
+  which semantically doesn't make sense, since an "undefined" property in a object means that the property is missing in
+  that object.
+*/
 
 const authSlice = createSlice({
   name: "auth",
@@ -22,7 +29,7 @@ const authSlice = createSlice({
   */
   initialState: {
     isLoggedIn: false,
-    session: undefined,
+    session: null,
   } satisfies AuthState as AuthState,
 
   reducers: {
@@ -32,7 +39,7 @@ const authSlice = createSlice({
     },
     endSession(state) {
       state.isLoggedIn = false
-      state.session = undefined
+      state.session = null
     },
   },
 })
@@ -41,9 +48,9 @@ const authSlice = createSlice({
 export const getUserInitials = createSelector(
   [
     (state: RootState) =>
-      state.auth.isLoggedIn ? state.auth.session.name : undefined,
+      state.auth.isLoggedIn ? state.auth.session.name : "",
   ],
-  (name) => (name ? name.charAt(0).toUpperCase() : undefined),
+  (name) => (name ? name.charAt(0).toUpperCase() : ""),
 )
 
 /*
@@ -54,7 +61,7 @@ export const getUserInitials = createSelector(
     
   Instead, we provide thunks that run the needed side effects, besides dispatching actions to update the state.
 */
-export const login =
+export const logIn =
   (session: Session): AppThunk =>
   (dispatch) => {
     dispatch(authSlice.actions.startSession(session))
@@ -63,7 +70,7 @@ export const login =
     localStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(session))
   }
 
-export const logout = (): AppThunk => (dispatch) => {
+export const logOut = (): AppThunk => (dispatch) => {
   dispatch(authSlice.actions.endSession())
 
   // clear cached session

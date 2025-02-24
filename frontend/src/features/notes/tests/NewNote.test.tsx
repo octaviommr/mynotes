@@ -12,7 +12,7 @@ import {
   expectNotes,
   expectMessage,
   expectNoteFormErrorMessage,
-} from "../testUtils"
+} from "./utils"
 import { mockNoteList } from "../../../mocks/handlers"
 import { server } from "../../../mocks/node"
 import { BASE_URL, NoteResponse, Note } from "../../../api"

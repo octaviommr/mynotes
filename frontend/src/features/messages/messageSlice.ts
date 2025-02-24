@@ -7,7 +7,7 @@ export interface Message {
   content: string
 }
 
-// set up a discriminated union to represent the valid state mutations
+// set up a discriminated union to represent the valid states
 export type MessageState =
   | { open: false; message?: Message }
   | { open: true; message: Message }

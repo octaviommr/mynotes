@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { ArrowLeftEndOnRectangleIcon } from "@heroicons/react/16/solid"
 import { AppDispatch } from "../../store"
-import { logout as runLogoutThunk, getUserInitials } from "../auth/authSlice"
+import { logOut as runLogOutThunk, getUserInitials } from "../auth/authSlice"
 
 const UserMenu: FC = () => {
   const userInitials = useSelector(getUserInitials)
@@ -12,8 +12,8 @@ const UserMenu: FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
-  const logout = () => {
-    dispatch(runLogoutThunk())
+  const logOut = () => {
+    dispatch(runLogOutThunk())
 
     // redirect to login screen
     navigate("/login")
@@ -30,11 +30,11 @@ const UserMenu: FC = () => {
       >
         <MenuItem>
           <button
-            onClick={() => logout()}
+            onClick={() => logOut()}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-gray-100"
           >
             <ArrowLeftEndOnRectangleIcon className="size-4" />
-            Log out
+            Log Out
           </button>
         </MenuItem>
       </MenuItems>

@@ -49,6 +49,9 @@ const makeUser = ({ _id, email, name }: UserResponse): User => ({
   name,
 })
 
+export type UserCredentials = Pick<User, "email"> & { password: string }
+export type UserSignUp = Omit<User, "id"> & Pick<UserCredentials, "password">
+
 // set up the service to query the API
 export const api = createApi({
   reducerPath: "api",
@@ -200,7 +203,7 @@ export const api = createApi({
     }),
 
     // authentication
-    login: build.mutation<Session, Pick<User, "email"> & { password: string }>({
+    logIn: build.mutation<Session, UserCredentials>({
       query: (body) => ({
         url: "/auth/login",
         method: "POST",
@@ -215,7 +218,7 @@ export const api = createApi({
         return []
       },
     }),
-    signup: build.mutation<User, Omit<User, "id"> & { password: string }>({
+    signUp: build.mutation<User, UserSignUp>({
       query: (body) => ({
         url: "/auth/signup",
         method: "POST",
@@ -233,6 +236,6 @@ export const {
   useUpdateNoteMutation,
   useDeleteNoteMutation,
   useDeleteNotesMutation,
-  useLoginMutation,
-  useSignupMutation,
+  useLogInMutation,
+  useSignUpMutation,
 } = api

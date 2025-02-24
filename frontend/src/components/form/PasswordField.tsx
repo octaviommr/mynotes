@@ -7,29 +7,29 @@ import {
 import { Input, Field, Label, Button } from "@headlessui/react"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid"
 
-type PasswordFieldProps = Omit<
+type PasswordFieldProps = Pick<
   DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
-  "ref" | "type"
+  "name" | "onChange" | "onBlur" | "required" | "disabled"
 > & { label: string; error?: string }
 
 const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
-  ({ label, error, disabled, ...inputProps }, ref) => {
+  ({ label, error, required, disabled, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false)
 
-    // set up a data attribute to be able to conditionally apply styling when in an error state
-    const dataAttrs = { ...(error && { "data-error": true }) }
-
     return (
-      <Field className="group" disabled={disabled} {...dataAttrs}>
-        <Label className="text-sm/6 font-medium data-[disabled]:opacity-50 group-data-[error]:text-red-700">
-          {label}
+      <Field className="group" disabled={disabled}>
+        <Label className="text-sm/6 font-medium data-[disabled]:opacity-50">
+          {`${label}${required ? " (required)" : ""}`}
         </Label>
         <div className="relative mt-1">
           <Input
             ref={ref}
-            {...inputProps}
+            {...props}
             type={showPassword ? "text" : "password"}
-            className="block w-full rounded-lg border border-gray-300 px-3 py-1.5 pr-10 text-sm/6 data-[disabled]:border-opacity-50 data-[disabled]:bg-gray-100 group-data-[error]:border-red-700"
+            invalid={!!error}
+            className="block w-full rounded-lg border border-gray-300 px-3 py-1.5 pr-10 text-sm/6 data-[invalid]:border-red-700 data-[disabled]:border-opacity-50 data-[disabled]:bg-gray-100"
+            aria-required={required}
+            aria-errormessage={`${props.name}-error-message`}
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-2">
             <Button
@@ -47,9 +47,13 @@ const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
           </div>
         </div>
         {error && (
-          <span role="alert" className="text-sm/6 text-red-700">
+          <p
+            id={`${props.name}-error-message`}
+            className="text-sm/6 text-red-700"
+            role="alert"
+          >
             {error}
-          </span>
+          </p>
         )}
       </Field>
     )

@@ -8,7 +8,7 @@ import NoteBoardToolbar from "./NoteBoardToolbar"
 const NoteBoard: FC = () => {
   const [selected, setSelected] = useState<string[]>([])
 
-  const { data: notes, error /* , isLoading */ } = useGetNotesQuery()
+  const { data: notes, error } = useGetNotesQuery()
   const handle = useAPIErrorHandler()
 
   const onToggle = (noteId: string, selected: boolean) => {
@@ -37,39 +37,40 @@ const NoteBoard: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
 
-  // TODO: show a loading spinner when "isLoading"
-
   if (!notes) {
     return null
   }
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 p-8 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-8">
-        {notes.map((note) => (
-          <NoteBoardItem
-            key={note.id}
-            note={note}
-            selected={selected.includes(note.id)}
-            onToggle={(selected) => onToggle(note.id, selected)}
-          />
-        ))}
-      </div>
       {notes.length > 0 && (
-        <NoteBoardToolbar
-          selectedNotes={selected}
-          onDeleteNotes={onDeleteNotes}
-          onCancelSelection={() => setSelected([])}
-        />
+        <>
+          <div className="grid grid-cols-1 gap-4 p-8 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-8">
+            {notes.map((note) => (
+              <NoteBoardItem
+                key={note.id}
+                note={note}
+                selected={selected.includes(note.id)}
+                onToggle={(selected) => onToggle(note.id, selected)}
+              />
+            ))}
+          </div>
+          <NoteBoardToolbar
+            selectedNotes={selected}
+            onDeleteNotes={onDeleteNotes}
+            onCancelSelection={() => setSelected([])}
+          />
+        </>
       )}
       {!notes.length && (
-        <div className="flex h-full items-center justify-center">
-          <span className="text-sm/6">
-            No notes yet.{" "}
-            <Link to="/note/create" className="font-medium text-sky-700">
-              Add one
-            </Link>
-          </span>
+        <div className="flex h-full flex-col items-center justify-center gap-2">
+          <span className="text-slate-700">No notes yet.</span>
+          <Link
+            to="/note/create"
+            className="text-sm/6 font-medium text-sky-700"
+          >
+            Add One
+          </Link>
         </div>
       )}
     </>

@@ -28,7 +28,7 @@ const customRender = (
   route = "/",
   options?: Omit<RenderOptions, "wrapper">,
 ) => {
-  window.history.pushState({}, "Test page", route)
+  window.history.pushState({}, "", route)
 
   return render(<App />, { wrapper: AllTheProviders, ...options })
 }

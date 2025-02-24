@@ -10,18 +10,21 @@ import {
   useUpdateNoteMutation,
   useDeleteNoteMutation,
 } from "../../api"
-import InputField from "../../components/form/InputField"
+import TextField from "../../components/form/TextField"
 import TextareaField from "../../components/form/TextareaField"
 import CheckboxField from "../../components/form/CheckboxField"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
 import { showModal } from "../modals/modalSlice"
 import { showMessage } from "../messages/messageSlice"
 
-type NoteFormData = Omit<Note, "id">
-
 interface NoteFormProps {
   note?: Note
 }
+
+type NoteFormData = Pick<Note, "title"> & {
+  content: string
+  important: boolean
+} // this shape describes the form, which always has the "content" and "important" fields
 
 const NoteForm: FC<NoteFormProps> = ({ note }) => {
   const {
@@ -33,7 +36,7 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
     defaultValues: {
       title: note?.title,
       content: note?.content,
-      important: note?.important,
+      important: note?.important ?? false, // controlled components should always have a default value
     },
   })
 
@@ -84,11 +87,7 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
   }, [isMutationSuccess, mutationError])
 
   const onSubmit: SubmitHandler<NoteFormData> = async (data) => {
-    const { title, content, important } = data
-
-    await (!note
-      ? addNote({ title, content, important })
-      : updateNote({ id: note.id, title, content, important }))
+    await (!note ? addNote(data) : updateNote({ id: note.id, ...data }))
   }
 
   const deleteNote = async () => {
@@ -114,32 +113,32 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} aria-labelledby="page-title">
       <div className="flex flex-col gap-6">
-        <InputField
+        <TextField
           {...register("title", {
             required: "Title is required.",
           })}
-          label="Title (required)"
+          label="Title"
           error={errors.title?.message}
+          required
         />
         <TextareaField {...register("content")} label="Content" rows={5} />
-
-        {/*
-            Checkbox fields are used as controlled components because Headless UI's "Checkbox" component doesn't
-            expose a native "onChange" handler (it can be used as uncontrolled, but this only means the component
-            will track the state internally)
-          */}
         <Controller
           name="important"
           control={control}
           render={({ field: { value, onChange, name } }) => (
             <CheckboxField
               name={name}
-              checked={value ?? false} // value can't be undefined to use Headless UI's "Checkbox" component as controlled
+              checked={value}
               onChange={onChange}
               label="Important"
             />
           )}
         />
+        {/*
+          NOTE: Checkbox fields are used as controlled components because Headless UI's "Checkbox" component doesn't expose
+          a native "onChange" handler (it can be used as uncontrolled, but this only means the component will track the
+          state internally)
+        */}
       </div>
       <div className="mt-6 flex items-center gap-4">
         {note && (

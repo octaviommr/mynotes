@@ -4,20 +4,17 @@ import { useNavigate, Link } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { Button } from "@headlessui/react"
 import { RootState, AppDispatch } from "../../store"
-import { User, useSignupMutation } from "../../api"
+import { UserSignUp, useSignUpMutation } from "../../api"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
 import { showMessage } from "../messages/messageSlice"
-import InputField from "../../components/form/InputField"
+import TextField from "../../components/form/TextField"
 import PasswordField from "../../components/form/PasswordField"
 
 // https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address
 export const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
-type SignupFormData = Omit<User, "id"> & {
-  password: string
-  confirmationPassword: string
-}
+type SignUpFormData = UserSignUp & { confirmationPassword: string }
 
 const Signup: FC = () => {
   const [canRender, setCanRender] = useState(false)
@@ -32,18 +29,16 @@ const Signup: FC = () => {
     handleSubmit,
     formState: { isSubmitting, errors },
     getValues,
-  } = useForm<SignupFormData>()
+  } = useForm<SignUpFormData>()
 
-  const [signup, { error, isSuccess }] = useSignupMutation()
+  const [signUp, { error, isSuccess }] = useSignUpMutation()
   const handle = useAPIErrorHandler()
 
-  const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
-    const { email, name, password } = data
-
-    await signup({ email, name, password })
+  const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
+    await signUp(data)
   }
 
-  // only render the signup screen if the user is not already logged in
+  // only render the sign up screen if the user is not already logged in
   useEffect(() => {
     if (isLoggedIn) {
       // redirect to homepage
@@ -74,7 +69,7 @@ const Signup: FC = () => {
     }
 
     if (error) {
-      // signup failed so let's handle the error
+      // sign up failed so let's handle the error
       handle(error)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,7 +85,7 @@ const Signup: FC = () => {
       <div className="mx-auto w-full max-w-sm">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-6">
-            <InputField
+            <TextField
               {...register("email", {
                 required: "Email is required.",
                 pattern: {
@@ -98,16 +93,17 @@ const Signup: FC = () => {
                   message: "Email is not valid.",
                 },
               })}
-              type="email"
               label="Email"
               error={errors.email?.message}
+              required
             />
-            <InputField
+            <TextField
               {...register("name", {
                 required: "Name is required.",
               })}
               label="Name"
               error={errors.name?.message}
+              required
             />
             <PasswordField
               {...register("password", {
@@ -115,6 +111,7 @@ const Signup: FC = () => {
               })}
               label="Password"
               error={errors.password?.message}
+              required
             />
             <PasswordField
               {...register("confirmationPassword", {
@@ -127,24 +124,23 @@ const Signup: FC = () => {
               })}
               label="Confirm password"
               error={errors.confirmationPassword?.message}
+              required
             />
             <Button
               type="submit"
               className="rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white data-[disabled]:bg-gray-500"
               disabled={isSubmitting}
             >
-              Sign up
+              Sign Up
             </Button>
           </div>
         </form>
       </div>
-      <div className="flex justify-center">
-        <span className="text-sm/6 text-slate-700">
-          Already have an account?{" "}
-          <Link to="/login" className="font-medium text-sky-700">
-            Log in
-          </Link>
-        </span>
+      <div className="flex flex-col items-center gap-2">
+        <span className=" text-slate-700">Already have an account?</span>
+        <Link to="/login" className="text-sm/6 font-medium text-sky-700">
+          Log In
+        </Link>
       </div>
     </div>
   )

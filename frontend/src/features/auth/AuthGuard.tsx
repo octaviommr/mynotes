@@ -18,7 +18,7 @@ const AuthGuard: FC<AuthGuardProps> = ({ children }) => {
   // only render the route element if we have an authenticated user
   useEffect(() => {
     if (!isLoggedIn) {
-      // redirect to log in screen with the attempted URL so we can redirect back to it later after login
+      // redirect to log in screen with the attempted URL so we can redirect back to it later after logging in
       navigate(`/login?attemptedUrl=${pathname}`)
 
       return

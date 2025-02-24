@@ -1,6 +1,6 @@
 import { UserEvent } from "@testing-library/user-event"
-import { screen, within } from "../../testUtils"
-import { NoteResponse } from "../../api"
+import { screen, within } from "../../../testUtils"
+import { NoteResponse } from "../../../api"
 
 const CARD_NAME_REGEX = /^Edit\s+.*$/
 
@@ -137,13 +137,24 @@ export const expectNoteForm = async (mockNote?: NoteResponse) => {
   const pageTitle = await screen.findByRole("heading", {
     name: mockNote ? "Edit Note" : "New Note",
   })
+
   expect(pageTitle).toBeInTheDocument()
+
+  const form = screen.getByRole("form", {
+    name: mockNote ? "Edit Note" : "New Note",
+  })
+
+  expect(form).toBeInTheDocument()
+
+  const titleField = within(form).getByLabelText("Title (required)")
+  expect(titleField).toBeRequired()
 }
 
 export const expectNoteFormDefaultValues = async (mockNote?: NoteResponse) => {
   const form = await screen.findByRole("form", {
     name: mockNote ? "Edit Note" : "New Note",
   })
+
   expect(form).toHaveFormValues({
     title: mockNote ? mockNote.title : "",
     content: mockNote ? mockNote.content : "",
@@ -152,8 +163,9 @@ export const expectNoteFormDefaultValues = async (mockNote?: NoteResponse) => {
   /* 
     Assert the value of the "Important" field individually because currently the feature that allows using Headless UI's
     "Checkbox" component with forms (by rendering a hidden input field in sync with the checkbox state) is not working 
-    correctly. Once it is, we should be able to use "toHaveFormValues" to assert the value of the "Important" form control
-    as well.
+    correctly. 
+    
+    Once it is, we should be able to use "toHaveFormValues" to assert the value of the "Important" form control as well.
   */
   const importantCheckbox = within(form).getByLabelText("Important")
 
@@ -165,11 +177,12 @@ export const expectNoteFormDefaultValues = async (mockNote?: NoteResponse) => {
 }
 
 export const expectNoteFormErrorMessage = (mockNote?: NoteResponse) => {
-  expect(
-    within(
-      screen.getByRole("form", {
-        name: mockNote ? "Edit Note" : "New Note",
-      }),
-    ).getByRole("alert"),
-  ).toHaveTextContent("Title is required.")
+  const titleField = within(
+    screen.getByRole("form", {
+      name: mockNote ? "Edit Note" : "New Note",
+    }),
+  ).getByLabelText("Title (required)")
+
+  expect(titleField).toBeInvalid()
+  expect(titleField).toHaveAccessibleErrorMessage("Title is required.")
 }
