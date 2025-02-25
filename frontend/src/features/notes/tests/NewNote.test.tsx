@@ -6,7 +6,6 @@ import {
   fillInContentField,
   toggleImportantField,
   submitForm,
-  cancelForm,
   expectNoteForm,
   expectNoteFormDefaultValues,
   expectNotes,
@@ -60,77 +59,82 @@ const mockNoteCreation = () => {
 }
 
 // tests
-describe("displays the note creation form", () => {
-  test("lands on the right page", async () => {
-    // arrange
-    render("/note/create")
+describe("NewNote component", () => {
+  describe("when navigating to the note creation page", () => {
+    it("displays the note creation form", async () => {
+      // arrange
+      render("/note/create")
 
-    // assert
-    await expectNoteForm()
+      // assert
+      await expectNoteForm("creation")
+    })
+
+    it("displays default values for all fields", async () => {
+      // arrange
+      render("/note/create")
+
+      // assert
+      await expectNoteFormDefaultValues()
+    })
   })
 
-  test("displays default values for all fields", async () => {
-    // arrange
-    render("/note/create")
+  describe("when creating a new note", () => {
+    describe("when the form is valid", () => {
+      it("displays the new note on the note board page", async () => {
+        const user = userEvent.setup()
 
-    // assert
-    await expectNoteFormDefaultValues()
-  })
-})
+        // mock
+        mockNoteCreation()
 
-describe("creates new notes", () => {
-  test("displays an updated list on the note board page and a success message when the form is valid", async () => {
-    const user = userEvent.setup()
+        // arrange
+        render("/note/create")
 
-    // mock
-    mockNoteCreation()
+        // act
+        await fillInTitleField(user, mockNewNote.title)
+        await fillInContentField(user, mockNewNote.content!)
+        await toggleImportantField(user)
+        await submitForm(user, "creation")
 
-    // arrange
-    render("/note/create")
+        // assert
+        await expectNotes([...mockNoteList, mockNewNote])
+      })
 
-    // act
-    await fillInTitleField(user, mockNewNote.title)
-    await fillInContentField(user, mockNewNote.content!)
-    await toggleImportantField(user)
-    await submitForm(user)
+      it("displays a note creation success message", async () => {
+        const user = userEvent.setup()
 
-    // assert
-    await expectNotes([...mockNoteList, mockNewNote])
-    expectMessage("Note created successfully!")
-  })
+        // mock
+        mockNoteCreation()
 
-  test("displays an error message when the required title field is left empty", async () => {
-    const user = userEvent.setup()
+        // arrange
+        render("/note/create")
 
-    // arrange
-    render("/note/create")
+        // act
+        await fillInTitleField(user, mockNewNote.title)
+        await fillInContentField(user, mockNewNote.content!)
+        await toggleImportantField(user)
+        await submitForm(user, "creation")
 
-    // act
-    await fillInTitleField(user, "")
-    await fillInContentField(user, mockNewNote.content!)
-    await toggleImportantField(user)
-    await submitForm(user)
+        // assert
+        await expectMessage("Note created successfully!")
+      })
+    })
 
-    // assert
-    expectNoteFormErrorMessage()
-  })
+    describe("when the form is not valid", () => {
+      it("displays an error message when the required title field is empty", async () => {
+        const user = userEvent.setup()
 
-  test("displays an unchanged list on the note board page when the user cancels the operation", async () => {
-    const user = userEvent.setup()
+        // arrange
+        render("/note/create")
 
-    // mock
-    mockNoteCreation()
+        // act
+        await fillInTitleField(user, "")
+        await fillInContentField(user, mockNewNote.content!)
+        await toggleImportantField(user)
+        await submitForm(user, "creation")
 
-    // arrange
-    render("/note/create")
-
-    // act
-    await fillInTitleField(user, mockNewNote.title)
-    await fillInContentField(user, mockNewNote.content!)
-    await toggleImportantField(user)
-    await cancelForm(user)
-
-    // assert
-    await expectNotes(mockNoteList)
+        // assert
+        expectNoteFormErrorMessage()
+      })
+    })
   })
 })

@@ -1,6 +1,6 @@
 import userEvent, { UserEvent } from "@testing-library/user-event"
 import { http, HttpResponse } from "msw"
-import { render, screen, within } from "../../../testUtils"
+import { render, screen } from "../../../testUtils"
 import {
   confirmNoteDeletion,
   cancelNoteDeletion,
@@ -8,13 +8,13 @@ import {
   fillInContentField,
   toggleImportantField,
   submitForm,
-  cancelForm,
   expectNoteForm,
   expectNoteFormDefaultValues,
   expectNotes,
   expectNoteDeletionAlert,
   expectMessage,
-  expectNoteFormErrorMessage,
+  expectNoNoteDeletionAlert,
+  expectLocation,
 } from "./utils"
 import { mockNoteList } from "../../../mocks/handlers"
 import { server } from "../../../mocks/node"
@@ -102,132 +102,153 @@ const mockNoteDeletion = () => {
 
 // actions
 const deleteNote = async (user: UserEvent) => {
-  const form = await screen.findByRole("form", { name: "Edit Note" })
-  await user.click(within(form).getByRole("button", { name: "Delete" }))
+  const deleteButton = await screen.findByRole("button", { name: "Delete" })
+  await user.click(deleteButton)
 }
 
 // tests
-describe("displays the note edition form", () => {
-  test("lands on the right page", async () => {
-    // arrange
-    render(`/note/${mockNoteList[0]._id}`)
+describe("NoteDetail component", () => {
+  describe("when navigating to the note edition page", () => {
+    it("displays the note edition form", async () => {
+      // arrange
+      render(`/note/${mockNoteList[0]._id}`)
 
-    // assert
-    await expectNoteForm(mockNoteList[0])
+      // assert
+      await expectNoteForm("edition")
+    })
+
+    it("displays default values for all fields, matching the note data", async () => {
+      // arrange
+      render(`/note/${mockNoteList[0]._id}`)
+
+      // assert
+      await expectNoteFormDefaultValues(mockNoteList[0])
+    })
   })
 
-  test("displays default values for all fields", async () => {
-    // arrange
-    render(`/note/${mockNoteList[0]._id}`)
+  describe("when updating a note", () => {
+    describe("when the form is valid", () => {
+      it("displays the updated note on the note board page", async () => {
+        const user = userEvent.setup()
 
-    // assert
-    await expectNoteFormDefaultValues(mockNoteList[0])
-  })
-})
+        // mock
+        mockNoteEdition()
 
-describe("updates notes", () => {
-  test("displays the updated note on the note board page and a success message when the form is valid", async () => {
-    const user = userEvent.setup()
+        // arrange
+        render(`/note/${mockNoteList[0]._id}`)
 
-    // mock
-    mockNoteEdition()
+        // act
+        await fillInTitleField(user, mockUpdatedNote.title)
+        await fillInContentField(user, mockUpdatedNote.content!)
+        await toggleImportantField(user)
+        await submitForm(user, "edition")
 
-    // arrange
-    render(`/note/${mockNoteList[0]._id}`)
+        // assert
+        await expectNotes([mockUpdatedNote, mockNoteList[1]])
+      })
 
-    // act
-    await fillInTitleField(user, mockUpdatedNote.title, mockNoteList[0])
-    await fillInContentField(user, mockUpdatedNote.content!, mockNoteList[0])
-    await toggleImportantField(user, mockNoteList[0])
-    await submitForm(user, mockNoteList[0])
+      it("displays a note edition success message", async () => {
+        const user = userEvent.setup()
 
-    // assert
-    await expectNotes([mockUpdatedNote, mockNoteList[1]])
-    expectMessage("Note updated successfully!")
-  })
+        // mock
+        mockNoteEdition()
 
-  test("displays an error message when the required title field is left empty", async () => {
-    const user = userEvent.setup()
+        // arrange
+        render(`/note/${mockNoteList[0]._id}`)
 
-    // arrange
-    render(`/note/${mockNoteList[0]._id}`)
+        // act
+        await fillInTitleField(user, mockUpdatedNote.title)
+        await fillInContentField(user, mockUpdatedNote.content!)
+        await toggleImportantField(user)
+        await submitForm(user, "edition")
 
-    // act
-    await fillInTitleField(user, "", mockNoteList[0])
-    await fillInContentField(user, mockUpdatedNote.content!, mockNoteList[0])
-    await toggleImportantField(user, mockNoteList[0])
-    await submitForm(user, mockNoteList[0])
-
-    // assert
-    expectNoteFormErrorMessage(mockNoteList[0])
+        // assert
+        await expectMessage("Note updated successfully!")
+      })
+    })
   })
 
-  test("displays an unchanged list on the note board page when the user cancels the operation", async () => {
-    const user = userEvent.setup()
+  describe("when deleting a note", () => {
+    it("displays a confirmation alert", async () => {
+      const user = userEvent.setup()
 
-    // mock
-    mockNoteEdition()
+      // arrange
+      render(`/note/${mockNoteList[0]._id}`)
 
-    // arrange
-    render(`/note/${mockNoteList[0]._id}`)
+      // act
+      await deleteNote(user)
 
-    // act
-    await fillInTitleField(user, mockUpdatedNote.title, mockNoteList[0])
-    await fillInContentField(user, mockUpdatedNote.content!, mockNoteList[0])
-    await toggleImportantField(user, mockNoteList[0])
-    await cancelForm(user, mockNoteList[0])
+      // assert
+      expectNoteDeletionAlert(
+        "Delete note",
+        "Are you sure you want to delete the note?",
+      )
+    })
 
-    // assert
-    await expectNotes(mockNoteList)
-  })
-})
+    describe("when the user confirms the note deletion", () => {
+      it("displays the note board page without the deleted note", async () => {
+        const user = userEvent.setup()
 
-describe("deletes notes", () => {
-  test("displays an alert when the user tries to delete the note", async () => {
-    const user = userEvent.setup()
+        // mock
+        mockNoteDeletion()
 
-    // arrange
-    render(`/note/${mockNoteList[0]._id}`)
+        // arrange
+        render(`/note/${mockNoteList[0]._id}`)
 
-    // act
-    await deleteNote(user)
+        // act
+        await deleteNote(user)
+        await confirmNoteDeletion(user)
 
-    // assert
-    expectNoteDeletionAlert(
-      "Delete note",
-      "Are you sure you want to delete the note?",
-    )
-  })
+        // assert
+        await expectNotes([mockNoteList[1]])
+      })
 
-  test("displays an updated list on the note board page and a success message when the user confirms the operation", async () => {
-    const user = userEvent.setup()
+      it("displays a note deletion success message", async () => {
+        const user = userEvent.setup()
 
-    // mock
-    mockNoteDeletion()
+        // mock
+        mockNoteDeletion()
 
-    // arrange
-    render(`/note/${mockNoteList[0]._id}`)
+        // arrange
+        render(`/note/${mockNoteList[0]._id}`)
 
-    // act
-    await deleteNote(user)
-    await confirmNoteDeletion(user)
+        // act
+        await deleteNote(user)
+        await confirmNoteDeletion(user)
 
-    // assert
-    await expectNotes([mockNoteList[1]])
-    expectMessage("Note deleted successfully!")
-  })
+        // assert
+        await expectMessage("Note deleted successfully!")
+      })
+    })
 
-  test("keep editing the note if the user cancels the operation", async () => {
-    const user = userEvent.setup()
+    describe("when the user cancels the note deletion", () => {
+      it("closes the confirmation alert", async () => {
+        const user = userEvent.setup()
 
-    // arrange
-    render(`/note/${mockNoteList[0]._id}`)
+        // arrange
+        render(`/note/${mockNoteList[0]._id}`)
 
-    // act
-    await deleteNote(user)
-    await cancelNoteDeletion(user)
+        // act
+        await deleteNote(user)
+        await cancelNoteDeletion(user)
 
-    // assert
-    await expectNoteForm(mockNoteList[0])
+        // assert
+        expectNoNoteDeletionAlert()
+      })
+
+      it("stays in the note edition page", async () => {
+        const user = userEvent.setup()
+
+        // arrange
+        render(`/note/${mockNoteList[0]._id}`)
+
+        // act
+        await deleteNote(user)
+        await cancelNoteDeletion(user)
+
+        // assert
+        expectLocation(`/note/${mockNoteList[0]._id}`)
+      })
+    })
   })
 })

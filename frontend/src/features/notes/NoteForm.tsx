@@ -144,7 +144,7 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
         {note && (
           <Button
             type="button"
-            className="rounded-md bg-red-700 px-3 py-1.5 text-sm/6 font-semibold text-white data-[disabled]:bg-gray-500"
+            className="rounded-md bg-red-700 px-3 py-1.5 text-sm/6 font-semibold text-white data-[disabled]:opacity-50"
             onClick={() => deleteNote()}
             disabled={isSubmitting}
           >
@@ -152,12 +152,12 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
           </Button>
         )}
         <span className="flex-1"></span>
-        <Link to="/" className="font-medium text-sky-700">
+        <Link to="/" className="text-sm/6 font-medium">
           Cancel
         </Link>
         <Button
           type="submit"
-          className="rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white data-[disabled]:bg-gray-500"
+          className="rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white data-[disabled]:opacity-50"
           disabled={isSubmitting}
         >
           {note ? "Update" : "Create"}

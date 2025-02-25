@@ -21,15 +21,8 @@ export const cancelNoteDeletion = async (user: UserEvent) => {
   )
 }
 
-export const fillInTitleField = async (
-  user: UserEvent,
-  newTitle: string,
-  mockNote?: NoteResponse,
-) => {
-  const form = await screen.findByRole("form", {
-    name: mockNote ? "Edit Note" : "New Note",
-  })
-  const field = within(form).getByLabelText("Title (required)")
+export const fillInTitleField = async (user: UserEvent, newTitle: string) => {
+  const field = await screen.findByLabelText("Title (required)")
   await user.clear(field)
 
   if (newTitle) {
@@ -40,64 +33,45 @@ export const fillInTitleField = async (
 export const fillInContentField = async (
   user: UserEvent,
   newContent: string,
-  mockNote?: NoteResponse,
 ) => {
-  const textbox = within(
-    screen.getByRole("form", { name: mockNote ? "Edit Note" : "New Note" }),
-  ).getByLabelText("Content")
-  await user.clear(textbox)
+  const field = await screen.findByLabelText("Content")
+  await user.clear(field)
 
   if (newContent) {
-    await user.type(textbox, newContent)
+    await user.type(field, newContent)
   }
 }
 
-export const toggleImportantField = async (
-  user: UserEvent,
-  mockNote?: NoteResponse,
-) => {
-  await user.click(
-    within(
-      screen.getByRole("form", {
-        name: mockNote ? "Edit Note" : "New Note",
-      }),
-    ).getByLabelText("Important"),
-  )
+export const toggleImportantField = async (user: UserEvent) => {
+  const field = await screen.findByLabelText("Important")
+  await user.click(field)
 }
 
-export const submitForm = async (user: UserEvent, mockNote?: NoteResponse) => {
+export const submitForm = async (
+  user: UserEvent,
+  mode: "creation" | "edition",
+) => {
   await user.click(
-    within(
-      screen.getByRole("form", {
-        name: mockNote ? "Edit Note" : "New Note",
-      }),
-    ).getByRole("button", {
-      name: mockNote ? "Update" : "Create",
+    screen.getByRole("button", {
+      name: mode === "creation" ? "Create" : "Update",
     }),
   )
 }
 
-export const cancelForm = async (user: UserEvent, mockNote?: NoteResponse) => {
-  await user.click(
-    within(
-      screen.getByRole("form", {
-        name: mockNote ? "Edit Note" : "New Note",
-      }),
-    ).getByRole("link", { name: "Cancel" }),
-  )
-}
-
 // assertions
-export const expectNote = ({ title, content, important }: NoteResponse) => {
+export const expectNote = ({
+  _id,
+  title,
+  content,
+  important,
+}: NoteResponse) => {
   const card = screen.getByRole("link", { name: `Edit ${title}` })
-  expect(card).toBeInTheDocument()
+  expect(card).toHaveAttribute("href", `/note/${_id}`)
 
   expect(within(card).getByRole("heading", { name: title })).toBeInTheDocument()
 
   if (content) {
-    expect(within(card).getByRole("paragraph")).toHaveTextContent(content)
-  } else {
-    expect(within(card).getByRole("paragraph")).toBeEmptyDOMElement()
+    expect(card).toHaveTextContent(content)
   }
 
   if (important) {
@@ -105,6 +79,10 @@ export const expectNote = ({ title, content, important }: NoteResponse) => {
   } else {
     expect(within(card).queryByRole("status")).not.toBeInTheDocument()
   }
+
+  expect(
+    within(card).getByRole("checkbox", { name: `Toggle ${title}` }),
+  ).toBeInTheDocument()
 }
 
 export const expectNotes = async (mockNotes: NoteResponse[]) => {
@@ -118,36 +96,64 @@ export const expectNotes = async (mockNotes: NoteResponse[]) => {
 
 export const expectNoteDeletionAlert = (title: string, content: string) => {
   const alert = screen.getByRole("alertdialog")
-  expect(alert).toBeInTheDocument()
 
   expect(
     within(alert).getByRole("heading", { name: title }),
   ).toBeInTheDocument()
-  expect(within(alert).getByRole("paragraph")).toHaveTextContent(content)
+
+  expect(alert).toHaveTextContent(content)
+
+  expect(
+    within(alert).getByRole("button", { name: "Delete" }),
+  ).toBeInTheDocument()
+
+  expect(
+    within(alert).getByRole("button", { name: "Cancel" }),
+  ).toBeInTheDocument()
 }
 
-export const expectMessage = (message: string) => {
-  const alert = screen.getByRole("alert")
-  expect(alert).toBeInTheDocument()
-
-  expect(within(alert).getByRole("paragraph")).toHaveTextContent(message)
+export const expectNoNoteDeletionAlert = () => {
+  expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
 }
 
-export const expectNoteForm = async (mockNote?: NoteResponse) => {
+export const expectMessage = async (message: string) => {
+  const alert = await screen.findByRole("alert")
+  expect(alert).toHaveTextContent(message)
+}
+
+export const expectNoteForm = async (mode: "creation" | "edition") => {
   const pageTitle = await screen.findByRole("heading", {
-    name: mockNote ? "Edit Note" : "New Note",
+    name: mode === "creation" ? "New Note" : "Edit Note",
   })
 
   expect(pageTitle).toBeInTheDocument()
 
   const form = screen.getByRole("form", {
-    name: mockNote ? "Edit Note" : "New Note",
+    name: mode === "creation" ? "New Note" : "Edit Note",
   })
 
   expect(form).toBeInTheDocument()
 
-  const titleField = within(form).getByLabelText("Title (required)")
-  expect(titleField).toBeRequired()
+  expect(within(form).getByLabelText("Title (required)")).toBeRequired()
+  expect(within(form).getByLabelText("Content")).toBeInTheDocument()
+  expect(within(form).getByLabelText("Important")).toBeInTheDocument()
+
+  expect(
+    within(form).getByRole("button", {
+      name: mode === "creation" ? "Create" : "Update",
+    }),
+  ).toBeInTheDocument()
+
+  expect(within(form).getByRole("link", { name: "Cancel" })).toHaveAttribute(
+    "href",
+    "/",
+  )
+
+  if (mode === "edition") {
+    expect(
+      within(form).getByRole("button", { name: "Delete" }),
+    ).toBeInTheDocument()
+  }
 }
 
 export const expectNoteFormDefaultValues = async (mockNote?: NoteResponse) => {
@@ -167,7 +173,7 @@ export const expectNoteFormDefaultValues = async (mockNote?: NoteResponse) => {
     
     Once it is, we should be able to use "toHaveFormValues" to assert the value of the "Important" form control as well.
   */
-  const importantCheckbox = within(form).getByLabelText("Important")
+  const importantCheckbox = screen.getByLabelText("Important")
 
   if (mockNote && mockNote.important) {
     expect(importantCheckbox).toBeChecked()
@@ -176,13 +182,12 @@ export const expectNoteFormDefaultValues = async (mockNote?: NoteResponse) => {
   }
 }
 
-export const expectNoteFormErrorMessage = (mockNote?: NoteResponse) => {
-  const titleField = within(
-    screen.getByRole("form", {
-      name: mockNote ? "Edit Note" : "New Note",
-    }),
-  ).getByLabelText("Title (required)")
-
+export const expectNoteFormErrorMessage = () => {
+  const titleField = screen.getByLabelText("Title (required)")
   expect(titleField).toBeInvalid()
   expect(titleField).toHaveAccessibleErrorMessage("Title is required.")
+}
+
+export const expectLocation = (pathname: string) => {
+  expect(window.location.pathname).toEqual(pathname)
 }

@@ -1,8 +1,8 @@
 import { FC, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
-import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import { Button } from "@headlessui/react"
+import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import { AppDispatch } from "../../store"
 import { useDeleteNotesMutation } from "../../api"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
@@ -102,12 +102,14 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
           </>
         )}
         {!selectedNotes.length && (
-          <Link
-            to="/note/create"
-            className="inline-flex size-10 items-center justify-center rounded-full bg-sky-700"
-            aria-label="Add"
-          >
-            <PlusIcon className="size-6 fill-white" />
+          <Link to="/note/create">
+            <Button
+              type="button"
+              className="inline-flex size-10 items-center justify-center rounded-full bg-sky-700"
+              aria-label="Add"
+            >
+              <PlusIcon className="size-6 fill-white" />
+            </Button>
           </Link>
         )}
       </div>

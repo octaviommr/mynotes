@@ -7,7 +7,8 @@ import {
   expectNotes,
   expectNoteDeletionAlert,
   expectMessage,
-  expectNoteForm,
+  expectNoNoteDeletionAlert,
+  expectLocation,
 } from "./utils"
 import { mockNoteList } from "../../../mocks/handlers"
 import { server } from "../../../mocks/node"
@@ -68,10 +69,10 @@ const toggleNoteSelection = async (
   user: UserEvent,
   { title }: NoteResponse,
 ) => {
-  const card = await screen.findByRole("link", { name: `Edit ${title}` })
-  await user.click(
-    within(card).getByRole("checkbox", { name: `Toggle ${title}` }),
-  )
+  const cardCheckbox = await screen.findByRole("checkbox", {
+    name: `Toggle ${title}`,
+  })
+  await user.click(cardCheckbox)
 }
 
 const clearNoteSelection = async (user: UserEvent) => {
@@ -93,38 +94,48 @@ const addNote = async (user: UserEvent, isEmptyState = false) => {
     const addLink = await screen.findByRole("link", { name: "Add One" })
     await user.click(addLink)
   } else {
-    const toolbar = await screen.findByRole("toolbar")
-    await user.click(within(toolbar).getByRole("link", { name: "Add" }))
+    const addButton = await screen.findByRole("button", { name: "Add" })
+    await user.click(addButton)
   }
 }
 
-const editNote = async (user: UserEvent, { title }: NoteResponse) => {
-  const card = await screen.findByRole("link", {
-    name: `Edit ${title}`,
-  })
-  await user.click(card)
+// assertions
+const expectToolbar = async () => {
+  const toolbar = await screen.findByRole("toolbar")
+  expect(toolbar).toBeInTheDocument()
 }
 
-// assertions
+const expectToolbarAddButton = async () => {
+  const toolbar = await screen.findByRole("toolbar")
+
+  expect(
+    within(toolbar).getByRole("button", { name: "Add" }),
+  ).toBeInTheDocument()
+}
+
 const expectNoteSelection = async (
   { title }: NoteResponse,
   isSelected: boolean,
 ) => {
-  const card = await screen.findByRole("link", { name: `Edit ${title}` })
-  const checkbox = within(card).getByRole("checkbox", {
+  const cardCheckbox = await screen.findByRole("checkbox", {
     name: `Toggle ${title}`,
   })
 
   if (isSelected) {
-    expect(checkbox).toBeChecked()
+    expect(cardCheckbox).toBeChecked()
   } else {
-    expect(checkbox).not.toBeChecked()
+    expect(cardCheckbox).not.toBeChecked()
   }
 }
 
 const expectEmptyState = async () => {
   const message = await screen.findByText("No notes yet.")
   expect(message).toBeInTheDocument()
+
+  expect(screen.getByRole("link", { name: "Add One" })).toHaveAttribute(
+    "href",
+    "/note/create",
+  )
 }
 
 const expectSelectedNotesCount = (count: number) => {
@@ -134,189 +145,251 @@ const expectSelectedNotesCount = (count: number) => {
 }
 
 // tests
-describe("lists existing notes", () => {
-  test("displays cards for all existing notes", async () => {
-    // arrange
-    render()
+describe("NoteBoard component", () => {
+  describe("when navigating to the note board page", () => {
+    describe("when there are notes", () => {
+      it("displays cards for all existing notes", async () => {
+        // arrange
+        render()
 
-    // assert
-    await expectNotes(mockNoteList)
+        // assert
+        await expectNotes(mockNoteList)
+      })
+
+      it("displays all notes as unselected", async () => {
+        // arrange
+        render()
+
+        // assert
+        for (let i = 0; i < mockNoteList.length; i++) {
+          await expectNoteSelection(mockNoteList[i], false)
+        }
+      })
+
+      it("displays the toolbar with an 'Add' button", async () => {
+        // arrange
+        render()
+
+        // assert
+        await expectToolbar()
+        await expectToolbarAddButton()
+      })
+    })
+
+    describe("when there are no notes", () => {
+      it("displays the empty state", async () => {
+        // mock
+        mockEmptyNoteList()
+
+        // arrange
+        render()
+
+        // assert
+        await expectEmptyState()
+      })
+    })
   })
 
-  test("displays empty state when there are no notes", async () => {
-    // mock
-    mockEmptyNoteList()
+  describe("when selecting and unselecting notes", () => {
+    it("displays how many notes are selected in the toolbar", async () => {
+      const user = userEvent.setup()
 
-    // arrange
-    render()
+      // arrange
+      render()
 
-    // assert
-    await expectEmptyState()
-  })
-})
+      // act
+      await toggleNoteSelection(user, mockNoteList[0])
 
-describe("provides selection features", () => {
-  test("initially, all notes are unselected", async () => {
-    // arrange
-    render()
+      // assert
+      expectSelectedNotesCount(1)
 
-    // assert
-    await expectNoteSelection(mockNoteList[0], false)
-    await expectNoteSelection(mockNoteList[1], false)
-  })
+      // act
+      await toggleNoteSelection(user, mockNoteList[1])
 
-  test("displays the correct selected notes count as the user selects and unselects notes", async () => {
-    const user = userEvent.setup()
+      // assert
+      expectSelectedNotesCount(2)
 
-    // arrange
-    render()
+      // act
+      await toggleNoteSelection(user, mockNoteList[1])
 
-    // act
-    await toggleNoteSelection(user, mockNoteList[0])
-
-    // assert
-    expectSelectedNotesCount(1)
-
-    // act
-    await toggleNoteSelection(user, mockNoteList[1])
-
-    // assert
-    expectSelectedNotesCount(2)
-
-    // act
-    await toggleNoteSelection(user, mockNoteList[1])
-
-    // assert
-    expectSelectedNotesCount(1)
+      // assert
+      expectSelectedNotesCount(1)
+    })
   })
 
-  test("clears note selection when the user clicks the 'X' mark button in the selection toolbar", async () => {
-    const user = userEvent.setup()
+  describe("when clearing note selection", () => {
+    it("resets selection of all notes", async () => {
+      const user = userEvent.setup()
 
-    // arrange
-    render()
+      // arrange
+      render()
 
-    // act
-    await toggleNoteSelection(user, mockNoteList[0])
-    await toggleNoteSelection(user, mockNoteList[1])
-    await clearNoteSelection(user)
+      // act
+      await toggleNoteSelection(user, mockNoteList[0])
+      await toggleNoteSelection(user, mockNoteList[1])
+      await clearNoteSelection(user)
 
-    // assert
-    await expectNoteSelection(mockNoteList[0], false)
-    await expectNoteSelection(mockNoteList[1], false)
-  })
-})
+      // assert
+      await expectNoteSelection(mockNoteList[0], false)
+      await expectNoteSelection(mockNoteList[1], false)
+    })
 
-describe("deletes selected notes", () => {
-  test("displays an alert when the user tries to delete a selected note", async () => {
-    const user = userEvent.setup()
+    it("resets the toolbar to the default layout, displaying a button to add new notes", async () => {
+      const user = userEvent.setup()
 
-    // arrange
-    render()
+      // arrange
+      render()
 
-    // act
-    await toggleNoteSelection(user, mockNoteList[0])
-    await deleteSelectedNotes(user)
+      // act
+      await toggleNoteSelection(user, mockNoteList[0])
+      await toggleNoteSelection(user, mockNoteList[1])
+      await clearNoteSelection(user)
 
-    // assert
-    expectNoteDeletionAlert(
-      "Delete notes",
-      "Are you sure you want to delete the selected notes?",
-    )
+      // assert
+      await expectToolbarAddButton()
+    })
   })
 
-  test("updates the list and displays a success message when the user confirms the operation", async () => {
-    const user = userEvent.setup()
+  describe("when deleting selected notes", () => {
+    it("displays a confirmation alert", async () => {
+      const user = userEvent.setup()
 
-    // arrange
-    render()
+      // arrange
+      render()
 
-    // act
-    await toggleNoteSelection(user, mockNoteList[0])
+      // act
+      await toggleNoteSelection(user, mockNoteList[0])
+      await deleteSelectedNotes(user)
 
-    // mock
-    mockNoteDeletion()
+      // assert
+      expectNoteDeletionAlert(
+        "Delete notes",
+        "Are you sure you want to delete the selected notes?",
+      )
+    })
 
-    // act
-    await deleteSelectedNotes(user)
-    await confirmNoteDeletion(user)
+    describe("when the user confirms the deletion of the selected notes", () => {
+      it("removes the deleted notes from the list", async () => {
+        const user = userEvent.setup()
 
-    // assert
-    await expectNotes([mockNoteList[1]])
-    /*
-      NOTE: it's ok to expect the updated list right after the confirmation action because, although deleting a note
-      involves some API calls, the promise returned by user events includes an extra delay to allow asynchronous updates
-      to happen (which will be enough since all our API calls are mocked)
-    */
+        // arrange
+        render()
 
-    expectMessage("Notes deleted successfully!")
+        // act
+        await toggleNoteSelection(user, mockNoteList[0])
+
+        // mock
+        mockNoteDeletion()
+
+        // act
+        await deleteSelectedNotes(user)
+        await confirmNoteDeletion(user)
+
+        // assert
+        await expectNotes([mockNoteList[1]])
+      })
+
+      it("displays a note deletion success message", async () => {
+        const user = userEvent.setup()
+
+        // arrange
+        render()
+
+        // act
+        await toggleNoteSelection(user, mockNoteList[0])
+
+        // mock
+        mockNoteDeletion()
+
+        // act
+        await deleteSelectedNotes(user)
+        await confirmNoteDeletion(user)
+
+        // assert
+        await expectMessage("Notes deleted successfully!")
+      })
+    })
+
+    describe("when the user cancels the deletion of the selected notes", () => {
+      it("closes the confirmation alert", async () => {
+        const user = userEvent.setup()
+
+        // arrange
+        render()
+
+        // act
+        await toggleNoteSelection(user, mockNoteList[0])
+
+        // mock
+        mockNoteDeletion()
+
+        // act
+        await deleteSelectedNotes(user)
+        await cancelNoteDeletion(user)
+
+        // assert
+        expectNoNoteDeletionAlert()
+      })
+
+      it("displays the same notes", async () => {
+        const user = userEvent.setup()
+
+        // arrange
+        render()
+
+        // act
+        await toggleNoteSelection(user, mockNoteList[0])
+
+        // mock
+        mockNoteDeletion()
+
+        // act
+        await deleteSelectedNotes(user)
+        await cancelNoteDeletion(user)
+
+        // assert
+        await expectNotes(mockNoteList)
+      })
+
+      it("keeps note selection", async () => {
+        const user = userEvent.setup()
+
+        // arrange
+        render()
+
+        // act
+        await toggleNoteSelection(user, mockNoteList[0])
+
+        // mock
+        mockNoteDeletion()
+
+        // act
+        await deleteSelectedNotes(user)
+        await cancelNoteDeletion(user)
+
+        // assert
+        await expectNoteSelection(mockNoteList[0], true)
+        await expectNoteSelection(mockNoteList[1], false)
+      })
+    })
   })
 
-  test("doesn't change the list nor note selection if the user cancels the operation", async () => {
-    const user = userEvent.setup()
+  describe("when adding new notes", () => {
+    describe("when there are notes", () => {
+      describe("when clicking the 'Add' button in the toolbar", () => {
+        it("navigates to the note creation page", async () => {
+          const user = userEvent.setup()
 
-    // arrange
-    render()
+          // arrange
+          render()
 
-    // act
-    await toggleNoteSelection(user, mockNoteList[0])
+          // act
+          await addNote(user)
 
-    // mock
-    mockNoteDeletion()
-
-    // act
-    await deleteSelectedNotes(user)
-    await cancelNoteDeletion(user)
-
-    // assert
-    await expectNotes(mockNoteList)
-    await expectNoteSelection(mockNoteList[0], true)
-    await expectNoteSelection(mockNoteList[1], false)
-  })
-})
-
-describe("allows note creation", () => {
-  test("navigates to the note creation page when the user clicks the plus button in the default toolbar", async () => {
-    const user = userEvent.setup()
-
-    // arrange
-    render()
-
-    // act
-    await addNote(user)
-
-    // assert
-    await expectNoteForm()
-  })
-
-  test("navigates to the note creation page when the user clicks the 'Add One' link in the empty state", async () => {
-    const user = userEvent.setup()
-
-    // mock
-    mockEmptyNoteList()
-
-    // arrange
-    render()
-
-    // act
-    await addNote(user, true)
-
-    // assert
-    await expectNoteForm()
-  })
-})
-
-describe("allows note edition", () => {
-  test("navigates to the note edition page when the user clicks a note card", async () => {
-    const user = userEvent.setup()
-
-    // arrange
-    render()
-
-    // act
-    await editNote(user, mockNoteList[0])
-
-    // assert
-    await expectNoteForm(mockNoteList[0])
+          // assert
+          expectLocation("/note/create")
+        })
+      })
+    })
   })
 })
