@@ -16,7 +16,7 @@ export const EMAIL_REGEX =
 
 type SignUpFormData = UserSignUp & { confirmationPassword: string }
 
-const Signup: FC = () => {
+const SignUp: FC = () => {
   const [canRender, setCanRender] = useState(false)
 
   const { isLoggedIn } = useSelector((state: RootState) => state.auth)
@@ -54,7 +54,7 @@ const Signup: FC = () => {
   // handle mutation results
   useEffect(() => {
     if (isSuccess) {
-      // redirect to the login screen so the user can log in
+      // redirect to the log in screen so the user can log in
       navigate("/login")
 
       // show a success message
@@ -146,4 +146,4 @@ const Signup: FC = () => {
   )
 }
 
-export default Signup
+export default SignUp

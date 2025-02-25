@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Layout from "./components/Layout"
 import NotFound from "./components/NotFound"
-import Login from "./features/auth/Login"
-import Signup from "./features/auth/Signup"
+import LogIn from "./features/auth/LogIn_temp"
+import SignUp from "./features/auth/SignUp_temp"
 import ErrorBoundary from "./components/ErrorBoundary"
 import AuthGuard from "./features/auth/AuthGuard"
 import NoteBoard from "./features/notes/NoteBoard"
@@ -40,8 +40,8 @@ function App() {
               }
             />
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<LogIn />} />
+            <Route path="/signup" element={<SignUp />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

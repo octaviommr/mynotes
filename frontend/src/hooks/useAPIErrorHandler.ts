@@ -29,7 +29,7 @@ export const useAPIErrorHandler = () => {
           // session has expired or is invalid so let's also log the user out
           dispatch(logOut())
 
-          // and redirect to the login screen
+          // and redirect to the log in screen
           navigate("/login")
         }
 

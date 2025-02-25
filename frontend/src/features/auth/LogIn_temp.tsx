@@ -7,13 +7,13 @@ import { RootState, AppDispatch } from "../../store"
 import { useLogInMutation, UserCredentials } from "../../api"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
 import { logIn as runLogInThunk } from "./authSlice"
-import { EMAIL_REGEX } from "./Signup"
+import { EMAIL_REGEX } from "./SignUp_temp"
 import TextField from "../../components/form/TextField"
 import PasswordField from "../../components/form/PasswordField"
 
 type LogInFormData = UserCredentials
 
-const Login: FC = () => {
+const LogIn: FC = () => {
   const [canRender, setCanRender] = useState(false)
 
   const authState = useSelector((state: RootState) => state.auth)
@@ -123,4 +123,4 @@ const Login: FC = () => {
   )
 }
 
-export default Login
+export default LogIn

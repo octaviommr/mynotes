@@ -15,7 +15,7 @@ const UserMenu: FC = () => {
   const logOut = () => {
     dispatch(runLogOutThunk())
 
-    // redirect to login screen
+    // redirect to log in screen
     navigate("/login")
   }
 
