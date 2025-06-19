@@ -1,16 +1,14 @@
 import { FC } from "react"
+import FormContainer from "../../components/form/FormContainer"
+import PageTitle from "../../components/PageTitle"
 import NoteForm from "./NoteForm"
 
 const NewNote: FC = () => {
   return (
-    <div className="flex h-full flex-col justify-center gap-10">
-      <h2 id="page-title" className="text-center text-2xl font-bold">
-        New Note
-      </h2>
-      <div className="mx-auto w-full max-w-sm">
-        <NoteForm />
-      </div>
-    </div>
+    <FormContainer>
+      <PageTitle id="page-title">New Note</PageTitle>
+      <NoteForm />
+    </FormContainer>
   )
 }
 

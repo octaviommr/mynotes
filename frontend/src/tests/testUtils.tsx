@@ -1,9 +1,12 @@
 import { FC, ReactNode } from "react"
 import { Provider } from "react-redux"
+import { BrowserRouter } from "react-router-dom"
+import { ThemeProvider } from "styled-components"
 import { render, RenderOptions } from "@testing-library/react"
-import { createStore } from "./store"
-import { Session, SESSION_CACHE_KEY } from "./features/auth/authSlice"
-import App from "./App"
+import { createStore } from "../store/store"
+import App from "../App"
+import theme from "../theme"
+import { Session, SESSION_CACHE_KEY } from "../store/authSlice"
 
 interface AllTheProvidersProps {
   children: ReactNode
@@ -21,7 +24,13 @@ const AllTheProviders: FC<AllTheProvidersProps> = ({ children }) => {
   // create a new store to make sure we always start each test with a clean state
   const store = createStore()
 
-  return <Provider store={store}>{children}</Provider>
+  return (
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>{children}</BrowserRouter>
+      </ThemeProvider>
+    </Provider>
+  )
 }
 
 const customRender = (

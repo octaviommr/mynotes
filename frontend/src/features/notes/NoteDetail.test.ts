@@ -1,6 +1,6 @@
 import userEvent, { UserEvent } from "@testing-library/user-event"
 import { http, HttpResponse } from "msw"
-import { render, screen } from "../../../testUtils"
+import { render, screen } from "../../tests/testUtils"
 import {
   confirmNoteDeletion,
   cancelNoteDeletion,
@@ -13,12 +13,13 @@ import {
   expectNotes,
   expectNoteDeletionAlert,
   expectMessage,
+  expectNoteFormErrorMessage,
   expectNoNoteDeletionAlert,
   expectLocation,
-} from "./utils"
-import { mockNoteList } from "../../../mocks/handlers"
-import { server } from "../../../mocks/node"
-import { BASE_URL, NoteResponse, Note } from "../../../api"
+} from "./noteTestUtils"
+import { mockNoteList } from "../../tests/mocks/handlers"
+import { server } from "../../tests/mocks/node"
+import { BASE_URL, NoteResponse, Note } from "../../api/api"
 
 // mocks
 const mockUpdatedNote: NoteResponse = {
@@ -166,6 +167,22 @@ describe("NoteDetail component", () => {
         await expectMessage("Note updated successfully!")
       })
     })
+
+    describe("when the form is not valid", () => {
+      it("displays an error message when the required title field is empty", async () => {
+        const user = userEvent.setup()
+
+        // arrange
+        render(`/note/${mockNoteList[0]._id}`)
+
+        // act
+        await fillInTitleField(user, "")
+        await submitForm(user, "edition")
+
+        // assert
+        expectNoteFormErrorMessage()
+      })
+    })
   })
 
   describe("when deleting a note", () => {
@@ -180,7 +197,7 @@ describe("NoteDetail component", () => {
 
       // assert
       expectNoteDeletionAlert(
-        "Delete note",
+        "Delete Note",
         "Are you sure you want to delete the note?",
       )
     })

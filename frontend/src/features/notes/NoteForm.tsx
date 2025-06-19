@@ -1,21 +1,23 @@
 import { FC, useEffect } from "react"
 import { useDispatch } from "react-redux"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useForm, Controller, SubmitHandler } from "react-hook-form"
-import { Button } from "@headlessui/react"
-import { AppDispatch } from "../../store"
+import styled from "styled-components"
+import type { AppDispatch } from "../../store/store"
 import {
   Note,
   useAddNoteMutation,
   useUpdateNoteMutation,
   useDeleteNoteMutation,
-} from "../../api"
+} from "../../api/api"
 import TextField from "../../components/form/TextField"
 import TextareaField from "../../components/form/TextareaField"
 import CheckboxField from "../../components/form/CheckboxField"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
-import { showModal } from "../modals/modalSlice"
-import { showMessage } from "../messages/messageSlice"
+import { showModal } from "../../store/modalSlice"
+import { showMessage } from "../../store/messageSlice"
+import Button from "../../components/Button"
+import Link from "../../components/Link"
 
 interface NoteFormProps {
   note?: Note
@@ -25,6 +27,17 @@ type NoteFormData = Pick<Note, "title"> & {
   content: string
   important: boolean
 } // this shape describes the form, which always has the "content" and "important" fields
+
+// styles
+const FormActionsContainer = styled.section`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+
+  > span {
+    flex: 1;
+  }
+`
 
 const NoteForm: FC<NoteFormProps> = ({ note }) => {
   const {
@@ -98,7 +111,7 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
     const result = await dispatch(
       showModal({
         type: "alert",
-        title: "Delete note",
+        title: "Delete Note",
         content: "Are you sure you want to delete the note?",
         okLabel: "Delete",
         cancelLabel: "Cancel",
@@ -112,7 +125,7 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} aria-labelledby="page-title">
-      <div className="flex flex-col gap-6">
+      <section>
         <TextField
           {...register("title", {
             required: "Title is required.",
@@ -122,6 +135,7 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
           required
         />
         <TextareaField {...register("content")} label="Content" rows={5} />
+
         <Controller
           name="important"
           control={control}
@@ -136,33 +150,26 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
         />
         {/*
           NOTE: Checkbox fields are used as controlled components because Headless UI's "Checkbox" component doesn't expose
-          a native "onChange" handler (it can be used as uncontrolled, but this only means the component will track the
-          state internally)
+          a native "onChange" handler (it can be used as uncontrolled, but this only means the component will track the state
+          internally)
         */}
-      </div>
-      <div className="mt-6 flex items-center gap-4">
+      </section>
+      <FormActionsContainer>
         {note && (
           <Button
-            type="button"
-            className="rounded-md bg-red-700 px-3 py-1.5 text-sm/6 font-semibold text-white data-[disabled]:opacity-50"
             onClick={() => deleteNote()}
             disabled={isSubmitting}
+            $variant="error"
           >
             Delete
           </Button>
         )}
-        <span className="flex-1"></span>
-        <Link to="/" className="text-sm/6 font-medium">
-          Cancel
-        </Link>
-        <Button
-          type="submit"
-          className="rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white data-[disabled]:opacity-50"
-          disabled={isSubmitting}
-        >
+        <span></span>
+        <Link to="/">Cancel</Link>
+        <Button type="submit" disabled={isSubmitting}>
           {note ? "Update" : "Create"}
         </Button>
-      </div>
+      </FormActionsContainer>
     </form>
   )
 }

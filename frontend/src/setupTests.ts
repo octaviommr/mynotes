@@ -4,7 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom/extend-expect"
 import "./jsdomPolyfills"
-import { server } from "./mocks/node"
+import { server } from "./tests/mocks/node"
 
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())

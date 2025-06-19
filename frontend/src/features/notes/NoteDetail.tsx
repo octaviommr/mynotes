@@ -1,7 +1,9 @@
 import { FC, useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { useGetNoteQuery } from "../../api"
+import { useGetNoteQuery } from "../../api/api"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
+import FormContainer from "../../components/form/FormContainer"
+import PageTitle from "../../components/PageTitle"
 import NoteForm from "./NoteForm"
 
 const NoteDetail: FC = () => {
@@ -13,9 +15,10 @@ const NoteDetail: FC = () => {
 
   /*
     Set up the query to get the note data, making sure it doesn't automatically refetch (after mount) as a consequence of
-    the note being updated or deleted. This configuration avoids unnecessary API calls (since we'll redirect back to the
-    homepage anyway) and prevents us from getting a 404 error when a note is deleted (since we'd be trying to get a note
-    that no longer exists).
+    the note being updated or deleted.
+    
+    This configuration avoids unnecessary API calls (since we'll redirect back to the homepage anyway) and prevents us from
+    getting a 404 error when a note is deleted (since we'd be trying to get a note that no longer exists).
   */
   const { data: note, error } = useGetNoteQuery(id!, {
     skip: skipQuery,
@@ -34,8 +37,10 @@ const NoteDetail: FC = () => {
 
       /*
         Narrow the type of the error to check if it's specifically a "FetchBaseQueryError", which represents an error 
-        response returned from the API. In this particular case, redirect back to the homepage if the note doesn't exist
-        or the user doesn't have access to it.
+        response returned from the API.
+        
+        In this particular case, redirect back to the homepage if the note doesn't exist or the user doesn't have access to
+        it.
       */
       if (
         "status" in error &&
@@ -53,14 +58,10 @@ const NoteDetail: FC = () => {
   }
 
   return (
-    <div className="flex h-full flex-col justify-center gap-10">
-      <h2 id="page-title" className="text-center text-2xl font-bold">
-        Edit Note
-      </h2>
-      <div className="mx-auto w-full max-w-sm">
-        <NoteForm note={note} />
-      </div>
-    </div>
+    <FormContainer>
+      <PageTitle id="page-title">Edit Note</PageTitle>
+      <NoteForm note={note} />
+    </FormContainer>
   )
 }
 

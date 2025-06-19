@@ -1,7 +1,7 @@
 import { FC, ReactNode, useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import { useLocation, useNavigate } from "react-router-dom"
-import { RootState } from "../../store"
+import type { RootState } from "../../store/store"
 
 interface AuthGuardProps {
   children: ReactNode

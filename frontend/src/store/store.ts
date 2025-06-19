@@ -1,10 +1,10 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit"
-import { api } from "./api"
-import authReducer, { preloadAuthState } from "./features/auth/authSlice"
-import messageReducer from "./features/messages/messageSlice"
-import modalReducer from "./features/modals/modalSlice"
+import { api } from "../api/api"
+import authReducer, { preloadAuthState } from "./authSlice"
+import messageReducer from "./messageSlice"
+import modalReducer from "./modalSlice"
 
-// set up a function to create the store so that it's easier to do so in tests
+// set up a function to create the store so that it can also be used in tests
 export const createStore = () =>
   configureStore({
     reducer: {

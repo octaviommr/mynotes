@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import type { RootState } from "./store"
-import { Session } from "./features/auth/authSlice"
+import type { RootState } from "../store/store"
+import { Session } from "../store/authSlice"
 
 export const BASE_URL = process.env.REACT_APP_API_URL
 
@@ -10,9 +10,9 @@ export const BASE_URL = process.env.REACT_APP_API_URL
   This highlights the importance of NOT cloning back-end data models in the front-end. 
 
   Front-end models are usually different from back-end ones because they have different concerns. A front-end model
-  might include only some of props of the back-end model, since the rest might not be needed in the front-end. On the other
-  hand, a front-end model might contain some props that don't exist in the back-end model due to only being relevant for
-  UI logic.
+  might include only some of the props of the back-end model, since the rest might not be needed in the front-end. On the
+  other hand, a front-end model might contain some props that don't exist in the back-end model, due to only being relevant
+  for UI logic.
 
   We should only pick the props we care about for the front-end, and then use those to build the actual front-end objects.
   Just as an example, here we're ignoring the "userId" prop of the note objects that we get from the back-end (since a user

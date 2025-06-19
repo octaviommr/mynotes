@@ -1,59 +1,108 @@
+import { forwardRef, useState } from "react"
+import styled from "styled-components"
 import {
-  forwardRef,
-  DetailedHTMLProps,
-  InputHTMLAttributes,
-  useState,
-} from "react"
-import { Input, Field, Label, Button } from "@headlessui/react"
+  Input,
+  Field,
+  Button,
+  type InputProps,
+  type ButtonProps,
+} from "@headlessui/react"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid"
+import Label from "./Label"
+import ErrorMessage from "./ErrorMessage"
 
-type PasswordFieldProps = Pick<
-  DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
-  "name" | "onChange" | "onBlur" | "required" | "disabled"
-> & { label: string; error?: string }
+type PasswordFieldProps = Omit<
+  InputProps,
+  "type" | "invalid" | "aria-invalid" | "aria-required" | "aria-errormessage"
+> & {
+  label: string
+  error?: string
+}
+
+// styles
+const StyledInput = styled(
+  forwardRef<HTMLInputElement, InputProps>((props, ref) => (
+    <Input ref={ref} {...props} />
+  )),
+)`
+  display: block;
+  width: 100%;
+  border-radius: ${({ theme }) => theme.borderRadiuses.lg};
+  border: 1px solid ${({ theme, invalid }) => invalid && theme.colors.error};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
+  padding-right: ${({ theme }) => theme.spacing[10]};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+
+  &[data-disabled] {
+    opacity: ${({ theme }) => theme.opacities.disabled};
+  }
+`
+
+const StyledButton = styled((props: ButtonProps) => <Button {...props} />)`
+  ${({ theme, disabled }) =>
+    disabled && `opacity: ${theme.opacities.disabled};`}
+`
+/* 
+  NOTE: In the case of the above Headless UI components, simply passing the component into "styled()", thus letting
+  styled-components figure out the type of the component props, won't yield the correct type.
+  
+  We need to use the type supplied by Headless UI for the component props by explicitly defining the components to be
+  rendered. And because we need to pass a ref to the "Input" component, we need to use "forwardRef" as well in that case.
+*/
+
+const InputContainer = styled.div`
+  position: relative;
+  margin-top: ${({ theme }) => theme.spacing[1]};
+
+  > div {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    padding-right: ${({ theme }) => theme.spacing[2]};
+  }
+`
+
+const PasswordVisibilityIcon = styled.svg`
+  ${({ theme }) => `
+    width: ${theme.sizes[6]};
+    height: ${theme.sizes[6]};
+  `};
+`
 
 const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
-  ({ label, error, required, disabled, ...props }, ref) => {
+  ({ disabled, required, label, error, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false)
 
     return (
-      <Field className="group" disabled={disabled}>
-        <Label className="text-sm/6 font-medium data-[disabled]:opacity-50">
-          {`${label}${required ? " (required)" : ""}`}
-        </Label>
-        <div className="relative mt-1">
-          <Input
+      <Field disabled={disabled}>
+        <Label>{`${label}${required ? " (required)" : ""}`}</Label>
+        <InputContainer>
+          <StyledInput
             ref={ref}
-            {...props}
             type={showPassword ? "text" : "password"}
             invalid={!!error}
-            className="block w-full rounded-lg border border-gray-300 px-3 py-1.5 pr-10 text-sm/6 data-[invalid]:border-red-700 data-[disabled]:border-opacity-50 data-[disabled]:bg-gray-100"
             aria-required={required}
             aria-errormessage={`${props.name}-error-message`}
+            {...props}
           />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2">
-            <Button
-              type="button"
-              className="data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+          <div>
+            <StyledButton
               onClick={() => setShowPassword((previousValue) => !previousValue)}
-              disabled={disabled || false}
+              disabled={disabled}
             >
-              {showPassword ? (
-                <EyeSlashIcon className="size-6" />
-              ) : (
-                <EyeIcon className="size-6" />
-              )}
-            </Button>
+              <PasswordVisibilityIcon
+                as={showPassword ? EyeSlashIcon : EyeIcon}
+              />
+            </StyledButton>
           </div>
-        </div>
+        </InputContainer>
         {error && (
-          <p
-            id={`${props.name}-error-message`}
-            className="text-sm/6 text-red-700"
-            role="alert"
-          >
+          <ErrorMessage id={`${props.name}-error-message`}>
             {error}
-          </p>
+          </ErrorMessage>
         )}
       </Field>
     )

@@ -1,6 +1,6 @@
 import userEvent from "@testing-library/user-event"
 import { http, HttpResponse } from "msw"
-import { render } from "../../../testUtils"
+import { render } from "../../tests/testUtils"
 import {
   fillInTitleField,
   fillInContentField,
@@ -11,10 +11,10 @@ import {
   expectNotes,
   expectMessage,
   expectNoteFormErrorMessage,
-} from "./utils"
-import { mockNoteList } from "../../../mocks/handlers"
-import { server } from "../../../mocks/node"
-import { BASE_URL, NoteResponse, Note } from "../../../api"
+} from "./noteTestUtils"
+import { mockNoteList } from "../../tests/mocks/handlers"
+import { server } from "../../tests/mocks/node"
+import { BASE_URL, NoteResponse, Note } from "../../api/api"
 
 // mocks
 const mockNewNote: NoteResponse = {

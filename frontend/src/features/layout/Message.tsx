@@ -1,10 +1,19 @@
 import { FC, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { RootState, AppDispatch } from "../../store"
-import { closeMessage } from "./messageSlice"
+import styled from "styled-components"
+import type { RootState, AppDispatch } from "../../store/store"
+import { closeMessage } from "../../store/messageSlice"
 import Alert from "./Alert"
 
-const Messenger: FC = () => {
+// styles
+const MessageContainer = styled.div`
+  position: fixed;
+  bottom: ${({ theme }) => theme.spacing[8]};
+  left: ${({ theme }) => theme.spacing[8]};
+  width: 100%;
+`
+
+const Message: FC = () => {
   const messageState = useSelector((state: RootState) => state.message)
 
   const dispatch = useDispatch<AppDispatch>()
@@ -18,15 +27,15 @@ const Messenger: FC = () => {
   }, [messageState.open])
 
   return (
-    <div className="fixed bottom-8 left-8 w-full">
+    <MessageContainer>
       {messageState.open && (
         <Alert
           severity={messageState.message.severity}
           message={messageState.message.content}
         />
       )}
-    </div>
+    </MessageContainer>
   )
 }
 
-export default Messenger
+export default Message

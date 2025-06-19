@@ -1,6 +1,6 @@
 import userEvent, { UserEvent } from "@testing-library/user-event"
 import { http, HttpResponse } from "msw"
-import { render, screen, within } from "../../../testUtils"
+import { render, screen, within } from "../../tests/testUtils"
 import {
   confirmNoteDeletion,
   cancelNoteDeletion,
@@ -9,10 +9,10 @@ import {
   expectMessage,
   expectNoNoteDeletionAlert,
   expectLocation,
-} from "./utils"
-import { mockNoteList } from "../../../mocks/handlers"
-import { server } from "../../../mocks/node"
-import { BASE_URL, NoteResponse } from "../../../api"
+} from "./noteTestUtils"
+import { mockNoteList } from "../../tests/mocks/handlers"
+import { server } from "../../tests/mocks/node"
+import { BASE_URL, NoteResponse } from "../../api/api"
 
 // mocks
 const mockEmptyNoteList = () => {
@@ -90,13 +90,11 @@ const deleteSelectedNotes = async (user: UserEvent) => {
 }
 
 const addNote = async (user: UserEvent, isEmptyState = false) => {
-  if (isEmptyState) {
-    const addLink = await screen.findByRole("link", { name: "Add One" })
-    await user.click(addLink)
-  } else {
-    const addButton = await screen.findByRole("button", { name: "Add" })
-    await user.click(addButton)
-  }
+  const addLink = await screen.findByRole("link", {
+    name: `Add${isEmptyState ? " One" : ""}`,
+  })
+
+  await user.click(addLink)
 }
 
 // assertions
@@ -108,9 +106,7 @@ const expectToolbar = async () => {
 const expectToolbarAddButton = async () => {
   const toolbar = await screen.findByRole("toolbar")
 
-  expect(
-    within(toolbar).getByRole("button", { name: "Add" }),
-  ).toBeInTheDocument()
+  expect(within(toolbar).getByRole("link", { name: "Add" })).toBeInTheDocument()
 }
 
 const expectNoteSelection = async (
@@ -263,7 +259,7 @@ describe("NoteBoard component", () => {
 
       // assert
       expectNoteDeletionAlert(
-        "Delete notes",
+        "Delete Notes",
         "Are you sure you want to delete the selected notes?",
       )
     })

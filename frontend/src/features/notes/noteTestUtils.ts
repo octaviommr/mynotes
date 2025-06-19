@@ -1,8 +1,6 @@
 import { UserEvent } from "@testing-library/user-event"
-import { screen, within } from "../../../testUtils"
-import { NoteResponse } from "../../../api"
-
-const CARD_NAME_REGEX = /^Edit\s+.*$/
+import { screen, within } from "../../tests/testUtils"
+import { NoteResponse } from "../../api/api"
 
 // actions
 export const confirmNoteDeletion = async (user: UserEvent) => {
@@ -59,16 +57,15 @@ export const submitForm = async (
 }
 
 // assertions
-export const expectNote = ({
-  _id,
-  title,
-  content,
-  important,
-}: NoteResponse) => {
-  const card = screen.getByRole("link", { name: `Edit ${title}` })
-  expect(card).toHaveAttribute("href", `/note/${_id}`)
-
+export const expectNote = (
+  card: HTMLElement,
+  { _id, title, content, important }: NoteResponse,
+) => {
   expect(within(card).getByRole("heading", { name: title })).toBeInTheDocument()
+
+  expect(
+    within(card).getByRole("checkbox", { name: `Toggle ${title}` }),
+  ).toBeInTheDocument()
 
   if (content) {
     expect(card).toHaveTextContent(content)
@@ -81,16 +78,16 @@ export const expectNote = ({
   }
 
   expect(
-    within(card).getByRole("checkbox", { name: `Toggle ${title}` }),
-  ).toBeInTheDocument()
+    within(card).getByRole("link", { name: `Edit ${title}` }),
+  ).toHaveAttribute("href", `/note/${_id}`)
 }
 
 export const expectNotes = async (mockNotes: NoteResponse[]) => {
-  const cards = await screen.findAllByRole("link", { name: CARD_NAME_REGEX })
+  const cards = await screen.findAllByRole("listitem")
   expect(cards).toHaveLength(mockNotes.length)
 
   for (let i = 0; i < mockNotes.length; i++) {
-    expectNote(mockNotes[i])
+    expectNote(cards[i], mockNotes[i])
   }
 }
 

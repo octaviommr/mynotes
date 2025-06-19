@@ -1,8 +1,9 @@
 import { FC } from "react"
-import { Link } from "react-router-dom"
-import { Checkbox } from "@headlessui/react"
-import { CheckIcon } from "@heroicons/react/16/solid"
-import { Note } from "../../api"
+import styled from "styled-components"
+import { PencilSquareIcon } from "@heroicons/react/16/solid"
+import { Note } from "../../api/api"
+import Checkbox from "../../components/Checkbox"
+import Link from "../../components/Link"
 
 interface NoteBoardItemProps {
   note: Note
@@ -10,45 +11,96 @@ interface NoteBoardItemProps {
   onToggle: (selected: boolean) => void
 }
 
+// styles
+const NoteCard = styled.li<{ $important?: boolean; $selected?: boolean }>`
+  display: flex;
+  height: ${({ theme }) => theme.sizes[72]};
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+  border-radius: ${({ theme }) => theme.borderRadiuses.xl};
+  border: 1px solid ${({ theme, $selected }) => $selected && theme.colors.error};
+  padding: ${({ theme }) => theme.spacing[4]};
+
+  > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  > span {
+    flex: 1;
+  }
+
+  > footer {
+    display: flex;
+    align-items: center;
+
+    justify-content: ${({ $important }) =>
+      $important ? "space-between" : "flex-end"};
+  }
+`
+
+const NoteCardTitle = styled.h3`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+`
+
+const NoteCardContent = styled.p`
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  width: 100%;
+  white-space: pre-wrap;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+`
+
+const NoteCardImportantBadge = styled.span.attrs({
+  role: "status",
+})`
+  border-radius: ${({ theme }) => theme.borderRadiuses.md};
+  border: 1px solid ${({ theme }) => theme.colors.secondary};
+  background-color: ${({ theme }) => theme.colors["secondary-light"]};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  color: ${({ theme }) => theme.colors.secondary};
+`
+
+const StyledPencilSquareIcon = styled(PencilSquareIcon)`
+  width: ${({ theme }) => theme.sizes[6]};
+  height: ${({ theme }) => theme.sizes[6]};
+`
+
 const NoteBoardItem: FC<NoteBoardItemProps> = ({
   note,
   selected,
   onToggle,
 }) => {
-  // set up a data attribute to be able to conditionally apply styling when the note is selected
-  const dataAttrs = { ...(selected && { "data-selected": true }) }
-
   return (
-    <Link
-      to={`/note/${note.id}`}
-      className="flex h-72 flex-col items-start gap-4 rounded-xl border border-gray-300 p-4 hover:border-gray-700 data-[selected]:border-red-700"
-      aria-label={`Edit ${note.title}`}
-      {...dataAttrs}
-    >
-      <div className="flex w-full items-center gap-4">
-        <h3 className="flex-1 truncate text-lg font-bold">{note.title}</h3>
+    <NoteCard $important={note.important} $selected={selected}>
+      <header>
+        <NoteCardTitle>{note.title}</NoteCardTitle>
         <Checkbox
           checked={selected}
           onChange={onToggle}
-          className="group size-6 rounded-md bg-white p-1 ring-1 ring-inset ring-gray-300 hover:cursor-default data-[checked]:bg-red-700 data-[checked]:ring-red-300"
           aria-label={`Toggle ${note.title}`}
-        >
-          <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
-        </Checkbox>
-      </div>
-      <p className="line-clamp-5 w-full whitespace-pre-wrap text-sm/6 text-slate-700">
-        {note.content}
-      </p>
-      <span className="flex-1"></span>
-      {note.important && (
-        <span
-          className="rounded-md border border-red-300 bg-red-100 px-2 py-1 text-xs font-medium text-red-700"
-          role="status"
-        >
-          Important
-        </span>
-      )}
-    </Link>
+        />
+      </header>
+      <NoteCardContent>{note.content}</NoteCardContent>
+      <span></span>
+      <footer>
+        {note.important && (
+          <NoteCardImportantBadge>Important</NoteCardImportantBadge>
+        )}
+        <Link to={`/note/${note.id}`} aria-label={`Edit ${note.title}`}>
+          <StyledPencilSquareIcon />
+        </Link>
+      </footer>
+    </NoteCard>
   )
 }
 

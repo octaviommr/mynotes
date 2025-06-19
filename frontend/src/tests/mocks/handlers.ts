@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw"
-import { BASE_URL, NoteResponse, Note } from "../api"
+import { BASE_URL, NoteResponse, Note } from "../../api/api"
 
 export const mockNoteList: NoteResponse[] = [
   {

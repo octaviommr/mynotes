@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit"
-import { AppThunk, RootState } from "../../store"
+import type { AppThunk, RootState } from "./store"
 
 export const SESSION_CACHE_KEY = "MYNOTES_SESSION"
 

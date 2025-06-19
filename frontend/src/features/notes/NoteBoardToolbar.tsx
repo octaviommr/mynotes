@@ -1,19 +1,97 @@
 import { FC, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
-import { Button } from "@headlessui/react"
+import styled from "styled-components"
+import { Button, type ButtonProps } from "@headlessui/react"
 import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/solid"
-import { AppDispatch } from "../../store"
-import { useDeleteNotesMutation } from "../../api"
+import type { AppDispatch } from "../../store/store"
+import { useDeleteNotesMutation } from "../../api/api"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
-import { showModal } from "../modals/modalSlice"
-import { showMessage } from "../messages/messageSlice"
+import { showModal } from "../../store/modalSlice"
+import { showMessage } from "../../store/messageSlice"
 
 interface NoteBoardToolbarProps {
   selectedNotes: string[]
   onDeleteNotes: (deletedNotes: string[]) => void
   onCancelSelection: () => void
 }
+
+// styles
+const ToolbarContainer = styled.div`
+  position: fixed;
+  left: 0px;
+  right: 0px;
+  bottom: ${({ theme }) => theme.spacing[8]};
+  display: flex;
+  justify-content: center;
+`
+
+const ToolbarButton = styled((props: ButtonProps) => <Button {...props} />)`
+  display: inline-flex;
+  width: ${({ theme }) => theme.sizes[10]};
+  height: ${({ theme }) => theme.sizes[10]};
+  align-items: center;
+  justify-content: center;
+  border-radius: ${({ theme }) => theme.borderRadiuses.full};
+`
+/* 
+  NOTE: In the case of the above Headless UI component, simply passing the component into "styled()", thus letting
+  styled-components figure out the type of the component props, won't yield the correct type. 
+  
+  We need to use the type supplied by Headless UI for the component props by explicitly defining the component to be
+  rendered.
+*/
+
+const ToolbarIcon = styled.svg`
+  width: ${({ theme }) => theme.sizes[6]};
+  height: ${({ theme }) => theme.sizes[6]};
+`
+
+const SelectedNotesCount = styled.span.attrs({ role: "status" })`
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+`
+
+const Toolbar = styled.section.attrs({ role: "toolbar" })<{
+  $selected?: boolean
+}>`
+  position: relative;
+  display: flex;
+  width: ${({ theme }) => theme.sizes[56]};
+  justify-content: center;
+  border-radius: ${({ theme }) => theme.borderRadiuses.full};
+
+  background-color: ${({ theme, $selected }) =>
+    $selected ? theme.colors["error-light"] : theme.colors["primary-light"]};
+
+  padding: ${({ theme }) => theme.spacing[2]} 0;
+
+  > ${ToolbarButton} {
+    background-color: ${({ theme, $selected }) =>
+      $selected ? theme.colors.error : theme.colors.primary};
+
+    > ${ToolbarIcon} {
+      fill: white;
+    }
+  }
+
+  > div {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: ${({ theme }) => theme.spacing[4]};
+    display: flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing[1]};
+
+    ${ToolbarIcon} {
+      fill: ${({ theme }) => theme.colors.error};
+    }
+
+    > ${SelectedNotesCount} {
+      color: ${({ theme }) => theme.colors.error};
+    }
+  }
+`
 
 const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
   selectedNotes,
@@ -24,22 +102,6 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
 
   const [runDeleteNotesMutation, { data, error }] = useDeleteNotesMutation()
   const handle = useAPIErrorHandler()
-
-  const deleteNotes = async () => {
-    const result = await dispatch(
-      showModal({
-        type: "alert",
-        title: "Delete notes",
-        content: "Are you sure you want to delete the selected notes?",
-        okLabel: "Delete",
-        cancelLabel: "Cancel",
-      }),
-    )
-
-    if (result) {
-      runDeleteNotesMutation(selectedNotes)
-    }
-  }
 
   // handle mutation results
   useEffect(() => {
@@ -66,54 +128,48 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, error])
 
-  // set up a data attribute to be able to conditionally apply styling when one or more notes are selected
-  const dataAttrs = { ...(selectedNotes.length && { "data-selected": true }) }
+  const deleteNotes = async () => {
+    const result = await dispatch(
+      showModal({
+        type: "alert",
+        title: "Delete Notes",
+        content: "Are you sure you want to delete the selected notes?",
+        okLabel: "Delete",
+        cancelLabel: "Cancel",
+      }),
+    )
+
+    if (result) {
+      runDeleteNotesMutation(selectedNotes)
+    }
+  }
 
   return (
-    <div className="fixed inset-x-0 bottom-8 flex justify-center">
-      <div
-        role="toolbar"
-        className="relative flex w-56 justify-center rounded-full bg-sky-100 py-2 data-[selected]:bg-red-100"
-        {...dataAttrs}
-      >
+    <ToolbarContainer>
+      <Toolbar $selected={selectedNotes.length > 0}>
         {selectedNotes.length > 0 && (
           <>
-            <Button
-              type="button"
-              className="inline-flex size-10 items-center justify-center rounded-full bg-red-700"
-              onClick={() => deleteNotes()}
-              aria-label="Delete"
-            >
-              <TrashIcon className="size-6 fill-white" />
-            </Button>
-            <div className="absolute inset-y-0 left-4 flex items-center gap-1">
+            <ToolbarButton onClick={() => deleteNotes()} aria-label="Delete">
+              <ToolbarIcon as={TrashIcon} />
+            </ToolbarButton>
+            <div>
               <Button
-                type="button"
-                className="inline-flex items-center gap-2"
                 onClick={() => onCancelSelection()}
                 aria-label="Clear selection"
               >
-                <XMarkIcon className="size-6 fill-red-700" />
+                <ToolbarIcon as={XMarkIcon} />
               </Button>
-              <span className="font-medium text-red-700" role="status">
-                {selectedNotes.length}
-              </span>
+              <SelectedNotesCount>{selectedNotes.length}</SelectedNotesCount>
             </div>
           </>
         )}
         {!selectedNotes.length && (
-          <Link to="/note/create">
-            <Button
-              type="button"
-              className="inline-flex size-10 items-center justify-center rounded-full bg-sky-700"
-              aria-label="Add"
-            >
-              <PlusIcon className="size-6 fill-white" />
-            </Button>
-          </Link>
+          <ToolbarButton as={Link} to="/note/create" aria-label="Add">
+            <ToolbarIcon as={PlusIcon} />
+          </ToolbarButton>
         )}
-      </div>
-    </div>
+      </Toolbar>
+    </ToolbarContainer>
   )
 }
 

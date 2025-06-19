@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { AppThunk } from "../../store"
+import type { AppThunk } from "./store"
 
 // set up a discriminated union to represent the available modal types
 export type Modal =
