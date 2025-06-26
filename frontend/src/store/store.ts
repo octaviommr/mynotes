@@ -1,22 +1,22 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit"
-import { api } from "../api/api"
-import authReducer, { preloadAuthState } from "./authSlice"
-import messageReducer from "./messageSlice"
-import modalReducer from "./modalSlice"
+import { baseApi } from "../features/api/baseApi"
+import authReducer, { preloadAuthState } from "../features/auth/authSlice"
+import messageReducer from "../components/layout/message/messageSlice"
+import modalReducer from "../components/layout/modal/modalSlice"
 
 // set up a function to create the store so that it can also be used in tests
 export const createStore = () =>
   configureStore({
     reducer: {
-      [api.reducerPath]: api.reducer,
+      [baseApi.reducerPath]: baseApi.reducer,
       auth: authReducer,
       message: messageReducer,
       modal: modalReducer,
     },
 
-    // add the API middleware
+    // add middleware for the API slices
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(api.middleware),
+      getDefaultMiddleware().concat(baseApi.middleware),
 
     // preload any existing session from local storage
     preloadedState: {

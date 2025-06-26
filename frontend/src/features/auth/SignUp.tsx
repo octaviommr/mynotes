@@ -3,15 +3,16 @@ import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import type { RootState, AppDispatch } from "../../store/store"
-import { UserSignUp, useSignUpMutation } from "../../api/api"
+import { useSignUpMutation } from "./authApi"
+import type { UserSignUp } from "./types/User"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
-import { showMessage } from "../../store/messageSlice"
-import FormContainer from "../../components/form/FormContainer"
-import TextField from "../../components/form/TextField"
-import PasswordField from "../../components/form/PasswordField"
-import PageTitle from "../../components/PageTitle"
-import Link from "../../components/Link"
-import AuthFormButton from "./AuthFormButton"
+import { showMessage } from "../../components/layout/message/messageSlice"
+import FormContainer from "../../components/ui/containers/FormContainer"
+import TextField from "../../components/ui/form/TextField"
+import PasswordField from "../../components/ui/form/PasswordField"
+import PageTitle from "../../components/ui/PageTitle"
+import Link from "../../components/ui/Link"
+import SubmitButton from "./components/SubmitButton"
 
 // https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address
 export const EMAIL_REGEX =
@@ -130,7 +131,7 @@ const SignUp: FC = () => {
           />
         </section>
         <section>
-          <AuthFormButton disabled={isSubmitting}>Sign Up</AuthFormButton>
+          <SubmitButton disabled={isSubmitting}>Sign Up</SubmitButton>
         </section>
       </form>
       <footer>

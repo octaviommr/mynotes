@@ -3,16 +3,17 @@ import { useSelector, useDispatch } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import type { RootState, AppDispatch } from "../../store/store"
-import { useLogInMutation, UserCredentials } from "../../api/api"
+import { useLogInMutation } from "./authApi"
+import type { UserCredentials } from "./types/User"
 import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
-import { logIn as runLogInThunk } from "../../store/authSlice"
+import { logIn as runLogInThunk } from "./authSlice"
 import { EMAIL_REGEX } from "./SignUp"
-import FormContainer from "../../components/form/FormContainer"
-import TextField from "../../components/form/TextField"
-import PasswordField from "../../components/form/PasswordField"
-import PageTitle from "../../components/PageTitle"
-import Link from "../../components/Link"
-import AuthFormButton from "./AuthFormButton"
+import FormContainer from "../../components/ui/containers/FormContainer"
+import TextField from "../../components/ui/form/TextField"
+import PasswordField from "../../components/ui/form/PasswordField"
+import PageTitle from "../../components/ui/PageTitle"
+import Link from "../../components/ui/Link"
+import SubmitButton from "./components/SubmitButton"
 
 type LogInFormData = UserCredentials
 
@@ -106,7 +107,7 @@ const LogIn: FC = () => {
           */}
         </section>
         <section>
-          <AuthFormButton disabled={isSubmitting}>Log In</AuthFormButton>
+          <SubmitButton disabled={isSubmitting}>Log In</SubmitButton>
         </section>
       </form>
       <footer>

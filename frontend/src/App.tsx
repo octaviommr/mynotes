@@ -1,51 +1,27 @@
-import { Routes, Route } from "react-router-dom"
-import ErrorBoundary from "./features/errors/ErrorBoundary"
-import NotFound from "./features/errors/NotFound"
-import Layout from "./features/layout/Layout"
-import LogIn from "./features/auth/LogIn"
-import SignUp from "./features/auth/SignUp"
-import AuthGuard from "./features/auth/AuthGuard"
-import NoteBoard from "./features/notes/NoteBoard"
-import NoteDetail from "./features/notes/NoteDetail"
-import NewNote from "./features/notes/NewNote"
+import { Provider } from "react-redux"
+import { BrowserRouter } from "react-router-dom"
+import { ThemeProvider } from "styled-components"
+import { store } from "./store/store"
+import theme from "./styles/theme"
+import GlobalStyle from "./styles/GlobalStyle"
+import ErrorBoundary from "./error/ErrorBoundary"
+import Layout from "./components/layout/Layout"
+import Routes from "./routes/Routes"
 
 function App() {
   return (
-    <ErrorBoundary>
-      <Layout>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <AuthGuard>
-                <NoteBoard />
-              </AuthGuard>
-            }
-          />
-          <Route
-            path="/note/:id"
-            element={
-              <AuthGuard>
-                <NoteDetail />
-              </AuthGuard>
-            }
-          />
-          <Route
-            path="/note/create"
-            element={
-              <AuthGuard>
-                <NewNote />
-              </AuthGuard>
-            }
-          />
-
-          <Route path="/login" element={<LogIn />} />
-          <Route path="/signup" element={<SignUp />} />
-
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Layout>
-    </ErrorBoundary>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <GlobalStyle />
+          <ErrorBoundary>
+            <Layout>
+              <Routes />
+            </Layout>
+          </ErrorBoundary>
+        </BrowserRouter>
+      </ThemeProvider>
+    </Provider>
   )
 }
 

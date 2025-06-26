@@ -3,8 +3,8 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom/extend-expect"
-import "./jsdomPolyfills"
-import { server } from "./tests/mocks/node"
+import "./tests/jsdomPolyfills"
+import { server } from "./tests/server"
 
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())

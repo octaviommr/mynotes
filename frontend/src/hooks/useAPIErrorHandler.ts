@@ -4,8 +4,8 @@ import { SerializedError } from "@reduxjs/toolkit"
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react"
 import { useNavigate } from "react-router-dom"
 import type { RootState, AppDispatch } from "../store/store"
-import { showMessage } from "../store/messageSlice"
-import { logOut } from "../store/authSlice"
+import { showMessage } from "../components/layout/message/messageSlice"
+import { logOut } from "../features/auth/authSlice"
 
 export const useAPIErrorHandler = () => {
   const { isLoggedIn } = useSelector((state: RootState) => state.auth)
