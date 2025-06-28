@@ -1,4 +1,4 @@
-import { NoteResponse } from "../../features/notes/types/Note"
+import { NoteResponse } from "../types/Note"
 
 export const mockNoteList: NoteResponse[] = [
   {

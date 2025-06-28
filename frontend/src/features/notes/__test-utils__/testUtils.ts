@@ -1,5 +1,8 @@
-import { UserEvent } from "@testing-library/user-event"
-import { screen, within } from "../../../tests/__test-utils__/testUtils"
+import {
+  screen,
+  within,
+  type UserEvent,
+} from "../../../tests/__test-utils__/testUtils"
 import { NoteResponse } from "../types/Note"
 
 // actions
@@ -17,6 +20,22 @@ export const cancelNoteDeletion = async (user: UserEvent) => {
       name: "Cancel",
     }),
   )
+}
+
+export const addNote = async (user: UserEvent) => {
+  const addLink = await screen.findByRole("link", {
+    name: "Add",
+  })
+
+  await user.click(addLink)
+}
+
+export const editNote = async (user: UserEvent, { title }: NoteResponse) => {
+  const editLink = await screen.findByRole("link", {
+    name: `Edit ${title}`,
+  })
+
+  await user.click(editLink)
 }
 
 export const fillInTitleField = async (user: UserEvent, newTitle: string) => {
@@ -57,7 +76,7 @@ export const submitForm = async (
 }
 
 // assertions
-export const expectNote = (
+const expectNote = (
   card: HTMLElement,
   { _id, title, content, important }: NoteResponse,
 ) => {

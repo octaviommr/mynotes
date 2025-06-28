@@ -1,19 +1,25 @@
-import userEvent, { UserEvent } from "@testing-library/user-event"
 import { http, HttpResponse } from "msw"
-import { render, screen, within } from "../../../tests/__test-utils__/testUtils"
-import { BASE_API_URL } from "../../../tests/handlers"
-import { mockNoteList } from "../../../tests/mocks/notes"
+import { BASE_API_URL } from "../../../api/baseApi"
+import {
+  render,
+  screen,
+  within,
+  userEvent,
+  type UserEvent,
+} from "../../../tests/__test-utils__/testUtils"
 import { server } from "../../../tests/server"
 import type { NoteResponse } from "../types/Note"
+import { mockNoteList } from "../__test-utils__/mocks"
 import {
   confirmNoteDeletion,
   cancelNoteDeletion,
+  addNote,
   expectNotes,
   expectNoteDeletionAlert,
   expectMessage,
   expectNoNoteDeletionAlert,
   expectLocation,
-} from "../__test-utils__/noteTestUtils"
+} from "../__test-utils__/testUtils"
 
 // mocks
 const mockEmptyNoteList = () => {
@@ -90,24 +96,24 @@ const deleteSelectedNotes = async (user: UserEvent) => {
   )
 }
 
-const addNote = async (user: UserEvent, isEmptyState = false) => {
-  const addLink = await screen.findByRole("link", {
-    name: `Add${isEmptyState ? " One" : ""}`,
-  })
-
-  await user.click(addLink)
-}
-
 // assertions
 const expectToolbar = async () => {
   const toolbar = await screen.findByRole("toolbar")
   expect(toolbar).toBeInTheDocument()
 }
 
-const expectToolbarAddButton = async () => {
-  const toolbar = await screen.findByRole("toolbar")
+const expectToolbarAddButton = () => {
+  expect(
+    within(screen.getByRole("toolbar")).getByRole("link", { name: "Add" }),
+  ).toBeInTheDocument()
+}
 
-  expect(within(toolbar).getByRole("link", { name: "Add" })).toBeInTheDocument()
+const expectToolbarDeleteButton = () => {
+  expect(
+    within(screen.getByRole("toolbar")).getByRole("button", {
+      name: "Delete",
+    }),
+  ).toBeInTheDocument()
 }
 
 const expectNoteSelection = async (
@@ -142,7 +148,7 @@ const expectSelectedNotesCount = (count: number) => {
 }
 
 // tests
-describe("NoteBoard component", () => {
+describe("Note board", () => {
   describe("when navigating to the note board page", () => {
     describe("when there are notes", () => {
       it("displays cards for all existing notes", async () => {
@@ -163,13 +169,13 @@ describe("NoteBoard component", () => {
         }
       })
 
-      it("displays the toolbar with an 'Add' button", async () => {
+      it("displays the default toolbar, with an 'Add' button", async () => {
         // arrange
         render()
 
         // assert
         await expectToolbar()
-        await expectToolbarAddButton()
+        expectToolbarAddButton()
       })
     })
 
@@ -187,7 +193,20 @@ describe("NoteBoard component", () => {
     })
   })
 
-  describe("when selecting and unselecting notes", () => {
+  describe("when selecting notes", () => {
+    it("displays the selection toolbar, with a 'Delete' button", async () => {
+      const user = userEvent.setup()
+
+      // arrange
+      render()
+
+      // act
+      await toggleNoteSelection(user, mockNoteList[0])
+
+      // assert
+      expectToolbarDeleteButton()
+    })
+
     it("displays how many notes are selected in the toolbar", async () => {
       const user = userEvent.setup()
 
@@ -231,7 +250,7 @@ describe("NoteBoard component", () => {
       await expectNoteSelection(mockNoteList[1], false)
     })
 
-    it("resets the toolbar to the default layout, displaying a button to add new notes", async () => {
+    it("reverts to the default toolbar, with an 'Add' button", async () => {
       const user = userEvent.setup()
 
       // arrange
@@ -243,7 +262,7 @@ describe("NoteBoard component", () => {
       await clearNoteSelection(user)
 
       // assert
-      await expectToolbarAddButton()
+      expectToolbarAddButton()
     })
   })
 
@@ -371,22 +390,22 @@ describe("NoteBoard component", () => {
     })
   })
 
-  describe("when adding new notes", () => {
-    describe("when there are notes", () => {
-      describe("when clicking the 'Add' button in the toolbar", () => {
-        it("navigates to the note creation page", async () => {
-          const user = userEvent.setup()
+  /*
+    Test adding new notes via the "Add" button in the toolbar, since adding them via the "Add One" link in the empty state
+    is already covered by the empty state test above
+  */
+  describe("when adding new notes using the toolbar", () => {
+    it("navigates to the note creation page", async () => {
+      const user = userEvent.setup()
 
-          // arrange
-          render()
+      // arrange
+      render()
 
-          // act
-          await addNote(user)
+      // act
+      await addNote(user)
 
-          // assert
-          expectLocation("/note/create")
-        })
-      })
+      // assert
+      expectLocation("/note/create")
     })
   })
 })

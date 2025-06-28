@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import type { RootState } from "../store/store"
 
+export const BASE_API_URL = process.env.REACT_APP_API_URL
+
 /* 
   Set up the service to query the API. 
     
@@ -9,7 +11,7 @@ import type { RootState } from "../store/store"
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_API_URL,
+    baseUrl: BASE_API_URL,
     prepareHeaders: (headers, { getState }) => {
       const authState = (getState() as RootState).auth
 
