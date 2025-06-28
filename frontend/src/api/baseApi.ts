@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import type { RootState } from "../../store/store"
+import type { RootState } from "../store/store"
 
 /* 
   Set up the service to query the API. 

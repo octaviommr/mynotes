@@ -1,4 +1,4 @@
-import { baseApi } from "../api/baseApi"
+import { baseApi } from "../../api/baseApi"
 import type { NoteResponse, Note } from "./types/Note"
 
 // set up the backend-to-frontend model transformer

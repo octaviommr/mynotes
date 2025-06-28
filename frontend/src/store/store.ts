@@ -1,5 +1,5 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit"
-import { baseApi } from "../features/api/baseApi"
+import { baseApi } from "../api/baseApi"
 import authReducer, { preloadAuthState } from "../features/auth/authSlice"
 import messageReducer from "../components/layout/message/messageSlice"
 import modalReducer from "../components/layout/modal/modalSlice"
