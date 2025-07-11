@@ -1,31 +1,25 @@
-import { FC, useEffect, useState } from "react"
-import { useSelector, useDispatch } from "react-redux"
+import { useEffect } from "react"
+import { useDispatch } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
-import type { RootState, AppDispatch } from "../../store/store"
-import { useLogInMutation } from "./authApi"
-import type { UserCredentials } from "./types/User"
-import { useAPIErrorHandler } from "../../hooks/useAPIErrorHandler"
-import { logIn as runLogInThunk } from "./authSlice"
-import { EMAIL_REGEX } from "./SignUp"
-import FormContainer from "../../components/ui/containers/FormContainer"
-import TextField from "../../components/ui/form/TextField"
-import PasswordField from "../../components/ui/form/PasswordField"
-import PageTitle from "../../components/ui/PageTitle"
-import Link from "../../components/ui/Link"
-import SubmitButton from "./components/SubmitButton"
+import type { AppDispatch } from "../../../store/store"
+import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
+import TextField from "../../../components/ui/form/TextField"
+import PasswordField from "../../../components/ui/form/PasswordField"
+import { UserCredentials } from "../types/User"
+import AuthForm from "../components/AuthForm"
+import { useLogInMutation } from "../authApi"
+import { logIn as runLogInThunk } from "../authSlice"
+import { EMAIL_REGEX } from "../validation"
+
+type LogInFormProps = Pick<
+  React.HTMLAttributes<HTMLFormElement>,
+  "aria-labelledby"
+>
 
 type LogInFormData = UserCredentials
 
-const LogIn: FC = () => {
-  const [canRender, setCanRender] = useState(false)
-
-  const authState = useSelector((state: RootState) => state.auth)
-
-  const dispatch = useDispatch<AppDispatch>()
-  const [params] = useSearchParams()
-  const navigate = useNavigate()
-
+const LogInForm: React.FC<LogInFormProps> = (props) => {
   const {
     register,
     handleSubmit,
@@ -35,18 +29,9 @@ const LogIn: FC = () => {
   const [logIn, { data, error }] = useLogInMutation()
   const handle = useAPIErrorHandler()
 
-  // only render the log in screen if the user is not already logged in
-  useEffect(() => {
-    if (authState.isLoggedIn) {
-      // redirect to homepage
-      navigate("/")
-
-      return
-    }
-
-    setCanRender(true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const dispatch = useDispatch<AppDispatch>()
+  const [params] = useSearchParams()
+  const navigate = useNavigate()
 
   // handle mutation results
   useEffect(() => {
@@ -70,15 +55,12 @@ const LogIn: FC = () => {
     await logIn(data)
   }
 
-  if (!canRender) {
-    return null
-  }
-
   return (
-    <FormContainer>
-      <PageTitle>Log In</PageTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <section>
+    <AuthForm
+      onSubmit={handleSubmit(onSubmit)}
+      aria-labelledby={props["aria-labelledby"]}
+      fields={
+        <>
           <TextField
             {...register("email", {
               required: "Email is required.",
@@ -102,20 +84,16 @@ const LogIn: FC = () => {
           />
           {/*
             NOTE: For security reasons, we want to give potential attackers as few hints as possible about the password.
+              
             Therefore, we won't mark the field as required and we'll let the required validation happen only on the server
             (so we can provide a more generic error message, which is not password-specific).
           */}
-        </section>
-        <section>
-          <SubmitButton disabled={isSubmitting}>Log In</SubmitButton>
-        </section>
-      </form>
-      <footer>
-        <p>Don't have an account yet?</p>
-        <Link to="/signup">Sign Up</Link>
-      </footer>
-    </FormContainer>
+        </>
+      }
+      submitLabel="Log In"
+      isSubmitting={isSubmitting}
+    />
   )
 }
 
-export default LogIn
+export default LogInForm

@@ -29,11 +29,11 @@ const StyledButton = styled((props: ButtonProps) => <Button {...props} />)<{
     disabled && `opacity: ${theme.opacities.disabled};`};
 `
 /* 
-  NOTE: In the case of the above Headless UI component, simply passing the component into "styled()", thus letting
-  styled-components figure out the type of the component props, won't yield the correct type. 
+  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
+  being inferred by styled-components.
   
-  We need to use the type supplied by Headless UI for the component props by explicitly defining the component to be
-  rendered.
+  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
+  styled-components to infer them.
 */
 
 export default StyledButton

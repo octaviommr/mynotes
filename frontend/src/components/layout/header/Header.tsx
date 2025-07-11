@@ -1,4 +1,3 @@
-import { FC } from "react"
 import { useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import styled from "styled-components"
@@ -17,11 +16,11 @@ const StyledHeader = styled.header`
 
 const StyledLink = styled(Link)`
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  font-size: ${({ theme }) => theme.fontSizes["2xl"]};
+  font-size: ${({ theme }) => theme.fontSizes["3xl"]};
   color: white;
 `
 
-const Header: FC = () => {
+const Header: React.FC = () => {
   const { isLoggedIn } = useSelector((state: RootState) => state.auth)
 
   if (!isLoggedIn) {

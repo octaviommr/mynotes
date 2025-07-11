@@ -1,10 +1,11 @@
-import { FC } from "react"
 import styled from "styled-components"
 import { Field, type FieldProps, type CheckboxProps } from "@headlessui/react"
 import Label from "./Label"
 import Checkbox from "../Checkbox"
 
-type CheckboxFieldProps = CheckboxProps & { label: string }
+type CheckboxFieldProps = CheckboxProps & {
+  label: string
+}
 
 // styles
 const StyledField = styled((props: FieldProps) => <Field {...props} />)`
@@ -13,11 +14,11 @@ const StyledField = styled((props: FieldProps) => <Field {...props} />)`
   gap: ${({ theme }) => theme.spacing[2]};
 `
 /* 
-  NOTE: In the case of the above Headless UI component, simply passing the component into "styled()", thus letting
-  styled-components figure out the type of the component props, won't yield the correct type. 
+  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
+  being inferred by styled-components.
   
-  We need to use the type supplied by Headless UI for the component props by explicitly defining the component to be
-  rendered.
+  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
+  styled-components to infer them.
 */
 
 const StyledCheckbox = styled(Checkbox)`
@@ -27,14 +28,14 @@ const StyledCheckbox = styled(Checkbox)`
   }
 `
 
-const CheckboxField: FC<CheckboxFieldProps> = ({
+const CheckboxField: React.FC<CheckboxFieldProps> = ({
   disabled,
   label,
   ...props
 }) => {
   return (
     <StyledField disabled={disabled}>
-      <Label>{label}</Label>
+      <Label label={label} />
       <StyledCheckbox {...props} />
     </StyledField>
   )

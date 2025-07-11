@@ -1,14 +1,13 @@
-import { FC } from "react"
 import { Routes as RouterRoutes, Route } from "react-router-dom"
-import NotFound from "./NotFound"
-import LogIn from "../features/auth/LogIn"
-import SignUp from "../features/auth/SignUp"
-import AuthGuard from "./AuthGuard"
+import LogIn from "../features/auth/LogIn/LogIn"
+import SignUp from "../features/auth/SignUp/SignUp"
 import NoteBoard from "../features/notes/NoteBoard/NoteBoard"
 import NoteDetail from "../features/notes/NoteDetail/NoteDetail"
 import NewNote from "../features/notes/NewNote/NewNote"
+import NotFound from "./NotFound"
+import AuthGuard from "./AuthGuard"
 
-const Routes: FC = () => {
+const Routes: React.FC = () => {
   return (
     <RouterRoutes>
       <Route

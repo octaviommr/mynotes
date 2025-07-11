@@ -1,4 +1,3 @@
-import { FC } from "react"
 import styled from "styled-components"
 import {
   XCircleIcon,
@@ -45,7 +44,7 @@ const AlertContainer = styled.div.attrs<{
   }
 `
 
-const Alert: FC<AlertProps> = ({ severity, message }) => {
+const Alert: React.FC<AlertProps> = ({ severity, message }) => {
   const getSeverityIcon = (severity: MessageSeverity) => {
     switch (severity) {
       case "error":

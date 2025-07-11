@@ -13,11 +13,12 @@ export type AuthState =
   | { isLoggedIn: false; session?: null }
   | { isLoggedIn: true; session: Session }
 /*
-  NOTE: Another option for the logged out state that would still allow us to use Immer in the "endSession" action, while
-  also still ensuring there's never a session when the user is logged out, would be defining the session property as
-  "session?: never" or "session?: undefined". But this would force us to assign "undefined" to the session in the action,
-  which semantically doesn't make sense, since an "undefined" property in a object means that the property is missing in
-  that object.
+  NOTE: Another option for the logged out state that would still allow us to use Immer in the "endSession" action while
+  ensuring there's never a session when the user is logged out, would be defining the session property as "session?: never"
+  or "session?: undefined".
+  
+  But this would force us to assign "undefined" to the session in the action, which semantically doesn't make sense, since 
+  an "undefined" property in a object means that the property is missing in that object.
 */
 
 const authSlice = createSlice({

@@ -1,13 +1,13 @@
-import { FC, ReactNode, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import { useLocation, useNavigate } from "react-router-dom"
 import type { RootState } from "../store/store"
 
 interface AuthGuardProps {
-  children: ReactNode
+  children: React.ReactNode
 }
 
-const AuthGuard: FC<AuthGuardProps> = ({ children }) => {
+const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const [canRender, setCanRender] = useState(false)
 
   const { isLoggedIn } = useSelector((state: RootState) => state.auth)

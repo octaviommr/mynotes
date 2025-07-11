@@ -1,4 +1,3 @@
-import { FC, ReactNode } from "react"
 import { Provider } from "react-redux"
 import { BrowserRouter } from "react-router-dom"
 import { ThemeProvider } from "styled-components"
@@ -12,10 +11,10 @@ import Routes from "../../routes/Routes"
 import { Session, SESSION_CACHE_KEY } from "../../features/auth/authSlice"
 
 interface AllTheProvidersProps {
-  children: ReactNode
+  children: React.ReactNode
 }
 
-const AllTheProviders: FC<AllTheProvidersProps> = ({ children }) => {
+const AllTheProviders: React.FC<AllTheProvidersProps> = ({ children }) => {
   const mockSession: Session = {
     token: "token",
     name: "name",

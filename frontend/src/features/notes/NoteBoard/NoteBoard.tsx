@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { useGetNotesQuery } from "../notesApi"
 import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
@@ -35,7 +35,7 @@ const NoNotesContainer = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
 `
 
-const NoteBoard: FC = () => {
+const NoteBoard: React.FC = () => {
   const [selected, setSelected] = useState<string[]>([])
 
   const { data: notes, error } = useGetNotesQuery()

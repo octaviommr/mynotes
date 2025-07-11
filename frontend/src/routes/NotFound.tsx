@@ -1,15 +1,13 @@
-import { FC } from "react"
-import ErrorContainer from "../components/ui/containers/ErrorContainer"
-import PageTitle from "../components/ui/PageTitle"
+import ErrorPage from "../components/ui/pages/ErrorPage"
 import Link from "../components/ui/Link"
 
-const NotFound: FC = () => {
+const NotFound: React.FC = () => {
   return (
-    <ErrorContainer>
-      <PageTitle>Ooops...</PageTitle>
-      <p>Page not found!</p>
-      <Link to="/">Back to Homepage</Link>
-    </ErrorContainer>
+    <ErrorPage
+      title="Ooops..."
+      message="Page not found."
+      action={<Link to="/">Back to Homepage</Link>}
+    />
   )
 }
 

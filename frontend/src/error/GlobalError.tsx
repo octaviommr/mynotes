@@ -1,19 +1,17 @@
-import { FC } from "react"
-import ErrorContainer from "../components/ui/containers/ErrorContainer"
-import PageTitle from "../components/ui/PageTitle"
+import ErrorPage from "../components/ui/pages/ErrorPage"
 import Button from "../components/ui/Button"
 
 interface GlobalErrorProps {
   onRetry: () => void
 }
 
-const GlobalError: FC<GlobalErrorProps> = ({ onRetry }) => {
+const GlobalError: React.FC<GlobalErrorProps> = ({ onRetry }) => {
   return (
-    <ErrorContainer>
-      <PageTitle>Ooops...</PageTitle>
-      <p>Something went wrong!</p>
-      <Button onClick={() => onRetry()}>Try Again</Button>
-    </ErrorContainer>
+    <ErrorPage
+      title="Oh no..."
+      message="Something went wrong."
+      action={<Button onClick={() => onRetry()}>Try Again</Button>}
+    />
   )
 }
 

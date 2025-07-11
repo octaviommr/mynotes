@@ -1,11 +1,10 @@
-import { FC, ReactNode } from "react"
 import styled from "styled-components"
 import Header from "./header/Header"
 import Message from "./message/Message"
 import Modal from "./modal/Modal"
 
 interface LayoutProps {
-  children: ReactNode
+  children: React.ReactNode
 }
 
 // styles
@@ -20,7 +19,7 @@ const ContentContainer = styled.main`
   overflow: auto;
 `
 
-const Layout: FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       <LayoutContainer>

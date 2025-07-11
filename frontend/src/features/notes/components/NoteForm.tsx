@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react"
+import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { useForm, Controller, SubmitHandler } from "react-hook-form"
@@ -17,29 +17,37 @@ import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
 import { showModal } from "../../../components/layout/modal/modalSlice"
 import { showMessage } from "../../../components/layout/message/messageSlice"
 import Button from "../../../components/ui/Button"
+import Spacer from "../../../components/ui/Spacer"
 import Link from "../../../components/ui/Link"
 
 interface NoteFormProps {
   note?: Note
+  "aria-labelledby": string
 }
 
 type NoteFormData = Pick<Note, "title"> & {
   content: string
   important: boolean
-} // this shape describes the form, which always has the "content" and "important" fields
+}
+// NOTE: This shape describes the form, which always has the "content" and "important" fields.
 
 // styles
-const FormActionsContainer = styled.section`
+const FieldsContainer = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[8]};
+`
+
+const ActionsContainer = styled.section`
+  margin-top: ${({ theme }) => theme.spacing[8]};
+  padding-top: ${({ theme }) => theme.spacing[4]};
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[4]};
-
-  > span {
-    flex: 1;
-  }
+  border-top: 1px solid;
 `
 
-const NoteForm: FC<NoteFormProps> = ({ note }) => {
+const NoteForm: React.FC<NoteFormProps> = ({ note, ...props }) => {
   const {
     register,
     control,
@@ -52,9 +60,6 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
       important: note?.important ?? false, // controlled components should always have a default value
     },
   })
-
-  const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
 
   const [addNote, { error: addMutationError, isSuccess: isAddSuccess }] =
     useAddNoteMutation()
@@ -74,6 +79,9 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
     addMutationError || updateMutationError || deleteMutationError
 
   const handle = useAPIErrorHandler()
+
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
 
   // handle mutation results
   useEffect(() => {
@@ -124,8 +132,11 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} aria-labelledby="page-title">
-      <section>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      aria-labelledby={props["aria-labelledby"]}
+    >
+      <FieldsContainer>
         <TextField
           {...register("title", {
             required: "Title is required.",
@@ -150,11 +161,12 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
         />
         {/*
           NOTE: Checkbox fields are used as controlled components because Headless UI's "Checkbox" component doesn't expose
-          a native "onChange" handler (it can be used as uncontrolled, but this only means the component will track the state
-          internally)
+          a native "onChange" handler.
+          
+          The component can be used as uncontrolled, but this only means it will track the state internally.
         */}
-      </section>
-      <FormActionsContainer>
+      </FieldsContainer>
+      <ActionsContainer>
         {note && (
           <Button
             onClick={() => deleteNote()}
@@ -164,12 +176,12 @@ const NoteForm: FC<NoteFormProps> = ({ note }) => {
             Delete
           </Button>
         )}
-        <span></span>
+        <Spacer />
         <Link to="/">Cancel</Link>
         <Button type="submit" disabled={isSubmitting}>
           {note ? "Update" : "Create"}
         </Button>
-      </FormActionsContainer>
+      </ActionsContainer>
     </form>
   )
 }

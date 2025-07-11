@@ -1,4 +1,3 @@
-import { FC } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import styled from "styled-components"
 import {
@@ -45,15 +44,8 @@ const StyledDialogTitle = styled((props: DialogTitleProps) => (
   font-size: ${({ theme }) => theme.fontSizes["2xl"]};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
 `
-/* 
-  NOTE: In the case of the above Headless UI components, simply passing the component into "styled()", thus letting
-  styled-components figure out the type of the component props, won't yield the correct type. 
-  
-  We need to use the type supplied by Headless UI for the component props by explicitly defining the components to be
-  rendered.
-*/
 
-const ModalPanelContainer = styled.div`
+const PanelContainer = styled.div`
   position: fixed;
   inset: 0;
   display: flex;
@@ -63,14 +55,21 @@ const ModalPanelContainer = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
 `
 
-const ModalActionContainer = styled.div`
+const ActionsContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing[4]};
   display: flex;
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing[4]};
 `
+/* 
+  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
+  being inferred by styled-components.
+  
+  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
+  styled-components to infer them.
+*/
 
-const Modal: FC = () => {
+const Modal: React.FC = () => {
   const modalState = useSelector((state: RootState) => state.modal)
 
   const dispatch = useDispatch<AppDispatch>()
@@ -84,11 +83,11 @@ const Modal: FC = () => {
           role={modalState.modal.type === "alert" ? "alertdialog" : "dialog"}
         >
           <StyledDialogBackdrop />
-          <ModalPanelContainer>
+          <PanelContainer>
             <StyledDialogPanel>
               <StyledDialogTitle>{modalState.modal.title}</StyledDialogTitle>
               <p>{modalState.modal.content}</p>
-              <ModalActionContainer>
+              <ActionsContainer>
                 {modalState.modal.type === "alert" && (
                   <Button
                     onClick={() => dispatch(closeModal(false))}
@@ -100,9 +99,9 @@ const Modal: FC = () => {
                 <Button onClick={() => dispatch(closeModal(true))}>
                   {modalState.modal.okLabel}
                 </Button>
-              </ModalActionContainer>
+              </ActionsContainer>
             </StyledDialogPanel>
-          </ModalPanelContainer>
+          </PanelContainer>
         </StyledDialog>
       )}
     </>

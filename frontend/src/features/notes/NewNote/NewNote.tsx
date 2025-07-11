@@ -1,14 +1,20 @@
-import { FC } from "react"
-import FormContainer from "../../../components/ui/containers/FormContainer"
-import PageTitle from "../../../components/ui/PageTitle"
+import PageTitle from "../../../components/ui/pages/PageTitle"
+import {
+  NotePageContainer,
+  NoteFormContainer,
+} from "../components/NotePage.styles"
 import NoteForm from "../components/NoteForm"
 
-const NewNote: FC = () => {
+const NEW_NOTE_TITLE_ID = "new-note-title"
+
+const NewNote: React.FC = () => {
   return (
-    <FormContainer>
-      <PageTitle id="page-title">New Note</PageTitle>
-      <NoteForm />
-    </FormContainer>
+    <NotePageContainer>
+      <PageTitle id={NEW_NOTE_TITLE_ID}>New Note</PageTitle>
+      <NoteFormContainer>
+        <NoteForm aria-labelledby={NEW_NOTE_TITLE_ID} />
+      </NoteFormContainer>
+    </NotePageContainer>
   )
 }
 

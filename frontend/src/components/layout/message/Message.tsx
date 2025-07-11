@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react"
+import { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import styled from "styled-components"
 import type { RootState, AppDispatch } from "../../../store/store"
@@ -13,7 +13,7 @@ const MessageContainer = styled.div`
   width: 100%;
 `
 
-const Message: FC = () => {
+const Message: React.FC = () => {
   const messageState = useSelector((state: RootState) => state.message)
 
   const dispatch = useDispatch<AppDispatch>()

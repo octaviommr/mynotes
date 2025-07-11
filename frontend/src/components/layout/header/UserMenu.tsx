@@ -1,4 +1,3 @@
-import { FC } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import styled from "styled-components"
@@ -44,13 +43,6 @@ const StyledMenuItems = styled((props: MenuItemsProps) => (
   padding: ${({ theme }) => theme.spacing[1]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
 `
-/* 
-  NOTE: In the case of the above Headless UI components, simply passing the component into "styled()", thus letting
-  styled-components figure out the type of the component props, won't yield the correct type. 
-  
-  We need to use the type supplied by Headless UI for the component props by explicitly defining the components to be
-  rendered.
-*/
 
 const MenuItemButton = styled.button`
   display: flex;
@@ -69,8 +61,15 @@ const StyledArrowLeftEndOnRectangleIcon = styled(ArrowLeftEndOnRectangleIcon)`
   width: ${({ theme }) => theme.sizes[4]};
   height: ${({ theme }) => theme.sizes[4]};
 `
+/* 
+  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
+  being inferred by styled-components.
+  
+  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
+  styled-components to infer them.
+*/
 
-const UserMenu: FC = () => {
+const UserMenu: React.FC = () => {
   const userInitials = useSelector(getUserInitials)
 
   const dispatch = useDispatch<AppDispatch>()

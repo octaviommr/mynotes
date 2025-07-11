@@ -1,4 +1,3 @@
-import { FC } from "react"
 import styled from "styled-components"
 import {
   Checkbox as HeadlessCheckbox,
@@ -7,11 +6,11 @@ import {
 import { CheckIcon } from "@heroicons/react/16/solid"
 
 // styles
-const StyledCheckIcon = styled(CheckIcon)``
-/*
-  NOTE: This is needed because "CheckIcon" is not a styled component but we need to reference it in "StyledCheckbox", since
-  that's the context where we define the styles for the checkbox icon
-*/
+const StyledCheckIcon = styled(CheckIcon)`
+  width: ${({ theme }) => theme.sizes[4]};
+  height: ${({ theme }) => theme.sizes[4]};
+  fill: white;
+`
 
 const StyledCheckbox = styled((props: CheckboxProps) => (
   <HeadlessCheckbox {...props} />
@@ -37,20 +36,17 @@ const StyledCheckbox = styled((props: CheckboxProps) => (
 
   > ${StyledCheckIcon} {
     display: ${({ checked }) => (checked ? "block" : "none")};
-    width: ${({ theme }) => theme.sizes[4]};
-    height: ${({ theme }) => theme.sizes[4]};
-    fill: white;
   }
 `
 /* 
-  NOTE: In the case of the above Headless UI component, simply passing the component into "styled()", thus letting
-  styled-components figure out the type of the component props, won't yield the correct type. 
+  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
+  being inferred by styled-components.
   
-  We need to use the type supplied by Headless UI for the component props by explicitly defining the component to be
-  rendered.
+  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
+  styled-components to infer them.
 */
 
-const Checkbox: FC<CheckboxProps> = (props) => {
+const Checkbox: React.FC<CheckboxProps> = (props) => {
   return (
     <StyledCheckbox {...props}>
       <StyledCheckIcon />

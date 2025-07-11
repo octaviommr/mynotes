@@ -1,8 +1,8 @@
-import { Component, ReactNode, ErrorInfo } from "react"
+import { Component } from "react"
 import GlobalError from "./GlobalError"
 
 interface ErrorBoundaryProps {
-  children: ReactNode
+  children: React.ReactNode
 }
 
 interface ErrorBoundaryState {
@@ -23,7 +23,7 @@ export class ErrorBoundary extends Component<
     return { hasError: true }
   }
 
-  componentDidCatch(error: any, errorInfo: ErrorInfo) {
+  componentDidCatch(error: any, errorInfo: React.ErrorInfo) {
     console.error(error, errorInfo)
   }
 

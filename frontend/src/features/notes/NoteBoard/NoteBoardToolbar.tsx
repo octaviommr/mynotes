@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react"
+import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import styled from "styled-components"
@@ -26,6 +26,11 @@ const ToolbarContainer = styled.div`
   justify-content: center;
 `
 
+const ToolbarIcon = styled.svg`
+  width: ${({ theme }) => theme.sizes[6]};
+  height: ${({ theme }) => theme.sizes[6]};
+`
+
 const ToolbarButton = styled((props: ButtonProps) => <Button {...props} />)`
   display: inline-flex;
   width: ${({ theme }) => theme.sizes[10]};
@@ -33,22 +38,10 @@ const ToolbarButton = styled((props: ButtonProps) => <Button {...props} />)`
   align-items: center;
   justify-content: center;
   border-radius: ${({ theme }) => theme.borderRadiuses.full};
-`
-/* 
-  NOTE: In the case of the above Headless UI component, simply passing the component into "styled()", thus letting
-  styled-components figure out the type of the component props, won't yield the correct type. 
-  
-  We need to use the type supplied by Headless UI for the component props by explicitly defining the component to be
-  rendered.
-*/
 
-const ToolbarIcon = styled.svg`
-  width: ${({ theme }) => theme.sizes[6]};
-  height: ${({ theme }) => theme.sizes[6]};
-`
-
-const SelectedNotesCount = styled.span.attrs({ role: "status" })`
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  > ${ToolbarIcon} {
+    fill: white;
+  }
 `
 
 const Toolbar = styled.section.attrs({ role: "toolbar" })<{
@@ -68,32 +61,36 @@ const Toolbar = styled.section.attrs({ role: "toolbar" })<{
   > ${ToolbarButton} {
     background-color: ${({ theme, $selected }) =>
       $selected ? theme.colors.error : theme.colors.primary};
-
-    > ${ToolbarIcon} {
-      fill: white;
-    }
-  }
-
-  > div {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: ${({ theme }) => theme.spacing[4]};
-    display: flex;
-    align-items: center;
-    gap: ${({ theme }) => theme.spacing[1]};
-
-    ${ToolbarIcon} {
-      fill: ${({ theme }) => theme.colors.error};
-    }
-
-    > ${SelectedNotesCount} {
-      color: ${({ theme }) => theme.colors.error};
-    }
   }
 `
 
-const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
+const SelectedNotesContainer = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: ${({ theme }) => theme.spacing[4]};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
+
+  ${ToolbarIcon} {
+    fill: ${({ theme }) => theme.colors.error};
+  }
+`
+
+const SelectedNotesCount = styled.span.attrs({ role: "status" })`
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  color: ${({ theme }) => theme.colors.error};
+`
+/* 
+  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
+  being inferred by styled-components.
+  
+  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
+  styled-components to infer them.
+*/
+
+const NoteBoardToolbar: React.FC<NoteBoardToolbarProps> = ({
   selectedNotes,
   onDeleteNotes,
   onCancelSelection,
@@ -152,7 +149,7 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
             <ToolbarButton onClick={() => deleteNotes()} aria-label="Delete">
               <ToolbarIcon as={TrashIcon} />
             </ToolbarButton>
-            <div>
+            <SelectedNotesContainer>
               <Button
                 onClick={() => onCancelSelection()}
                 aria-label="Clear selection"
@@ -160,7 +157,7 @@ const NoteBoardToolbar: FC<NoteBoardToolbarProps> = ({
                 <ToolbarIcon as={XMarkIcon} />
               </Button>
               <SelectedNotesCount>{selectedNotes.length}</SelectedNotesCount>
-            </div>
+            </SelectedNotesContainer>
           </>
         )}
         {!selectedNotes.length && (

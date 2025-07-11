@@ -1,12 +1,17 @@
-import { FC, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useGetNoteQuery } from "../notesApi"
 import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
-import FormContainer from "../../../components/ui/containers/FormContainer"
-import PageTitle from "../../../components/ui/PageTitle"
+import PageTitle from "../../../components/ui/pages/PageTitle"
+import {
+  NotePageContainer,
+  NoteFormContainer,
+} from "../components/NotePage.styles"
 import NoteForm from "../components/NoteForm"
 
-const NoteDetail: FC = () => {
+const NOTE_DETAIL_TITLE_ID = "note-detail-title"
+
+const NoteDetail: React.FC = () => {
   const [skipQuery, setSkipQuery] = useState(false)
 
   const { id } = useParams()
@@ -58,10 +63,12 @@ const NoteDetail: FC = () => {
   }
 
   return (
-    <FormContainer>
-      <PageTitle id="page-title">Edit Note</PageTitle>
-      <NoteForm note={note} />
-    </FormContainer>
+    <NotePageContainer>
+      <PageTitle id={NOTE_DETAIL_TITLE_ID}>Edit Note</PageTitle>
+      <NoteFormContainer>
+        <NoteForm note={note} aria-labelledby={NOTE_DETAIL_TITLE_ID} />
+      </NoteFormContainer>
+    </NotePageContainer>
   )
 }
 

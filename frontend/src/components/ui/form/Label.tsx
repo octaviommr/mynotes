@@ -1,7 +1,18 @@
 import styled from "styled-components"
-import { Label, type LabelProps } from "@headlessui/react"
+import {
+  Label as HeadlessLabel,
+  type LabelProps as HeadlessLabelProps,
+} from "@headlessui/react"
 
-const StyledLabel = styled((props: LabelProps) => <Label {...props} />)`
+interface LabelProps {
+  label: string
+  required?: boolean
+}
+
+// styles
+const StyledHeadlessLabel = styled((props: HeadlessLabelProps) => (
+  <HeadlessLabel {...props} />
+))`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
 
@@ -10,11 +21,17 @@ const StyledLabel = styled((props: LabelProps) => <Label {...props} />)`
   }
 `
 /* 
-  NOTE: In the case of the above Headless UI component, simply passing the component into "styled()", thus letting
-  styled-components figure out the type of the component props, won't yield the correct type. 
+  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
+  being inferred by styled-components.
   
-  We need to use the type supplied by Headless UI for the component props by explicitly defining the component to be
-  rendered.
+  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
+  styled-components to infer them.
 */
 
-export default StyledLabel
+const Label: React.FC<LabelProps> = ({ label, required }) => {
+  return (
+    <StyledHeadlessLabel>{`${label}${required ? " (required)" : ""}`}</StyledHeadlessLabel>
+  )
+}
+
+export default Label

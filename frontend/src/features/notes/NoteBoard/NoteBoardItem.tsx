@@ -1,8 +1,8 @@
-import { FC } from "react"
 import styled from "styled-components"
 import { PencilSquareIcon } from "@heroicons/react/16/solid"
 import { Note } from "../types/Note"
 import Checkbox from "../../../components/ui/Checkbox"
+import Spacer from "../../../components/ui/Spacer"
 import Link from "../../../components/ui/Link"
 
 interface NoteBoardItemProps {
@@ -20,24 +20,12 @@ const NoteCard = styled.li<{ $important?: boolean; $selected?: boolean }>`
   border-radius: ${({ theme }) => theme.borderRadiuses.xl};
   border: 1px solid ${({ theme, $selected }) => $selected && theme.colors.error};
   padding: ${({ theme }) => theme.spacing[4]};
+`
 
-  > header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  > span {
-    flex: 1;
-  }
-
-  > footer {
-    display: flex;
-    align-items: center;
-
-    justify-content: ${({ $important }) =>
-      $important ? "space-between" : "flex-end"};
-  }
+const NoteCardHeader = styled.header`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `
 
 const NoteCardTitle = styled.h3`
@@ -58,6 +46,11 @@ const NoteCardContent = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
 `
 
+const NoteCardFooter = styled.footer`
+  display: flex;
+  align-items: center;
+`
+
 const NoteCardImportantBadge = styled.span.attrs({
   role: "status",
 })`
@@ -75,31 +68,32 @@ const StyledPencilSquareIcon = styled(PencilSquareIcon)`
   height: ${({ theme }) => theme.sizes[6]};
 `
 
-const NoteBoardItem: FC<NoteBoardItemProps> = ({
+const NoteBoardItem: React.FC<NoteBoardItemProps> = ({
   note,
   selected,
   onToggle,
 }) => {
   return (
     <NoteCard $important={note.important} $selected={selected}>
-      <header>
+      <NoteCardHeader>
         <NoteCardTitle>{note.title}</NoteCardTitle>
         <Checkbox
           checked={selected}
           onChange={onToggle}
           aria-label={`Toggle ${note.title}`}
         />
-      </header>
+      </NoteCardHeader>
       <NoteCardContent>{note.content}</NoteCardContent>
-      <span></span>
-      <footer>
+      <Spacer />
+      <NoteCardFooter>
         {note.important && (
           <NoteCardImportantBadge>Important</NoteCardImportantBadge>
         )}
+        <Spacer />
         <Link to={`/note/${note.id}`} aria-label={`Edit ${note.title}`}>
           <StyledPencilSquareIcon />
         </Link>
-      </footer>
+      </NoteCardFooter>
     </NoteCard>
   )
 }
