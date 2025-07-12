@@ -20,10 +20,9 @@ import Button from "../../../components/ui/Button"
 import Spacer from "../../../components/ui/Spacer"
 import Link from "../../../components/ui/Link"
 
-interface NoteFormProps {
+type NoteFormProps = {
   note?: Note
-  "aria-labelledby": string
-}
+} & Pick<React.HTMLAttributes<HTMLFormElement>, "aria-labelledby">
 
 type NoteFormData = Pick<Note, "title"> & {
   content: string
