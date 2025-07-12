@@ -3,9 +3,10 @@ import { Field, type FieldProps, type CheckboxProps } from "@headlessui/react"
 import Label from "./Label"
 import Checkbox from "../Checkbox"
 
-type CheckboxFieldProps = CheckboxProps & {
-  label: string
-}
+type CheckboxFieldProps = Omit<CheckboxProps, "className"> &
+  Pick<FieldProps, "className"> & {
+    label: string
+  }
 
 // styles
 const StyledField = styled((props: FieldProps) => <Field {...props} />)`
@@ -29,12 +30,13 @@ const StyledCheckbox = styled(Checkbox)`
 `
 
 const CheckboxField: React.FC<CheckboxFieldProps> = ({
+  className,
   disabled,
   label,
   ...props
 }) => {
   return (
-    <StyledField disabled={disabled}>
+    <StyledField className={className} disabled={disabled}>
       <Label label={label} />
       <StyledCheckbox {...props} />
     </StyledField>

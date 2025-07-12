@@ -4,6 +4,7 @@ import {
   Field,
   Input,
   Button,
+  type FieldProps,
   type InputProps,
   type ButtonProps,
 } from "@headlessui/react"
@@ -18,12 +19,17 @@ interface InputAdornment {
 
 type InputFieldProps = Omit<
   InputProps,
-  "invalid" | "aria-invalid" | "aria-required" | "aria-errormessage"
-> & {
-  label: string
-  error?: string
-  adornment?: InputAdornment
-}
+  | "className"
+  | "invalid"
+  | "aria-invalid"
+  | "aria-required"
+  | "aria-errormessage"
+> &
+  Pick<FieldProps, "className"> & {
+    label: string
+    error?: string
+    adornment?: InputAdornment
+  }
 
 // styles
 const InputContainer = styled.div`
@@ -82,11 +88,14 @@ const AdornmentIcon = styled.svg`
 */
 
 const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
-  ({ name, disabled, required, label, error, adornment, ...props }, ref) => {
+  (
+    { className, name, disabled, required, label, error, adornment, ...props },
+    ref,
+  ) => {
     const errorMessageId = `${name}-error-message`
 
     return (
-      <Field disabled={disabled}>
+      <Field className={className} disabled={disabled}>
         <Label label={label} required={required} />
         <InputContainer>
           <StyledInput
@@ -113,7 +122,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             </AdornmentContainer>
           )}
         </InputContainer>
-        {error && <ErrorMessage id={errorMessageId} message={error} />}
+        {error && <ErrorMessage id={errorMessageId}>{error}</ErrorMessage>}
       </Field>
     )
   },

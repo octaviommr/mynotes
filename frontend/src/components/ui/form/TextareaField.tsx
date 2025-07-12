@@ -1,16 +1,26 @@
 import { forwardRef } from "react"
 import styled from "styled-components"
-import { Textarea, Field, type TextareaProps } from "@headlessui/react"
+import {
+  Field,
+  Textarea,
+  type FieldProps,
+  type TextareaProps,
+} from "@headlessui/react"
 import Label from "./Label"
 import ErrorMessage from "./ErrorMessage"
 
 type TextareaFieldProps = Omit<
   TextareaProps,
-  "invalid" | "aria-invalid" | "aria-required" | "aria-errormessage"
-> & {
-  label: string
-  error?: string
-}
+  | "className"
+  | "invalid"
+  | "aria-invalid"
+  | "aria-required"
+  | "aria-errormessage"
+> &
+  Pick<FieldProps, "className"> & {
+    label: string
+    error?: string
+  }
 
 // styles
 const TextareaContainer = styled.div`
@@ -45,11 +55,11 @@ const StyledTextarea = styled(
 */
 
 const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
-  ({ name, disabled, required, label, error, ...props }, ref) => {
+  ({ className, name, disabled, required, label, error, ...props }, ref) => {
     const errorMessageId = `${name}-error-message`
 
     return (
-      <Field disabled={disabled}>
+      <Field className={className} disabled={disabled}>
         <Label label={label} required={required} />
         <TextareaContainer>
           <StyledTextarea
@@ -61,7 +71,7 @@ const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
             {...props}
           />
         </TextareaContainer>
-        {error && <ErrorMessage id={errorMessageId} message={error} />}
+        {error && <ErrorMessage id={errorMessageId}>{error}</ErrorMessage>}
       </Field>
     )
   },
