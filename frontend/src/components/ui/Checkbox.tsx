@@ -1,3 +1,4 @@
+import { forwardRef } from "react"
 import styled from "styled-components"
 import {
   Checkbox as HeadlessCheckbox,
@@ -12,9 +13,7 @@ const StyledCheckIcon = styled(CheckIcon)`
   fill: white;
 `
 
-const StyledCheckbox = styled((props: CheckboxProps) => (
-  <HeadlessCheckbox {...props} />
-))`
+const StyledHeadlessCheckbox = styled(HeadlessCheckbox)`
   width: ${({ theme }) => theme.sizes[6]};
   height: ${({ theme }) => theme.sizes[6]};
   border-radius: ${({ theme }) => theme.borderRadiuses.md};
@@ -38,20 +37,16 @@ const StyledCheckbox = styled((props: CheckboxProps) => (
     display: ${({ checked }) => (checked ? "block" : "none")};
   }
 `
-/* 
-  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
-  being inferred by styled-components.
-  
-  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
-  styled-components to infer them.
-*/
 
-const Checkbox: React.FC<CheckboxProps> = (props) => {
+const Checkbox = forwardRef<
+  React.ComponentRef<typeof HeadlessCheckbox>,
+  CheckboxProps
+>((props, ref) => {
   return (
-    <StyledCheckbox {...props}>
+    <StyledHeadlessCheckbox ref={ref} {...props}>
       <StyledCheckIcon />
-    </StyledCheckbox>
+    </StyledHeadlessCheckbox>
   )
-}
+})
 
 export default Checkbox

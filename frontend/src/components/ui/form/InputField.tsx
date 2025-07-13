@@ -6,7 +6,6 @@ import {
   Button,
   type FieldProps,
   type InputProps,
-  type ButtonProps,
 } from "@headlessui/react"
 import type { Icon } from "../../../types/Icon"
 import Label from "./Label"
@@ -38,7 +37,7 @@ const InputContainer = styled.div`
 `
 
 const StyledInput = styled(
-  forwardRef<HTMLInputElement, InputProps>((props, ref) => (
+  forwardRef<React.ComponentRef<typeof Input>, InputProps>((props, ref) => (
     <Input ref={ref} {...props} />
   )),
 )<{ $hasAdornment?: boolean }>`
@@ -55,6 +54,15 @@ const StyledInput = styled(
     opacity: ${({ theme }) => theme.opacities.disabled};
   }
 `
+/* 
+  NOTE: For the Headless UI Input component, passing the component directly to styled() does not result in the correct prop
+  types being inferred by styled-components.
+  
+  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
+  styled-components to infer them.
+  
+  Additionally, since we need to pass a ref to the Input component, we must use forwardRef as well.
+*/
 
 const AdornmentContainer = styled.div`
   position: absolute;
@@ -66,7 +74,7 @@ const AdornmentContainer = styled.div`
   padding-right: ${({ theme }) => theme.spacing[2]};
 `
 
-const StyledButton = styled((props: ButtonProps) => <Button {...props} />)`
+const StyledButton = styled(Button)`
   ${({ theme, disabled }) =>
     disabled && `opacity: ${theme.opacities.disabled};`}
 `
@@ -77,17 +85,11 @@ const AdornmentIcon = styled.svg`
     height: ${theme.sizes[6]};
   `};
 `
-/* 
-  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
-  being inferred by styled-components.
-  
-  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
-  styled-components to infer them.
-  
-  Additionally, since we need to pass a ref to the Input component, we must use forwardRef as well.
-*/
 
-const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
+const InputField = forwardRef<
+  React.ComponentRef<typeof Input>,
+  InputFieldProps
+>(
   (
     { className, name, disabled, required, label, error, adornment, ...props },
     ref,

@@ -1,9 +1,9 @@
 import styled from "styled-components"
-import { Button, type ButtonProps } from "@headlessui/react"
+import { Button } from "@headlessui/react"
 
 type ButtonVariant = "primary" | "secondary" | "error"
 
-const StyledButton = styled((props: ButtonProps) => <Button {...props} />)<{
+const StyledButton = styled(Button)<{
   $variant?: ButtonVariant
 }>`
   border-radius: ${({ theme }) => theme.borderRadiuses.md};
@@ -28,12 +28,5 @@ const StyledButton = styled((props: ButtonProps) => <Button {...props} />)<{
   ${({ theme, disabled }) =>
     disabled && `opacity: ${theme.opacities.disabled};`};
 `
-/* 
-  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
-  being inferred by styled-components.
-  
-  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
-  styled-components to infer them.
-*/
 
 export default StyledButton

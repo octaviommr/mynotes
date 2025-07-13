@@ -1,14 +1,7 @@
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import styled from "styled-components"
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  MenuButtonProps,
-  MenuItemsProps,
-} from "@headlessui/react"
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { ArrowLeftEndOnRectangleIcon } from "@heroicons/react/16/solid"
 import type { AppDispatch } from "../../../store/store"
 import {
@@ -17,9 +10,7 @@ import {
 } from "../../../features/auth/authSlice"
 
 // styles
-const StyledMenuButton = styled((props: MenuButtonProps) => (
-  <MenuButton {...props} />
-))`
+const StyledMenuButton = styled(MenuButton)`
   display: inline-flex;
   width: ${({ theme }) => theme.sizes[10]};
   height: ${({ theme }) => theme.sizes[10]};
@@ -32,9 +23,7 @@ const StyledMenuButton = styled((props: MenuButtonProps) => (
   box-shadow: inset 0 0 0 2px white;
 `
 
-const StyledMenuItems = styled((props: MenuItemsProps) => (
-  <MenuItems {...props} />
-))`
+const StyledMenuItems = styled(MenuItems)`
   width: ${({ theme }) => theme.sizes[52]};
   transform-origin: top right;
   border-radius: ${({ theme }) => theme.borderRadiuses.xl};
@@ -61,13 +50,6 @@ const StyledArrowLeftEndOnRectangleIcon = styled(ArrowLeftEndOnRectangleIcon)`
   width: ${({ theme }) => theme.sizes[4]};
   height: ${({ theme }) => theme.sizes[4]};
 `
-/* 
-  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
-  being inferred by styled-components.
-  
-  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
-  styled-components to infer them.
-*/
 
 const UserMenu: React.FC = () => {
   const userInitials = useSelector(getUserInitials)

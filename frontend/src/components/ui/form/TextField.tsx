@@ -1,5 +1,5 @@
 import { forwardRef } from "react"
-import type { FieldProps, InputProps } from "@headlessui/react"
+import { Input, type FieldProps, type InputProps } from "@headlessui/react"
 import InputField from "./InputField"
 
 type TextFieldProps = Omit<
@@ -16,8 +16,10 @@ type TextFieldProps = Omit<
     error?: string
   }
 
-const TextField = forwardRef<HTMLInputElement, TextFieldProps>((props, ref) => {
-  return <InputField ref={ref} {...props} />
-})
+const TextField = forwardRef<React.ComponentRef<typeof Input>, TextFieldProps>(
+  (props, ref) => {
+    return <InputField ref={ref} {...props} />
+  },
+)
 
 export default TextField

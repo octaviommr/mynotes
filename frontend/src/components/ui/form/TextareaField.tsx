@@ -28,9 +28,9 @@ const TextareaContainer = styled.div`
 `
 
 const StyledTextarea = styled(
-  forwardRef<HTMLTextAreaElement, TextareaProps>((props, ref) => (
-    <Textarea ref={ref} {...props} />
-  )),
+  forwardRef<React.ComponentRef<typeof Textarea>, TextareaProps>(
+    (props, ref) => <Textarea ref={ref} {...props} />,
+  ),
 )`
   display: block;
   width: 100%;
@@ -45,8 +45,8 @@ const StyledTextarea = styled(
   }
 `
 /* 
-  NOTE: For Headless UI components, passing the component directly to styled() does not result in the correct prop types 
-  being inferred by styled-components.
+  NOTE: For the Headless UI Textarea component, passing the component directly to styled() does not result in the correct
+  prop types being inferred by styled-components.
   
   We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
   styled-components to infer them.
@@ -54,27 +54,28 @@ const StyledTextarea = styled(
   Additionally, since we need to pass a ref to the Textarea component, we must use forwardRef as well.
 */
 
-const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
-  ({ className, name, disabled, required, label, error, ...props }, ref) => {
-    const errorMessageId = `${name}-error-message`
+const TextareaField = forwardRef<
+  React.ComponentRef<typeof Textarea>,
+  TextareaFieldProps
+>(({ className, name, disabled, required, label, error, ...props }, ref) => {
+  const errorMessageId = `${name}-error-message`
 
-    return (
-      <Field className={className} disabled={disabled}>
-        <Label label={label} required={required} />
-        <TextareaContainer>
-          <StyledTextarea
-            ref={ref}
-            name={name}
-            invalid={!!error}
-            aria-required={required}
-            aria-errormessage={errorMessageId}
-            {...props}
-          />
-        </TextareaContainer>
-        {error && <ErrorMessage id={errorMessageId}>{error}</ErrorMessage>}
-      </Field>
-    )
-  },
-)
+  return (
+    <Field className={className} disabled={disabled}>
+      <Label label={label} required={required} />
+      <TextareaContainer>
+        <StyledTextarea
+          ref={ref}
+          name={name}
+          invalid={!!error}
+          aria-required={required}
+          aria-errormessage={errorMessageId}
+          {...props}
+        />
+      </TextareaContainer>
+      {error && <ErrorMessage id={errorMessageId}>{error}</ErrorMessage>}
+    </Field>
+  )
+})
 
 export default TextareaField
