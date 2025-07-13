@@ -7,7 +7,7 @@ import Link from "../../../components/ui/Link"
 
 interface NoteBoardItemProps {
   note: Note
-  selected: boolean
+  selected?: boolean
   onToggle: (selected: boolean) => void
 }
 

@@ -13,7 +13,7 @@ import { useSignUpMutation } from "../authApi"
 import { EMAIL_REGEX } from "../validation"
 
 type SignUpFormProps = Pick<
-  React.HTMLAttributes<HTMLFormElement>,
+  React.ComponentProps<typeof AuthForm>,
   "aria-labelledby"
 >
 

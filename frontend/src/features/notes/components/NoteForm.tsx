@@ -24,11 +24,7 @@ type NoteFormProps = {
   note?: Note
 } & Pick<React.HTMLAttributes<HTMLFormElement>, "aria-labelledby">
 
-type NoteFormData = Pick<Note, "title"> & {
-  content: string
-  important: boolean
-}
-// NOTE: This shape describes the form, which always has the "content" and "important" fields.
+type NoteFormData = Omit<Note, "id">
 
 // styles
 const FieldsContainer = styled.section`

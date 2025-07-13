@@ -1,7 +1,10 @@
 import styled from "styled-components"
 import Button from "../../../components/ui/Button"
 
-type AuthFormProps = React.HTMLAttributes<HTMLFormElement> & {
+type AuthFormProps = Pick<
+  React.HTMLAttributes<HTMLFormElement>,
+  "onSubmit" | "aria-labelledby"
+> & {
   fields: React.ReactNode
   submitLabel: string
   isSubmitting?: boolean

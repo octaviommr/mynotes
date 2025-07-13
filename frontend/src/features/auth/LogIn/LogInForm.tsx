@@ -13,7 +13,7 @@ import { logIn as runLogInThunk } from "../authSlice"
 import { EMAIL_REGEX } from "../validation"
 
 type LogInFormProps = Pick<
-  React.HTMLAttributes<HTMLFormElement>,
+  React.ComponentProps<typeof AuthForm>,
   "aria-labelledby"
 >
 
