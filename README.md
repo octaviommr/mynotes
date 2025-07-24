@@ -2,7 +2,7 @@
 
 A very simple full-stack note board application, written for sandboxing and demonstration purposes.
 
-It showcases the MERN stack, especially the frontend bit, since frontend development is my main area of interest, and one I'm passionate about.
+It showcases the MERN stack, especially the frontend bit, since frontend development is my main area of interest and one I'm passionate about.
 
 Below is a breakdown of the most relevant application features:
 
