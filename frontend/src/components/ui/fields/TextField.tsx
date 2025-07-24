@@ -7,8 +7,9 @@ type TextFieldProps = Omit<
   | "className"
   | "type"
   | "invalid"
-  | "aria-invalid"
   | "aria-required"
+  | "aria-invalid"
+  | "aria-disabled"
   | "aria-errormessage"
 > &
   Pick<FieldProps, "className"> & {

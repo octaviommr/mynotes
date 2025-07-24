@@ -10,9 +10,9 @@ import {
   useDeleteNoteMutation,
 } from "../notesApi"
 import type { Note } from "../types/Note"
-import TextField from "../../../components/ui/form/TextField"
-import TextareaField from "../../../components/ui/form/TextareaField"
-import CheckboxField from "../../../components/ui/form/CheckboxField"
+import TextField from "../../../components/ui/fields/TextField"
+import TextareaField from "../../../components/ui/fields/TextareaField"
+import CheckboxField from "../../../components/ui/fields/CheckboxField"
 import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
 import { showModal } from "../../../components/layout/modal/modalSlice"
 import { showMessage } from "../../../components/layout/message/messageSlice"
@@ -20,9 +20,10 @@ import Button from "../../../components/ui/Button"
 import Spacer from "../../../components/ui/Spacer"
 import Link from "../../../components/ui/Link"
 
-type NoteFormProps = {
+interface NoteFormProps {
   note?: Note
-} & Pick<React.HTMLAttributes<HTMLFormElement>, "aria-labelledby">
+  labelElementId: string
+}
 
 type NoteFormData = Omit<Note, "id">
 
@@ -42,7 +43,7 @@ const ActionsContainer = styled.section`
   border-top: 1px solid;
 `
 
-const NoteForm: React.FC<NoteFormProps> = ({ note, ...props }) => {
+const NoteForm: React.FC<NoteFormProps> = ({ note, labelElementId }) => {
   const {
     register,
     control,
@@ -127,10 +128,7 @@ const NoteForm: React.FC<NoteFormProps> = ({ note, ...props }) => {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      aria-labelledby={props["aria-labelledby"]}
-    >
+    <form onSubmit={handleSubmit(onSubmit)} aria-labelledby={labelElementId}>
       <FieldsContainer>
         <TextField
           {...register("title", {

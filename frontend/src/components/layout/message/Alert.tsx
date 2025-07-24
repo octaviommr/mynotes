@@ -13,18 +13,18 @@ interface AlertProps {
 }
 
 // styles
-const AlertIcon = styled.svg`
+const SeverityIcon = styled.svg`
   width: ${({ theme }) => theme.sizes[6]};
   height: ${({ theme }) => theme.sizes[6]};
 `
 
-const AlertMessage = styled.p`
+const Message = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
 `
 
-const AlertContainer = styled.div.attrs<{
+const AlertContainer = styled.div<{
   $severity: MessageSeverity
-}>({ role: "alert" })`
+}>`
   display: flex;
   max-width: ${({ theme }) => theme.sizes.lg};
   align-items: center;
@@ -35,11 +35,11 @@ const AlertContainer = styled.div.attrs<{
   background-color: ${({ theme, $severity }) =>
     theme.colors[`${$severity}-light`]};
 
-  > ${AlertIcon} {
+  > ${SeverityIcon} {
     fill: ${({ theme, $severity }) => theme.colors[$severity]};
   }
 
-  > ${AlertMessage} {
+  > ${Message} {
     color: ${({ theme, $severity }) => theme.colors[$severity]};
   }
 `
@@ -59,9 +59,9 @@ const Alert: React.FC<AlertProps> = ({ severity, message }) => {
   }
 
   return (
-    <AlertContainer $severity={severity}>
-      <AlertIcon as={getSeverityIcon(severity)} />
-      <AlertMessage>{message}</AlertMessage>
+    <AlertContainer $severity={severity} role="alert">
+      <SeverityIcon as={getSeverityIcon(severity)} />
+      <Message>{message}</Message>
     </AlertContainer>
   )
 }

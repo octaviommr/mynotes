@@ -51,9 +51,7 @@ const NoteCardFooter = styled.footer`
   align-items: center;
 `
 
-const NoteCardImportantBadge = styled.span.attrs({
-  role: "status",
-})`
+const NoteCardImportantBadge = styled.span`
   border-radius: ${({ theme }) => theme.borderRadiuses.md};
   border: 1px solid ${({ theme }) => theme.colors.secondary};
   background-color: ${({ theme }) => theme.colors["secondary-light"]};
@@ -87,7 +85,9 @@ const NoteBoardItem: React.FC<NoteBoardItemProps> = ({
       <Spacer />
       <NoteCardFooter>
         {note.important && (
-          <NoteCardImportantBadge>Important</NoteCardImportantBadge>
+          <NoteCardImportantBadge role="status">
+            Important
+          </NoteCardImportantBadge>
         )}
         <Spacer />
         <Link to={`/note/${note.id}`} aria-label={`Edit ${note.title}`}>

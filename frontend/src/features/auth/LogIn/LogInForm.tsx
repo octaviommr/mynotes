@@ -4,22 +4,25 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import type { AppDispatch } from "../../../store/store"
 import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
-import TextField from "../../../components/ui/form/TextField"
-import PasswordField from "../../../components/ui/form/PasswordField"
+import TextField from "../../../components/ui/fields/TextField"
+import PasswordField from "../../../components/ui/fields/PasswordField"
 import { UserCredentials } from "../types/User"
-import AuthForm from "../components/AuthForm"
 import { useLogInMutation } from "../authApi"
 import { logIn as runLogInThunk } from "../authSlice"
 import { EMAIL_REGEX } from "../validation"
+import {
+  AuthFormActionsContainer,
+  AuthFormFieldsContainer,
+  AuthFormSubmitButton,
+} from "../components/AuthForm.styles"
 
-type LogInFormProps = Pick<
-  React.ComponentProps<typeof AuthForm>,
-  "aria-labelledby"
->
+interface LogInFormProps {
+  labelElementId: string
+}
 
 type LogInFormData = UserCredentials
 
-const LogInForm: React.FC<LogInFormProps> = (props) => {
+const LogInForm: React.FC<LogInFormProps> = ({ labelElementId }) => {
   const {
     register,
     handleSubmit,
@@ -56,43 +59,42 @@ const LogInForm: React.FC<LogInFormProps> = (props) => {
   }
 
   return (
-    <AuthForm
-      onSubmit={handleSubmit(onSubmit)}
-      aria-labelledby={props["aria-labelledby"]}
-      fields={
-        <>
-          <TextField
-            {...register("email", {
-              required: "Email is required.",
-              pattern: {
-                value: EMAIL_REGEX,
-                message: "Email is not valid.",
-              },
-            })}
-            label="Email"
-            error={errors.email?.message}
-          />
-          {/* 
-            NOTE: No need to mark this field as required, since it's already obvious for users that the email field is
-            required when logging in
-          */}
+    <form onSubmit={handleSubmit(onSubmit)} aria-labelledby={labelElementId}>
+      <AuthFormFieldsContainer>
+        <TextField
+          {...register("email", {
+            required: "Email is required.",
+            pattern: {
+              value: EMAIL_REGEX,
+              message: "Email is not valid.",
+            },
+          })}
+          label="Email"
+          error={errors.email?.message}
+        />
+        {/* 
+          NOTE: No need to mark this field as required, since it's already obvious for users that the email field is
+          required when logging in
+        */}
 
-          <PasswordField
-            {...register("password")}
-            label="Password"
-            error={errors.password?.message}
-          />
-          {/*
-            NOTE: For security reasons, we want to give potential attackers as few hints as possible about the password.
-              
-            Therefore, we won't mark the field as required and we'll let the required validation happen only on the server
-            (so we can provide a more generic error message, which is not password-specific).
-          */}
-        </>
-      }
-      submitLabel="Log In"
-      isSubmitting={isSubmitting}
-    />
+        <PasswordField
+          {...register("password")}
+          label="Password"
+          error={errors.password?.message}
+        />
+        {/*
+          NOTE: For security reasons, we want to give potential attackers as few hints as possible about the password.
+            
+          Therefore, we won't mark the field as required and we'll let the required validation happen only on the server
+          (so we can provide a more generic error message, which is not password-specific).
+        */}
+      </AuthFormFieldsContainer>
+      <AuthFormActionsContainer>
+        <AuthFormSubmitButton type="submit" disabled={isSubmitting}>
+          Log In
+        </AuthFormSubmitButton>
+      </AuthFormActionsContainer>
+    </form>
   )
 }
 

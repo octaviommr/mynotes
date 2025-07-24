@@ -44,7 +44,7 @@ const ToolbarButton = styled(Button)`
   }
 `
 
-const Toolbar = styled.section.attrs({ role: "toolbar" })<{
+const Toolbar = styled.section<{
   $selected?: boolean
 }>`
   position: relative;
@@ -78,7 +78,7 @@ const SelectedNotesContainer = styled.div`
   }
 `
 
-const SelectedNotesCount = styled.span.attrs({ role: "status" })`
+const SelectedNotesCount = styled.span`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   color: ${({ theme }) => theme.colors.error};
 `
@@ -136,7 +136,7 @@ const NoteBoardToolbar: React.FC<NoteBoardToolbarProps> = ({
 
   return (
     <ToolbarContainer>
-      <Toolbar $selected={selectedNotes.length > 0}>
+      <Toolbar $selected={selectedNotes.length > 0} role="toolbar">
         {selectedNotes.length > 0 && (
           <>
             <ToolbarButton onClick={() => deleteNotes()} aria-label="Delete">
@@ -149,7 +149,9 @@ const NoteBoardToolbar: React.FC<NoteBoardToolbarProps> = ({
               >
                 <ToolbarIcon as={XMarkIcon} />
               </Button>
-              <SelectedNotesCount>{selectedNotes.length}</SelectedNotesCount>
+              <SelectedNotesCount role="status">
+                {selectedNotes.length}
+              </SelectedNotesCount>
             </SelectedNotesContainer>
           </>
         )}

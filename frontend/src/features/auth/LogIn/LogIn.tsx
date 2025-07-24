@@ -40,7 +40,7 @@ const LogIn: React.FC = () => {
     <AuthPageContainer>
       <PageTitle id={LOG_IN_TITLE_ID}>Log In</PageTitle>
       <AuthFormContainer>
-        <LogInForm aria-labelledby={LOG_IN_TITLE_ID} />
+        <LogInForm labelElementId={LOG_IN_TITLE_ID} />
       </AuthFormContainer>
       <AuthPageFooter>
         <p>Don't have an account yet?</p>

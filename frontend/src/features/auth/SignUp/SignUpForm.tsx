@@ -4,22 +4,25 @@ import { useNavigate } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import type { AppDispatch } from "../../../store/store"
 import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
-import TextField from "../../../components/ui/form/TextField"
-import PasswordField from "../../../components/ui/form/PasswordField"
+import TextField from "../../../components/ui/fields/TextField"
+import PasswordField from "../../../components/ui/fields/PasswordField"
 import { showMessage } from "../../../components/layout/message/messageSlice"
 import { UserSignUp } from "../types/User"
-import AuthForm from "../components/AuthForm"
 import { useSignUpMutation } from "../authApi"
 import { EMAIL_REGEX } from "../validation"
+import {
+  AuthFormActionsContainer,
+  AuthFormFieldsContainer,
+  AuthFormSubmitButton,
+} from "../components/AuthForm.styles"
 
-type SignUpFormProps = Pick<
-  React.ComponentProps<typeof AuthForm>,
-  "aria-labelledby"
->
+interface SignUpFormProps {
+  labelElementId: string
+}
 
 type SignUpFormData = UserSignUp & { confirmationPassword: string }
 
-const SignUpForm: React.FC<SignUpFormProps> = (props) => {
+const SignUpForm: React.FC<SignUpFormProps> = ({ labelElementId }) => {
   const {
     register,
     handleSubmit,
@@ -62,57 +65,56 @@ const SignUpForm: React.FC<SignUpFormProps> = (props) => {
   }
 
   return (
-    <AuthForm
-      onSubmit={handleSubmit(onSubmit)}
-      aria-labelledby={props["aria-labelledby"]}
-      fields={
-        <>
-          <TextField
-            {...register("email", {
-              required: "Email is required.",
-              pattern: {
-                value: EMAIL_REGEX,
-                message: "Email is not valid.",
-              },
-            })}
-            label="Email"
-            error={errors.email?.message}
-            required
-          />
-          <TextField
-            {...register("name", {
-              required: "Name is required.",
-            })}
-            label="Name"
-            error={errors.name?.message}
-            required
-          />
-          <PasswordField
-            {...register("password", {
-              required: "Password is required.",
-            })}
-            label="Password"
-            error={errors.password?.message}
-            required
-          />
-          <PasswordField
-            {...register("confirmationPassword", {
-              required: "Confirmation password is required.",
-              validate: (value) => {
-                const password = getValues("password")
+    <form onSubmit={handleSubmit(onSubmit)} aria-labelledby={labelElementId}>
+      <AuthFormFieldsContainer>
+        <TextField
+          {...register("email", {
+            required: "Email is required.",
+            pattern: {
+              value: EMAIL_REGEX,
+              message: "Email is not valid.",
+            },
+          })}
+          label="Email"
+          error={errors.email?.message}
+          required
+        />
+        <TextField
+          {...register("name", {
+            required: "Name is required.",
+          })}
+          label="Name"
+          error={errors.name?.message}
+          required
+        />
+        <PasswordField
+          {...register("password", {
+            required: "Password is required.",
+          })}
+          label="Password"
+          error={errors.password?.message}
+          required
+        />
+        <PasswordField
+          {...register("confirmationPassword", {
+            required: "Confirmation password is required.",
+            validate: (value) => {
+              const password = getValues("password")
 
-                return value === password || "Passwords don't match."
-              },
-            })}
-            label="Confirm password"
-            error={errors.confirmationPassword?.message}
-            required
-          />
-        </>
-      }
-      submitLabel="Sign Up"
-      isSubmitting={isSubmitting}
-    />
+              return value === password || "Passwords don't match."
+            },
+          })}
+          label="Confirm password"
+          error={errors.confirmationPassword?.message}
+          required
+        />
+      </AuthFormFieldsContainer>
+      <AuthFormActionsContainer>
+        <AuthFormSubmitButton type="submit" disabled={isSubmitting}>
+          Sign Up
+        </AuthFormSubmitButton>
+      </AuthFormActionsContainer>
+    </form>
   )
 }
 

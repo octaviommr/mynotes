@@ -9,6 +9,7 @@ import {
 } from "@headlessui/react"
 import type { Icon } from "../../../types/Icon"
 import Label from "./Label"
+import { makeLabel } from "./utils/makeLabel"
 import ErrorMessage from "./ErrorMessage"
 
 interface InputAdornment {
@@ -20,8 +21,9 @@ type InputFieldProps = Omit<
   InputProps,
   | "className"
   | "invalid"
-  | "aria-invalid"
   | "aria-required"
+  | "aria-invalid"
+  | "aria-disabled"
   | "aria-errormessage"
 > &
   Pick<FieldProps, "className"> & {
@@ -98,7 +100,7 @@ const InputField = forwardRef<
 
     return (
       <Field className={className} disabled={disabled}>
-        <Label label={label} required={required} />
+        <Label>{makeLabel(label, required)}</Label>
         <InputContainer>
           <StyledInput
             ref={ref}

@@ -33,7 +33,7 @@ const StyledMenuItems = styled(MenuItems)`
   font-size: ${({ theme }) => theme.fontSizes.sm};
 `
 
-const MenuItemButton = styled.button`
+const LogOutButton = styled.button`
   display: flex;
   width: 100%;
   align-items: center;
@@ -69,10 +69,10 @@ const UserMenu: React.FC = () => {
       <StyledMenuButton>{userInitials}</StyledMenuButton>
       <StyledMenuItems anchor="bottom end">
         <MenuItem>
-          <MenuItemButton onClick={() => logOut()}>
+          <LogOutButton onClick={() => logOut()}>
             <StyledArrowLeftEndOnRectangleIcon />
             Log Out
-          </MenuItemButton>
+          </LogOutButton>
         </MenuItem>
       </StyledMenuItems>
     </Menu>

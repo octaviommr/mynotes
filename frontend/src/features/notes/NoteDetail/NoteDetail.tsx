@@ -66,7 +66,7 @@ const NoteDetail: React.FC = () => {
     <NotePageContainer>
       <PageTitle id={NOTE_DETAIL_TITLE_ID}>Edit Note</PageTitle>
       <NoteFormContainer>
-        <NoteForm note={note} aria-labelledby={NOTE_DETAIL_TITLE_ID} />
+        <NoteForm note={note} labelElementId={NOTE_DETAIL_TITLE_ID} />
       </NoteFormContainer>
     </NotePageContainer>
   )

@@ -7,14 +7,16 @@ import {
   type TextareaProps,
 } from "@headlessui/react"
 import Label from "./Label"
+import { makeLabel } from "./utils/makeLabel"
 import ErrorMessage from "./ErrorMessage"
 
 type TextareaFieldProps = Omit<
   TextareaProps,
   | "className"
   | "invalid"
-  | "aria-invalid"
   | "aria-required"
+  | "aria-invalid"
+  | "aria-disabled"
   | "aria-errormessage"
 > &
   Pick<FieldProps, "className"> & {
@@ -62,7 +64,7 @@ const TextareaField = forwardRef<
 
   return (
     <Field className={className} disabled={disabled}>
-      <Label label={label} required={required} />
+      <Label>{makeLabel(label, required)}</Label>
       <TextareaContainer>
         <StyledTextarea
           ref={ref}
