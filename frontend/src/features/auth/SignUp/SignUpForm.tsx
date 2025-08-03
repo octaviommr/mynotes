@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import type { AppDispatch } from "../../../store/store"
 import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
-import TextField from "../../../components/ui/fields/TextField"
-import PasswordField from "../../../components/ui/fields/PasswordField"
+import TextField from "../../../components/ui/form/TextField"
+import PasswordField from "../../../components/ui/form/PasswordField"
 import { showMessage } from "../../../components/layout/message/messageSlice"
 import { UserSignUp } from "../types/User"
 import { useSignUpMutation } from "../authApi"
@@ -17,12 +17,12 @@ import {
 } from "../components/AuthForm.styles"
 
 interface SignUpFormProps {
-  labelElementId: string
+  "aria-labelledby": string
 }
 
 type SignUpFormData = UserSignUp & { confirmationPassword: string }
 
-const SignUpForm: React.FC<SignUpFormProps> = ({ labelElementId }) => {
+const SignUpForm: React.FC<SignUpFormProps> = (props) => {
   const {
     register,
     handleSubmit,
@@ -65,7 +65,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ labelElementId }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} aria-labelledby={labelElementId}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      aria-labelledby={props["aria-labelledby"]}
+    >
       <AuthFormFieldsContainer>
         <TextField
           {...register("email", {

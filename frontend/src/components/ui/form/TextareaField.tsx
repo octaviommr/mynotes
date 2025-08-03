@@ -1,39 +1,33 @@
 import { forwardRef } from "react"
 import styled from "styled-components"
-import {
-  Field,
-  Textarea,
-  type FieldProps,
-  type TextareaProps,
-} from "@headlessui/react"
+import { Field, Textarea, type TextareaProps } from "@headlessui/react"
 import Label from "./Label"
-import { makeLabel } from "./utils/makeLabel"
 import ErrorMessage from "./ErrorMessage"
 
 type TextareaFieldProps = Omit<
   TextareaProps,
-  | "className"
+  | "name"
+  | "value"
+  | "defaultValue"
   | "invalid"
   | "aria-required"
   | "aria-invalid"
   | "aria-disabled"
   | "aria-errormessage"
-> &
-  Pick<FieldProps, "className"> & {
-    label: string
-    error?: string
-  }
+  | "as"
+  | "children"
+> & {
+  name: string
+  label: string
+  error?: string
+}
 
 // styles
 const TextareaContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing[1]};
 `
 
-const StyledTextarea = styled(
-  forwardRef<React.ComponentRef<typeof Textarea>, TextareaProps>(
-    (props, ref) => <Textarea ref={ref} {...props} />,
-  ),
-)`
+const StyledTextarea = styled(Textarea)<TextareaProps>`
   display: block;
   width: 100%;
   resize: none;
@@ -47,13 +41,10 @@ const StyledTextarea = styled(
   }
 `
 /* 
-  NOTE: For the Headless UI Textarea component, passing the component directly to styled() does not result in the correct
-  prop types being inferred by styled-components.
-  
-  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
-  styled-components to infer them.
-  
-  Additionally, since we need to pass a ref to the Textarea component, we must use forwardRef as well.
+  NOTE: For Headless UI components, just passing the component to styled() does not result in the correct prop types being
+  inferred by styled-components (due to how Headless UI types are defined).
+
+  We need to explicitly set the prop types for the styled component using the types provided by Headless UI.
 */
 
 const TextareaField = forwardRef<
@@ -63,8 +54,8 @@ const TextareaField = forwardRef<
   const errorMessageId = `${name}-error-message`
 
   return (
-    <Field className={className} disabled={disabled}>
-      <Label>{makeLabel(label, required)}</Label>
+    <Field disabled={disabled}>
+      <Label label={label} required={required} />
       <TextareaContainer>
         <StyledTextarea
           ref={ref}

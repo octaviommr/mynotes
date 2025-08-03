@@ -40,7 +40,7 @@ const SignUp: React.FC = () => {
     <AuthPageContainer>
       <PageTitle id={SIGN_UP_TITLE_ID}>Sign Up</PageTitle>
       <AuthFormContainer>
-        <SignUpForm labelElementId={SIGN_UP_TITLE_ID} />
+        <SignUpForm aria-labelledby={SIGN_UP_TITLE_ID} />
       </AuthFormContainer>
       <AuthPageFooter>
         <p>Already have an account?</p>

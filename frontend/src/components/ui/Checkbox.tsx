@@ -1,10 +1,19 @@
-import { forwardRef } from "react"
 import styled from "styled-components"
 import {
   Checkbox as HeadlessCheckbox,
-  type CheckboxProps,
+  type CheckboxProps as HeadlessCheckboxProps,
 } from "@headlessui/react"
 import { CheckIcon } from "@heroicons/react/16/solid"
+
+type CheckboxProps = Omit<
+  HeadlessCheckboxProps,
+  | "aria-required"
+  | "aria-invalid"
+  | "aria-disabled"
+  | "aria-errormessage"
+  | "as"
+  | "children"
+>
 
 // styles
 const StyledCheckIcon = styled(CheckIcon)`
@@ -13,7 +22,7 @@ const StyledCheckIcon = styled(CheckIcon)`
   fill: white;
 `
 
-const StyledHeadlessCheckbox = styled(HeadlessCheckbox)`
+const StyledHeadlessCheckbox = styled(HeadlessCheckbox)<HeadlessCheckboxProps>`
   width: ${({ theme }) => theme.sizes[6]};
   height: ${({ theme }) => theme.sizes[6]};
   border-radius: ${({ theme }) => theme.borderRadiuses.md};
@@ -37,16 +46,19 @@ const StyledHeadlessCheckbox = styled(HeadlessCheckbox)`
     display: ${({ checked }) => (checked ? "block" : "none")};
   }
 `
+/* 
+  NOTE: For Headless UI components, just passing the component to styled() does not result in the correct prop types being
+  inferred by styled-components (due to how Headless UI types are defined).
 
-const Checkbox = forwardRef<
-  React.ComponentRef<typeof HeadlessCheckbox>,
-  CheckboxProps
->((props, ref) => {
+  We need to explicitly set the prop types for the styled component using the types provided by Headless UI.
+*/
+
+const Checkbox: React.FC<CheckboxProps> = (props) => {
   return (
-    <StyledHeadlessCheckbox ref={ref} {...props}>
+    <StyledHeadlessCheckbox {...props}>
       <StyledCheckIcon />
     </StyledHeadlessCheckbox>
   )
-})
+}
 
 export default Checkbox

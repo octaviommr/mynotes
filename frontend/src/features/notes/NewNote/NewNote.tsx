@@ -12,7 +12,7 @@ const NewNote: React.FC = () => {
     <NotePageContainer>
       <PageTitle id={NEW_NOTE_TITLE_ID}>New Note</PageTitle>
       <NoteFormContainer>
-        <NoteForm labelElementId={NEW_NOTE_TITLE_ID} />
+        <NoteForm aria-labelledby={NEW_NOTE_TITLE_ID} />
       </NoteFormContainer>
     </NotePageContainer>
   )

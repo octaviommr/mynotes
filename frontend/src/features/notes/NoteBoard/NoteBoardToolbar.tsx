@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import styled from "styled-components"
-import { Button } from "@headlessui/react"
+import { Button, type ButtonProps } from "@headlessui/react"
 import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import type { AppDispatch } from "../../../store/store"
 import { useDeleteNotesMutation } from "../notesApi"
@@ -31,7 +31,7 @@ const ToolbarIcon = styled.svg`
   height: ${({ theme }) => theme.sizes[6]};
 `
 
-const ToolbarButton = styled(Button)`
+const ToolbarButton = styled(Button)<ButtonProps>`
   display: inline-flex;
   width: ${({ theme }) => theme.sizes[10]};
   height: ${({ theme }) => theme.sizes[10]};
@@ -82,6 +82,12 @@ const SelectedNotesCount = styled.span`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   color: ${({ theme }) => theme.colors.error};
 `
+/* 
+  NOTE: For Headless UI components, just passing the component to styled() does not result in the correct prop types being
+  inferred by styled-components (due to how Headless UI types are defined).
+
+  We need to explicitly set the prop types for the styled component using the types provided by Headless UI.
+*/
 
 const NoteBoardToolbar: React.FC<NoteBoardToolbarProps> = ({
   selectedNotes,

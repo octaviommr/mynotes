@@ -1,22 +1,26 @@
 import { forwardRef, useState } from "react"
-import { Input, type FieldProps, type InputProps } from "@headlessui/react"
+import { Input, type InputProps } from "@headlessui/react"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid"
 import InputField from "./InputField"
 
 type PasswordFieldProps = Omit<
   InputProps,
-  | "className"
+  | "name"
   | "type"
+  | "value"
+  | "defaultValue"
   | "invalid"
   | "aria-required"
   | "aria-invalid"
   | "aria-disabled"
   | "aria-errormessage"
-> &
-  Pick<FieldProps, "className"> & {
-    label: string
-    error?: string
-  }
+  | "as"
+  | "children"
+> & {
+  name: string
+  label: string
+  error?: string
+}
 
 const PasswordField = forwardRef<
   React.ComponentRef<typeof Input>,

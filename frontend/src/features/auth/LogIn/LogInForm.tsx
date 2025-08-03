@@ -4,8 +4,8 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import { useForm, SubmitHandler } from "react-hook-form"
 import type { AppDispatch } from "../../../store/store"
 import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
-import TextField from "../../../components/ui/fields/TextField"
-import PasswordField from "../../../components/ui/fields/PasswordField"
+import TextField from "../../../components/ui/form/TextField"
+import PasswordField from "../../../components/ui/form/PasswordField"
 import { UserCredentials } from "../types/User"
 import { useLogInMutation } from "../authApi"
 import { logIn as runLogInThunk } from "../authSlice"
@@ -17,12 +17,12 @@ import {
 } from "../components/AuthForm.styles"
 
 interface LogInFormProps {
-  labelElementId: string
+  "aria-labelledby": string
 }
 
 type LogInFormData = UserCredentials
 
-const LogInForm: React.FC<LogInFormProps> = ({ labelElementId }) => {
+const LogInForm: React.FC<LogInFormProps> = (props) => {
   const {
     register,
     handleSubmit,
@@ -59,7 +59,10 @@ const LogInForm: React.FC<LogInFormProps> = ({ labelElementId }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} aria-labelledby={labelElementId}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      aria-labelledby={props["aria-labelledby"]}
+    >
       <AuthFormFieldsContainer>
         <TextField
           {...register("email", {
@@ -74,7 +77,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ labelElementId }) => {
         />
         {/* 
           NOTE: No need to mark this field as required, since it's already obvious for users that the email field is
-          required when logging in
+          required when logging in.
         */}
 
         <PasswordField

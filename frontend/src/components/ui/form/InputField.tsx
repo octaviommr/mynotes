@@ -4,12 +4,11 @@ import {
   Field,
   Input,
   Button,
-  type FieldProps,
   type InputProps,
+  type ButtonProps,
 } from "@headlessui/react"
 import type { Icon } from "../../../types/Icon"
 import Label from "./Label"
-import { makeLabel } from "./utils/makeLabel"
 import ErrorMessage from "./ErrorMessage"
 
 interface InputAdornment {
@@ -19,18 +18,22 @@ interface InputAdornment {
 
 type InputFieldProps = Omit<
   InputProps,
-  | "className"
+  | "name"
+  | "value"
+  | "defaultValue"
   | "invalid"
   | "aria-required"
   | "aria-invalid"
   | "aria-disabled"
   | "aria-errormessage"
-> &
-  Pick<FieldProps, "className"> & {
-    label: string
-    error?: string
-    adornment?: InputAdornment
-  }
+  | "as"
+  | "children"
+> & {
+  name: string
+  label: string
+  error?: string
+  adornment?: InputAdornment
+}
 
 // styles
 const InputContainer = styled.div`
@@ -38,11 +41,7 @@ const InputContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing[1]};
 `
 
-const StyledInput = styled(
-  forwardRef<React.ComponentRef<typeof Input>, InputProps>((props, ref) => (
-    <Input ref={ref} {...props} />
-  )),
-)<{ $hasAdornment?: boolean }>`
+const StyledInput = styled(Input)<InputProps & { $hasAdornment?: boolean }>`
   display: block;
   width: 100%;
   border-radius: ${({ theme }) => theme.borderRadiuses.lg};
@@ -56,16 +55,6 @@ const StyledInput = styled(
     opacity: ${({ theme }) => theme.opacities.disabled};
   }
 `
-/* 
-  NOTE: For the Headless UI Input component, passing the component directly to styled() does not result in the correct prop
-  types being inferred by styled-components.
-  
-  We need to explicitly define the component and use the prop types provided by Headless UI, instead of relying on 
-  styled-components to infer them.
-  
-  Additionally, since we need to pass a ref to the Input component, we must use forwardRef as well.
-*/
-
 const AdornmentContainer = styled.div`
   position: absolute;
   top: 0;
@@ -76,7 +65,7 @@ const AdornmentContainer = styled.div`
   padding-right: ${({ theme }) => theme.spacing[2]};
 `
 
-const StyledButton = styled(Button)`
+const StyledButton = styled(Button)<ButtonProps>`
   ${({ theme, disabled }) =>
     disabled && `opacity: ${theme.opacities.disabled};`}
 `
@@ -87,6 +76,12 @@ const AdornmentIcon = styled.svg`
     height: ${theme.sizes[6]};
   `};
 `
+/* 
+  NOTE: For Headless UI components, just passing the component to styled() does not result in the correct prop types being
+  inferred by styled-components (due to how Headless UI types are defined).
+
+  We need to explicitly set the prop types for the styled component using the types provided by Headless UI.
+*/
 
 const InputField = forwardRef<
   React.ComponentRef<typeof Input>,
@@ -99,8 +94,8 @@ const InputField = forwardRef<
     const errorMessageId = `${name}-error-message`
 
     return (
-      <Field className={className} disabled={disabled}>
-        <Label>{makeLabel(label, required)}</Label>
+      <Field disabled={disabled}>
+        <Label label={label} required={required} />
         <InputContainer>
           <StyledInput
             ref={ref}

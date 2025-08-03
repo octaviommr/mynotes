@@ -10,9 +10,9 @@ import {
   useDeleteNoteMutation,
 } from "../notesApi"
 import type { Note } from "../types/Note"
-import TextField from "../../../components/ui/fields/TextField"
-import TextareaField from "../../../components/ui/fields/TextareaField"
-import CheckboxField from "../../../components/ui/fields/CheckboxField"
+import TextField from "../../../components/ui/form/TextField"
+import TextareaField from "../../../components/ui/form/TextareaField"
+import CheckboxField from "../../../components/ui/form/CheckboxField"
 import { useAPIErrorHandler } from "../../../hooks/useAPIErrorHandler"
 import { showModal } from "../../../components/layout/modal/modalSlice"
 import { showMessage } from "../../../components/layout/message/messageSlice"
@@ -22,7 +22,7 @@ import Link from "../../../components/ui/Link"
 
 interface NoteFormProps {
   note?: Note
-  labelElementId: string
+  "aria-labelledby": string
 }
 
 type NoteFormData = Omit<Note, "id">
@@ -43,7 +43,7 @@ const ActionsContainer = styled.section`
   border-top: 1px solid;
 `
 
-const NoteForm: React.FC<NoteFormProps> = ({ note, labelElementId }) => {
+const NoteForm: React.FC<NoteFormProps> = ({ note, ...props }) => {
   const {
     register,
     control,
@@ -128,7 +128,10 @@ const NoteForm: React.FC<NoteFormProps> = ({ note, labelElementId }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} aria-labelledby={labelElementId}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      aria-labelledby={props["aria-labelledby"]}
+    >
       <FieldsContainer>
         <TextField
           {...register("title", {
@@ -153,10 +156,8 @@ const NoteForm: React.FC<NoteFormProps> = ({ note, labelElementId }) => {
           )}
         />
         {/*
-          NOTE: Checkbox fields are used as controlled components because Headless UI's "Checkbox" component doesn't expose
-          a native "onChange" handler.
-          
-          The component can be used as uncontrolled, but this only means it will track the state internally.
+          NOTE: Checkbox fields are used as controlled components because Headless UI Checkbox component doesn't use a
+          native checkbox-type input.
         */}
       </FieldsContainer>
       <ActionsContainer>
@@ -164,7 +165,7 @@ const NoteForm: React.FC<NoteFormProps> = ({ note, labelElementId }) => {
           <Button
             onClick={() => deleteNote()}
             disabled={isSubmitting}
-            $variant="error"
+            variant="error"
           >
             Delete
           </Button>
