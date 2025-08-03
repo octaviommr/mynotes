@@ -12,7 +12,7 @@ Below is a breakdown of the most relevant application features:
 - Redux Toolkit (with RTK Query and Reselect) for state management
 - React Hook Form for form building and validation
 - styled-components for styling (with Headless UI and Heroicons), including creation of a theme
-- Accessibility by using semantic HTML, ARIA roles and attributes, and by ensuring color contrast
+- Accessibility features, including the use of semantic HTML, ARIA roles and attributes, and sufficient color contrast for readability
 - Global error handling
 - Test suite using Jest, React Testing Library and Mock Service Worker
 
@@ -61,6 +61,6 @@ Run `npm run test` in the "frontend" directory to run the test suite for the fro
 
 ## Next Steps
 
-- Implement containerization using Docker
 - Deploy the application
-- Automate deployment using GitHub actions
+- Implement CI/CD to automate deployment with GitHub Actions
+- Implement containerization with Docker
