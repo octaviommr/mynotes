@@ -88,8 +88,8 @@ const LogInForm: React.FC<LogInFormProps> = (props) => {
         {/*
           NOTE: For security reasons, we want to give potential attackers as few hints as possible about the password.
             
-          Therefore, we won't mark the field as required and we'll let the required validation happen only on the server
-          (so we can provide a more generic error message, which is not password-specific).
+          Therefore, we won't mark the field as required or perform any validation, so we can provide a more generic error
+          message, which is not password-specific.
         */}
       </AuthFormFieldsContainer>
       <AuthFormActionsContainer>

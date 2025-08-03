@@ -9,6 +9,11 @@ const router = express.Router()
 router.post("/login", (req, res, next) => {
   const { email, password } = req.body
 
+  if (!email || !password) {
+    res.status(401).json({ message: "Invalid email or password." })
+    return
+  }
+
   User.findOne({ email })
     .then((user) => {
       if (!user) {
