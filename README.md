@@ -24,17 +24,17 @@ Below is a breakdown of the most relevant application features:
 
 This is a personal project so I'm not accepting contributions at the moment.
 
-## Running locally
+## Running Locally
 
 ### Prerequisites
 
 Building and running the application locally requires Node.js 20+ and either MongoDB Community Edition 6+ or a MongoDB Atlas account.
 
-### Install dependencies
+### Install Dependencies
 
 Run `npm install` in both the "backend" and "frontend" directories. This will install all the needed packages for both the backend and frontend projects.
 
-### Environment variables
+### Environment Variables
 
 Create a "nodemon.json" file in the "backend" folder with the following structure, which contains the address of the MongoDB instance and the secret key that will be used to encode JWT tokens:
 
@@ -49,7 +49,7 @@ Create a "nodemon.json" file in the "backend" folder with the following structur
 
 Typically, a local MongoDB instance address looks like `mongodb://127.0.0.1:27017/your-database-name-goes-here`. If you're using MongoDB Atlas, use the connection string that is provided by the platform for your instance.
 
-### Build and start
+### Build and Start
 
 Run `npm run start` in the "backend" directory to start the development server for the API.
 
@@ -64,3 +64,7 @@ Run `npm run test` in the "frontend" directory to run the test suite for the fro
 - Deploy the application
 - Implement CI/CD to automate deployment with GitHub Actions
 - Implement containerization with Docker
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
