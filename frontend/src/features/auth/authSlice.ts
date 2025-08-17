@@ -30,7 +30,6 @@ const authSlice = createSlice({
   */
   initialState: {
     isLoggedIn: false,
-    session: null,
   } satisfies AuthState as AuthState,
 
   reducers: {
