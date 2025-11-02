@@ -39,7 +39,7 @@ Run `npm install` in both the `backend` and `frontend` folders. This will instal
 
 In the `backend` folder, copy `nodemon.example.json` to `nodemon.json` and fill in the required values.
 
-If you're using MongoDB Atlas, use the connection string that is provided for your instance as the value for `MONGODB_URI`.
+If you're using MongoDB Atlas, use the connection string that is provided for your cluster as the value for `MONGODB_URI`.
 
 Fill in `JWT_SECRET` with the secret key that will be used to encode JWT tokens.
 
